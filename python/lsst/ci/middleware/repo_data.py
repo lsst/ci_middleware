@@ -305,7 +305,7 @@ class ObservationRecords:
         cls,
         universe: DimensionUniverse,
         uri: ResourcePathExpression = f"resource://lsst.ci.middleware/{OBSERVATION_RECORDS_FILENAME}",
-    ) -> InstrumentRecords:
+    ) -> ObservationRecords:
         """Read the records from a JSON file.
 
         Parameters
