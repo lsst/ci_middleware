@@ -31,6 +31,7 @@ from typing import Any, cast
 
 from lsst.daf.butler import Butler, DimensionRecord, DimensionUniverse, SerializedDimensionRecord
 from lsst.resources import ResourcePath, ResourcePathExpression
+from lsst.skymap import DiscreteSkyMap
 from lsst.sphgeom import ConvexPolygon
 
 from ._constants import BANDS, DETECTORS, INSTRUMENT
@@ -39,6 +40,7 @@ FOCUS_HTM7_ID = 231866
 
 INSTRUMENT_RECORDS_FILENAME = os.path.join("data", "instrument-records.json")
 OBSERVATION_RECORDS_FILENAME = os.path.join("data", "observation-records.json")
+SKYMAP_CONFIG_FILENAME = os.path.join("data", "skymap-config.py")
 
 
 @dataclasses.dataclass
@@ -392,3 +394,25 @@ class ObservationRecords:
             d = visit_record.toDict()
             d["region"] = ConvexPolygon(visit_vector_vertices[visit_record.id])
             self.visit.append(type(visit_record)(**d))
+
+
+def make_skymap_instance(
+    uri: ResourcePathExpression = f"resource://lsst.ci.middleware/{SKYMAP_CONFIG_FILENAME}",
+) -> DiscreteSkyMap:
+    """Make a skymap object for the test repository.
+
+    Parameters
+    ----------
+    uri : convertible to `lsst.resources.ResourcePath`, optional
+        URI to the skymap config file.  Defaults to the location in this
+        package where it should have been committed to version control.
+
+    Returns
+    -------
+    skymap : `lsst.skymap.DiscreteSkyMap`
+        Skymap object.
+    """
+    config = DiscreteSkyMap.ConfigClass()
+    uri = ResourcePath(uri)
+    config.loadFromString(uri.read())
+    return DiscreteSkyMap(config)
