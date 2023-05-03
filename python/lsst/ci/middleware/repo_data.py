@@ -21,12 +21,13 @@
 
 from __future__ import annotations
 
-__all__ = ("InstrumentRecords", "ObservationRecords")
+__all__ = ("InstrumentRecords", "ObservationRecords", "make_skymap_instance", "RepoData")
 
 import dataclasses
 import itertools
 import json
 import os.path
+import shutil
 from collections import defaultdict
 from collections.abc import Iterable
 from typing import Any, cast
@@ -34,6 +35,7 @@ from typing import Any, cast
 import pydantic
 from lsst.daf.butler import (
     Butler,
+    CollectionType,
     DatasetType,
     DimensionRecord,
     DimensionUniverse,
@@ -42,17 +44,29 @@ from lsst.daf.butler import (
 )
 from lsst.pipe.base.tests.mocks import MockStorageClass, get_original_name
 from lsst.resources import ResourcePath, ResourcePathExpression
-from lsst.skymap import DiscreteSkyMap
+from lsst.skymap import BaseSkyMap, DiscreteSkyMap
 from lsst.sphgeom import ConvexPolygon
 
-from ._constants import BANDS, DETECTORS, INSTRUMENT
+from ._constants import (
+    BANDS,
+    DEFAULTS_COLLECTION,
+    DETECTORS,
+    INPUT_FORMATTERS_CONFIG_DIR,
+    INSTRUMENT,
+    MISC_INPUT_RUN,
+    SKYMAP,
+)
+from .mock_dataset_maker import MockDatasetMaker
 
 FOCUS_HTM7_ID = 231866
 
 INSTRUMENT_RECORDS_FILENAME = os.path.join("data", "instrument-records.json")
 OBSERVATION_RECORDS_FILENAME = os.path.join("data", "observation-records.json")
+INPUT_DATASET_TYPES_FILENAME = os.path.join("data", "input-dataset-types.json")
 SKYMAP_CONFIG_FILENAME = os.path.join("data", "skymap-config.py")
 INPUT_DATASET_TYPES_FILENAME = os.path.join("data", "input-dataset-types.json")
+
+CALIBS_COLLECTION = "HSC/calibs"
 
 
 @dataclasses.dataclass
@@ -504,3 +518,104 @@ class InputDatasetTypes(pydantic.BaseModel):
             run: [DatasetType.from_simple(s, universe=universe) for s in serialized_dataset_types]
             for run, serialized_dataset_types in self.__root__.items()
         }
+
+
+class RepoData:
+    """A high-level class for preparing test data repositories.
+
+    Parameters
+    ----------
+    root : `str`
+        Repository root directory.
+    clobber : `bool`, optional
+        If `True` and ``root`` exists, recursively delete it and make a new
+        one.  Otherwise assume any existing path is an already-valid repo that
+        may still need to be populated in one or more respects.
+    """
+
+    def __init__(self, root: str, clobber: bool = False):
+        self.root = ResourcePath(root, forceDirectory=True)
+        self.dataset_types = InputDatasetTypes.read()
+        if self.root.exists():
+            if clobber:
+                shutil.rmtree(root, ignore_errors=False)
+            else:
+                return
+        self.formatter_config_dir = os.path.join(root, INPUT_FORMATTERS_CONFIG_DIR)
+        self.dataset_types.make_formatter_config_dir(self.formatter_config_dir)
+        Butler.makeRepo(self.root)
+
+    @classmethod
+    def prep(cls, root: str, clobber: bool = False) -> Butler:
+        """Fully prepare a data repository, running all regular methods of
+        this class.
+
+        Parameters
+        ----------
+        root : `str`
+            Repository root directory.
+        clobber : `bool`, optional
+            If `True` and ``root`` exists, recursively delete it and make a new
+            one.  Otherwise assume any existing path is an already-valid repo
+            that will still need to be populated; this allows for external
+            creation of repos with non-default configuration.
+
+        Returns
+        -------
+        butler : `lsst.daf.butler.Butler`
+            Butler client for the new repository.
+        """
+        helper = cls(root, clobber=clobber)
+        butler = Butler(helper.root, writeable=True, searchPaths=[helper.formatter_config_dir])
+        helper.register_instrument(butler)
+        helper.insert_observations(butler)
+        helper.register_skymap(butler)
+        helper.mock_input_datasets(butler)
+        helper.make_defaults_collection(butler)
+        return butler
+
+    def register_instrument(self, butler: Butler) -> None:
+        """Add all instrument-managed records to the repository."""
+        instrument_records = InstrumentRecords.read(butler.registry.dimensions)
+        butler.registry.insertDimensionData("instrument", instrument_records.instrument)
+        butler.registry.insertDimensionData("physical_filter", *instrument_records.physical_filter)
+        butler.registry.insertDimensionData("detector", *instrument_records.detector)
+
+    def insert_observations(self, butler: Butler) -> None:
+        """Add all observation records to the repository."""
+        observation_records = ObservationRecords.read(butler.registry.dimensions)
+        for field in dataclasses.fields(observation_records):
+            butler.registry.insertDimensionData(field.name, *getattr(observation_records, field.name))
+
+    def register_skymap(self, butler: Butler) -> None:
+        """Add all skymap, tract, and patch records to the repository."""
+        skymap_instance = make_skymap_instance()
+        skymap_instance.register(SKYMAP, butler)
+
+    def mock_input_datasets(self, butler: Butler) -> None:
+        """Add mock input datasets that will be used by most pipelines."""
+        mock_maker = MockDatasetMaker(butler)
+        for run, dataset_types in self.dataset_types.resolve(butler.registry.dimensions).items():
+            butler.registry.registerCollection(run, CollectionType.RUN)
+            for dataset_type in dataset_types:
+                mock_maker.make_datasets(dataset_type, run)
+
+    def make_defaults_collection(self, butler: Butler) -> None:
+        """Create default input collections for pipeline graph-building and
+        execution.
+        """
+        defaults = []
+        calibs = []
+        for run in self.dataset_types.runs:
+            if run.startswith(CALIBS_COLLECTION):
+                calibs.append(run)
+            else:
+                defaults.append(run)
+        butler.registry.registerCollection(CALIBS_COLLECTION, CollectionType.CHAINED)
+        butler.registry.setCollectionChain(CALIBS_COLLECTION, calibs)
+        defaults.append(CALIBS_COLLECTION)
+        defaults.append(BaseSkyMap.SKYMAP_RUN_COLLECTION_NAME)
+        butler.registry.registerCollection(MISC_INPUT_RUN, CollectionType.RUN)
+        defaults.append(MISC_INPUT_RUN)
+        butler.registry.registerCollection(DEFAULTS_COLLECTION, CollectionType.CHAINED)
+        butler.registry.setCollectionChain(DEFAULTS_COLLECTION, defaults)

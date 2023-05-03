@@ -35,6 +35,7 @@ from lsst.resources import ResourcePathExpression
 from lsst.sphgeom import Box, ConvexPolygon
 
 from ._constants import (
+    INPUT_FORMATTERS_CONFIG_DIR,
     MISC_INPUT_RUN,
     PIPELINE_FORMATTERS_CONFIG_DIR,
     UNMOCKED_DATASET_TYPES,
@@ -90,6 +91,9 @@ class MockDatasetMaker:
         pipeline_config_dir = os.path.join(root, PIPELINE_FORMATTERS_CONFIG_DIR)
         MockStorageClass.make_formatter_config_dir(pipeline_config_dir)
         search_path = [pipeline_config_dir]
+        input_config_dir = os.path.join(root, INPUT_FORMATTERS_CONFIG_DIR)
+        if os.path.exists(input_config_dir):
+            search_path.append(input_config_dir)
         butler = Butler(
             root,
             writeable=True,
