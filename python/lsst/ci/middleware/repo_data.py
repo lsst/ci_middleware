@@ -24,12 +24,23 @@ from __future__ import annotations
 __all__ = ("InstrumentRecords", "ObservationRecords")
 
 import dataclasses
+import itertools
 import json
 import os.path
 from collections import defaultdict
+from collections.abc import Iterable
 from typing import Any, cast
 
-from lsst.daf.butler import Butler, DimensionRecord, DimensionUniverse, SerializedDimensionRecord
+import pydantic
+from lsst.daf.butler import (
+    Butler,
+    DatasetType,
+    DimensionRecord,
+    DimensionUniverse,
+    SerializedDatasetType,
+    SerializedDimensionRecord,
+)
+from lsst.pipe.base.tests.mocks import MockStorageClass, get_original_name
 from lsst.resources import ResourcePath, ResourcePathExpression
 from lsst.skymap import DiscreteSkyMap
 from lsst.sphgeom import ConvexPolygon
@@ -41,6 +52,7 @@ FOCUS_HTM7_ID = 231866
 INSTRUMENT_RECORDS_FILENAME = os.path.join("data", "instrument-records.json")
 OBSERVATION_RECORDS_FILENAME = os.path.join("data", "observation-records.json")
 SKYMAP_CONFIG_FILENAME = os.path.join("data", "skymap-config.py")
+INPUT_DATASET_TYPES_FILENAME = os.path.join("data", "input-dataset-types.json")
 
 
 @dataclasses.dataclass
@@ -416,3 +428,79 @@ def make_skymap_instance(
     uri = ResourcePath(uri)
     config.loadFromString(uri.read())
     return DiscreteSkyMap(config)
+
+
+class InputDatasetTypes(pydantic.BaseModel):
+    """Datasets types used as overall inputs by most mocked pipelines.
+
+    This is not expected to be exhaustive for all pipelines; it's a common
+    subset that we want to include in the base repo we'll copy from every time
+    we make a per-pipeline repo to test with.
+
+    This class also groups these dataset types by the collection names their
+    datasets should be inserted into.
+    """
+
+    __root__: dict[str, list[SerializedDatasetType]]
+
+    @property
+    def runs(self) -> Iterable[str]:
+        """The RUN collections datasets should be written to."""
+        return self.__root__.keys()
+
+    def make_formatter_config_dir(self, root: str) -> None:
+        """Make a butler config directory (suitable for the ``searchPaths``
+        argument to butler construction) with formatter configuration for
+        these dataset types.
+
+        Parameters
+        ----------
+        root : `str`
+            Directory that configuration files should be written to.
+        """
+        for serialized_dataset_type in itertools.chain.from_iterable(self.__root__.values()):
+            assert serialized_dataset_type.storageClass is not None
+            MockStorageClass.get_or_register_mock(get_original_name(serialized_dataset_type.storageClass))
+        MockStorageClass.make_formatter_config_dir(root)
+
+    @classmethod
+    def read(
+        cls,
+        uri: ResourcePathExpression = f"resource://lsst.ci.middleware/{INPUT_DATASET_TYPES_FILENAME}",
+    ) -> InputDatasetTypes:
+        """Read the dataset types from a JSON file.
+
+        Parameters
+        ----------
+        uri : convertible to `lsst.resources.ResourcePath`, optional
+            File to load.  Defaults to the location in this package where it
+            should have been committed to version control
+
+        Returns
+        -------
+        dataset_types : `InputDatasetTypes`
+            Loaded dataset types struct.
+        """
+        uri = ResourcePath(uri)
+        with uri.open() as stream:
+            data = json.load(stream)
+        return cls.parse_obj(data)
+
+    def resolve(self, universe: DimensionUniverse) -> dict[str, list[DatasetType]]:
+        """Return dataset type objects with resolved dimensions.
+
+        Parameters
+        ----------
+        universe : `lsst.daf.butler.DimensionUniverse`
+            Definition of the dimension data model.
+
+        Returns
+        -------
+        resolved : `dict` [ `str`, `list` [ `lsst.daf.butler.DatasetType` ] ]
+            Mapping from RUN collection name to the dataset types whose
+            datasets should be inserted into that collection.
+        """
+        return {
+            run: [DatasetType.from_simple(s, universe=universe) for s in serialized_dataset_types]
+            for run, serialized_dataset_types in self.__root__.items()
+        }
