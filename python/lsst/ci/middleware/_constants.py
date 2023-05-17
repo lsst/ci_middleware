@@ -25,8 +25,16 @@ __all__ = (
     "INSTRUMENT",
     "DETECTORS",
     "BANDS",
+    "SKYMAP",
+    "UNMOCKED_DATASET_TYPES",
+    "MISC_INPUT_RUN",
+    "PIPELINE_FORMATTERS_CONFIG_DIR",
 )
 
 INSTRUMENT = "HSC"
 DETECTORS = (57, 58, 49, 50, 41, 42)
 BANDS = ("r", "i")
+SKYMAP = "ci_mw"
+UNMOCKED_DATASET_TYPES = ("skyMap",)
+MISC_INPUT_RUN = "HSC/misc"
+PIPELINE_FORMATTERS_CONFIG_DIR = "pipeline_formatters"
