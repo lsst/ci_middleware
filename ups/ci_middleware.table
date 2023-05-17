@@ -4,5 +4,6 @@ setupRequired(obs_base)
 setupRequired(obs_subaru)
 setupRequired(skymap)
 setupRequired(ctrl_mpexec)
+setupRequired(drp_pipe)
 
 envPrepend(PYTHONPATH, ${PRODUCT_DIR}/python)
