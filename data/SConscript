@@ -22,15 +22,12 @@
 from __future__ import annotations
 
 import os
-from collections.abc import Mapping, Sequence
 
 from lsst.sconsUtils import state
 from lsst.sconsUtils.utils import libraryLoaderEnvironment
 from lsst.ci.middleware import (
     UNMOCKED_DATASET_TYPES,
     DEFAULTS_COLLECTION,
-    INPUT_FORMATTERS_CONFIG_DIR,
-    PIPELINE_FORMATTERS_CONFIG_DIR,
 )
 
 
@@ -38,30 +35,21 @@ PIPELINES_DIR = os.path.join(os.environ["DRP_PIPE_DIR"], "pipelines", "HSC")
 PIPETASK_BIN = os.path.join(os.environ["CTRL_MPEXEC_DIR"], "bin/pipetask")
 
 
-def python_cmd(*tail: str, path_vars: Mapping[str, Sequence[str]] | None = None) -> str:
+def python_cmd(*args: str) -> str:
     """Return a command-line string that runs the Python executable.
 
     Parameters
     ----------
     *args
         Command-line arguments to pass to Python.
-    path_vars : `collections.abc.Mapping` [`str`, `collections.abc.Sequence` \
-            [ `str` ] ], optional
-        A mapping from names of ``PATH``-like environment variables to their
-        ``:``-separated values.  These will be set when invoking the Python
-        executable.
 
     Returns
     -------
     cmd : `str`
         A command-line string.
     """
-    if path_vars is None:
-        path_vars = {}
-    terms = [f"{k}={':'.join(v)}" for k, v in path_vars.items()]
-    terms.append(libraryLoaderEnvironment())
-    terms.append("python")
-    terms.extend(tail)
+    terms = [libraryLoaderEnvironment(), "python"]
+    terms.extend(args)
     return " ".join(terms)
 
 
@@ -273,12 +261,6 @@ def build_pipetask_outputs(
                 "--register-dataset-types",
                 "--mock",
                 f"--unmocked-dataset-types '{','.join(UNMOCKED_DATASET_TYPES)}'",
-                path_vars={
-                    "DAF_BUTLER_CONFIG_PATH": [
-                        os.path.join(repo_root, PIPELINE_FORMATTERS_CONFIG_DIR),
-                        os.path.join(repo_root, INPUT_FORMATTERS_CONFIG_DIR),
-                    ]
-                },
             ),
             # Tar up the output data repository.
             tar_repo_cmd(repo_root, "${TARGETS[0]}"),
