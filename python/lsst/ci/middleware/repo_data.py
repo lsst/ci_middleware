@@ -201,6 +201,9 @@ class InstrumentRecords:
 class ObservationRecords:
     """Struct that manages test-data dimension records typically inserted by
     raw ingest and visit definition.
+
+    This class currently assumes all visit definitions are one-to-one and that
+    visit and exposure IDs are interchangeable.
     """
 
     exposure: list[DimensionRecord] = dataclasses.field(default_factory=list)
@@ -302,6 +305,58 @@ class ObservationRecords:
         result._fill_visit_definition_elements(butler, visit_ids, instrument)
         result._fill_visit(butler, visit_ids, instrument)
         return result
+
+    def find_removal_candidate(self, **kwargs: Any) -> tuple[int, tuple]:
+        """Find the best visit to remove while preserving overall heterogeneity
+        of the mock dataset.
+
+        Parameters
+        ----------
+        **kwargs
+            Keyword arguments may either be:
+
+            - The name of an exposure dimension record field and the value that
+              field must have in order to consider that exposure for removal.
+            - An arbitrary name and a callable that extracts some hashable
+              quantity from an exposure dimension record.  Records will be
+              binned by these quantities, and a record from the largest bin
+              will be removed.
+
+        Returns
+        -------
+        visit_id : `int`
+            Exposure/visit ID to consider removing.
+        bin_key : `tuple`
+            Tuple of extracted values that defined the bin with the most
+            records.
+        """
+        fixed = {}
+        extractors = {}
+        for k, v in kwargs.items():
+            if callable(v):
+                extractors[k] = v
+            else:
+                fixed[k] = v
+        binned: defaultdict[tuple, list[int]] = defaultdict(list)
+        for record in self.exposure:
+            if any(getattr(record, k) != v for k, v in fixed.items()):
+                continue
+            bin_key = []
+            for k, extract in extractors.items():
+                value = extract(record)
+                bin_key.append(value)
+            binned[tuple(bin_key)].append(record.id)
+        biggest_bin_key = max(binned.keys(), key=lambda k: len(binned[k]))
+        visit = binned[biggest_bin_key].pop()
+        return visit, biggest_bin_key
+
+    def remove_visit(self, id: int) -> None:
+        """Remove a visit from all records."""
+        self.exposure = [r for r in self.exposure if r.id != id]
+        self.visit = [r for r in self.visit if r.id != id]
+        self.visit_detector_region = [r for r in self.visit_detector_region if r.visit != id]
+        self.visit_system_membership = [r for r in self.visit_system_membership if r.visit != id]
+        self.visit_definition = [r for r in self.visit_definition if r.visit != id]
 
     def write(
         self, filename: str = os.path.join(os.path.dirname(__file__), OBSERVATION_RECORDS_FILENAME)
