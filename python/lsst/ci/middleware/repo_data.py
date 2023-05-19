@@ -505,7 +505,7 @@ class InputDatasetTypes(pydantic.BaseModel):
     @property
     def runs(self) -> Iterable[str]:
         """The RUN collections datasets should be written to."""
-        return self.__root__.keys()
+        return self.__root__.keys() - {"REGISTER_ONLY"}
 
     @classmethod
     def read(
@@ -624,9 +624,13 @@ class RepoData:
         """Add mock input datasets that will be used by most pipelines."""
         mock_maker = MockDatasetMaker(butler)
         for run, dataset_types in self.dataset_types.resolve(butler.registry.dimensions).items():
-            butler.registry.registerCollection(run, CollectionType.RUN)
-            for dataset_type in dataset_types:
-                mock_maker.make_datasets(dataset_type, run)
+            if run == "REGISTER_ONLY":
+                for dataset_type in dataset_types:
+                    butler.registry.registerDatasetType(dataset_type)
+            else:
+                butler.registry.registerCollection(run, CollectionType.RUN)
+                for dataset_type in dataset_types:
+                    mock_maker.make_datasets(dataset_type, run)
 
     def make_defaults_collection(self, butler: Butler) -> None:
         """Create default input collections for pipeline graph-building and

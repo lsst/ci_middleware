@@ -1,4 +1,21 @@
 {
+  "REGISTER_ONLY": [
+    {
+      "name": "_mock_isr_metadata",
+      "storageClass": "PropertySet",
+      "dimensions": {
+        "names": [
+          "band",
+          "instrument",
+          "detector",
+          "physical_filter",
+          "exposure"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": false
+    }
+  ],
   "HSC/raw/all": [
     {
       "name": "_mock_raw",
