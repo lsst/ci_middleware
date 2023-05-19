@@ -43,15 +43,11 @@ class MockStorageClassTestCase(unittest.TestCase):
             # Register some mock storage classes for the first time.
             for original_name in ["Exposure", "ExposureF", "ArrowTable", "ArrowAstropy"]:
                 MockStorageClass.get_or_register_mock(original_name)
-            # Write formatter configuration for all mock storage classes to a
-            # directory we can put in the butler config search path.
-            config_dir = os.path.join(root, "config")
-            MockStorageClass.make_formatter_config_dir(config_dir)
             # Instantiate a butler instance.  Note that we're getting the
             # storage class definitions via the in-memory StorageClassFactory
             # singleton, but the formatter entries for those storage classes
             # from the new config file.
-            butler = Butler(Butler.makeRepo(root), writeable=True, searchPaths=[config_dir])
+            butler = Butler(Butler.makeRepo(root), writeable=True)
             # Proceed with the rest of the tests.
             storage_class = MockStorageClass.get_or_register_mock("Exposure")
             self.assertNotEqual("Exposure", storage_class.name)

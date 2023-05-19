@@ -24,7 +24,6 @@ from __future__ import annotations
 __all__ = ("InstrumentRecords", "ObservationRecords", "make_skymap_instance", "RepoData")
 
 import dataclasses
-import itertools
 import json
 import os.path
 import shutil
@@ -42,20 +41,11 @@ from lsst.daf.butler import (
     SerializedDatasetType,
     SerializedDimensionRecord,
 )
-from lsst.pipe.base.tests.mocks import MockStorageClass, get_original_name
 from lsst.resources import ResourcePath, ResourcePathExpression
 from lsst.skymap import BaseSkyMap, DiscreteSkyMap
 from lsst.sphgeom import ConvexPolygon
 
-from ._constants import (
-    BANDS,
-    DEFAULTS_COLLECTION,
-    DETECTORS,
-    INPUT_FORMATTERS_CONFIG_DIR,
-    INSTRUMENT,
-    MISC_INPUT_RUN,
-    SKYMAP,
-)
+from ._constants import BANDS, DEFAULTS_COLLECTION, DETECTORS, INSTRUMENT, MISC_INPUT_RUN, SKYMAP
 from .mock_dataset_maker import MockDatasetMaker
 
 FOCUS_HTM7_ID = 231866
@@ -517,21 +507,6 @@ class InputDatasetTypes(pydantic.BaseModel):
         """The RUN collections datasets should be written to."""
         return self.__root__.keys()
 
-    def make_formatter_config_dir(self, root: str) -> None:
-        """Make a butler config directory (suitable for the ``searchPaths``
-        argument to butler construction) with formatter configuration for
-        these dataset types.
-
-        Parameters
-        ----------
-        root : `str`
-            Directory that configuration files should be written to.
-        """
-        for serialized_dataset_type in itertools.chain.from_iterable(self.__root__.values()):
-            assert serialized_dataset_type.storageClass is not None
-            MockStorageClass.get_or_register_mock(get_original_name(serialized_dataset_type.storageClass))
-        MockStorageClass.make_formatter_config_dir(root)
-
     @classmethod
     def read(
         cls,
@@ -596,8 +571,6 @@ class RepoData:
                 shutil.rmtree(root, ignore_errors=False)
             else:
                 return
-        self.formatter_config_dir = os.path.join(root, INPUT_FORMATTERS_CONFIG_DIR)
-        self.dataset_types.make_formatter_config_dir(self.formatter_config_dir)
         Butler.makeRepo(self.root)
 
     @classmethod
@@ -621,7 +594,7 @@ class RepoData:
             Butler client for the new repository.
         """
         helper = cls(root, clobber=clobber)
-        butler = Butler(helper.root, writeable=True, searchPaths=[helper.formatter_config_dir])
+        butler = Butler(helper.root, writeable=True)
         helper.register_instrument(butler)
         helper.insert_observations(butler)
         helper.register_skymap(butler)

@@ -24,22 +24,16 @@ from __future__ import annotations
 __all__ = ("MockDatasetMaker", "UNMOCKED_DATASET_TYPES")
 
 import itertools
-import os
 from collections.abc import Sequence
 from typing import Any, ClassVar, cast
 
 from lsst.daf.butler import Butler, DataCoordinate, DatasetRef, DatasetType, DimensionGraph, SkyPixDimension
 from lsst.pipe.base import Pipeline, PipelineDatasetTypes, TaskDef
-from lsst.pipe.base.tests.mocks import MockDataset, MockStorageClass, is_mock_name, mock_task_defs
+from lsst.pipe.base.tests.mocks import MockDataset, is_mock_name, mock_task_defs
 from lsst.resources import ResourcePathExpression
 from lsst.sphgeom import Box, ConvexPolygon
 
-from ._constants import (
-    INPUT_FORMATTERS_CONFIG_DIR,
-    MISC_INPUT_RUN,
-    PIPELINE_FORMATTERS_CONFIG_DIR,
-    UNMOCKED_DATASET_TYPES,
-)
+from ._constants import MISC_INPUT_RUN, UNMOCKED_DATASET_TYPES
 
 
 class MockDatasetMaker:
@@ -88,18 +82,7 @@ class MockDatasetMaker:
         """
         original = Pipeline.from_uri(uri).toExpandedPipeline()
         mocked = mock_task_defs(original, unmocked_dataset_types=UNMOCKED_DATASET_TYPES)
-        pipeline_config_dir = os.path.join(root, PIPELINE_FORMATTERS_CONFIG_DIR)
-        MockStorageClass.make_formatter_config_dir(pipeline_config_dir)
-        search_path = [pipeline_config_dir]
-        input_config_dir = os.path.join(root, INPUT_FORMATTERS_CONFIG_DIR)
-        if os.path.exists(input_config_dir):
-            search_path.append(input_config_dir)
-        butler = Butler(
-            root,
-            writeable=True,
-            run=run,
-            searchPaths=search_path,
-        )
+        butler = Butler(root, writeable=True, run=run)
         maker = cls(butler)
         maker.make_inputs(mocked, run)
 
