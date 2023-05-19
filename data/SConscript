@@ -261,6 +261,9 @@ def build_pipetask_outputs(
                 "--register-dataset-types",
                 "--mock",
                 f"--unmocked-dataset-types '{','.join(UNMOCKED_DATASET_TYPES)}'",
+                "--coverage",
+                "--cov-packages lsst.daf.butler,lsst.pipe.base,lsst.ctrl.mpexec",
+                "--no-cov-report",
             ),
             # Tar up the output data repository.
             tar_repo_cmd(repo_root, "${TARGETS[0]}"),

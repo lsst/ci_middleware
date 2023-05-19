@@ -1,4 +1,7 @@
 # -*- python -*-
-from lsst.sconsUtils import scripts
+from lsst.sconsUtils import scripts, state
+
 # Python-only package
 scripts.BasicSConstruct("ci_middleware", disableCc=True, noCfgFile=True)
+
+state.env.CleanTree([".coverage*"])
