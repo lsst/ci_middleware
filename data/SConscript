@@ -278,18 +278,17 @@ def build_pipetask_outputs(
 # care about tract slicing are not run in this pipeline, and for the remainder
 # we just live with any slight degradation in the quality of the results.
 ci_hsc_inputs = build_inputs_repo("ci_hsc")
-ci_hsc = build_pipetask_outputs(ci_hsc_inputs, "ci_hsc", where="skymap='ci_mw' AND tract=3 AND patch=0")
+ci_hsc = build_pipetask_outputs(ci_hsc_inputs, "ci_hsc", where="skymap='ci_mw' AND tract=2 AND patch=1")
 
 # RC2 is run in steps, with the target of the real pipeline being outputs for
 # just a few non-overlapping tracts.  We do care here about giving full visits
 # to steps that expect full visits (no "tract slicing"), and that's the main
 # reason for splitting up into steps.  For the mock version, we process just
-# one tract (0), and deliberately leave out the one visit here (96980) that
-# doesn't overlap it.  Some patches in this tract will not have any data in one
-# or both bands.
+# one tract (0), and deliberately leave out the two visit here (18202, 96980)
+# that doesn't overlap it.
 rc2_inputs = build_inputs_repo("RC2")
 rc2_step1 = build_pipetask_outputs(
-    rc2_inputs, "RC2", where="instrument='HSC' AND exposure != 96980", step="step1"
+    rc2_inputs, "RC2", where="instrument='HSC' AND exposure NOT IN (18202, 96980)", step="step1"
 )
 rc2_step2a = build_pipetask_outputs(rc2_step1, "RC2", where="skymap='ci_mw'", step="step2a")
 rc2_step2b = build_pipetask_outputs(rc2_step2a, "RC2", where="skymap='ci_mw' AND tract=0", step="step2b")

@@ -27,10 +27,10 @@ assert config.__class__.__name__ == "DiscreteSkyMapConfig"
 config.projection = "TAN"
 config.tractOverlap = 0.25 / 60  # Overlap between tracts (degrees)
 config.pixelScale = 0.168
-config.raList = [149.7, 148.9, 149.7, 148.9]
-config.decList = [1.1, 1.1, 1.9, 1.9]
-config.radiusList = [0.4, 0.4, 0.4, 0.4]
-config.tractBuilder["cells"].cellInnerDimensions = [200, 150]
+config.raList = [149.5, 148.9, 149.5, 148.9]
+config.decList = [1.1, 1.1, 1.7, 1.7]
+config.radiusList = [0.3, 0.3, 0.3, 0.3]
+config.tractBuilder["cells"].cellInnerDimensions = [250, 250]
 config.tractBuilder["cells"].numCellsPerPatchInner = 30
 config.pixelScale = 0.168
 config.tractBuilder = "cells"
