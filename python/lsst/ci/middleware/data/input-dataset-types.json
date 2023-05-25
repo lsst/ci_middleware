@@ -14,6 +14,18 @@
       },
       "parentStorageClass": null,
       "isCalibration": false
+    },
+    {
+      "name": "_mock_objectTable",
+      "storageClass": "_mock_ArrowTable",
+      "dimensions": {
+        "names": [
+          "tract",
+          "patch"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": false
     }
   ],
   "HSC/raw/all": [
