@@ -83,7 +83,7 @@ def tar_repo_cmd(input_dir: str, output_tar: str) -> str:
     extract the data repository into a location that is different from the
     original one.
     """
-    return f"tar --remove-files -czf {output_tar} -C {input_dir} ."
+    return f"tar -czf {output_tar} -C {input_dir} . && rm -rf {input_dir}"
 
 
 def untar_repo_cmd(source_tar: str, output_dir: str) -> str:
