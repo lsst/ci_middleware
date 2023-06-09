@@ -62,14 +62,14 @@ class MockStorageClassTestCase(unittest.TestCase):
                 "mock_exposure",
                 dimensions=[],
                 storageClass=storage_class,
-                universe=butler.registry.dimensions,
+                universe=butler.dimensions,
             )
             butler.registry.registerDatasetType(dataset_type)
             run = "test_exposure_mock"
             butler.registry.registerCollection(run, CollectionType.RUN)
             dataset_ref = DatasetRef(
                 dataset_type,
-                DataCoordinate.makeEmpty(butler.registry.dimensions),
+                DataCoordinate.makeEmpty(butler.dimensions),
                 run=run,
             )
             # Make a dataset with this storage class and put it.
@@ -105,12 +105,12 @@ class MockStorageClassTestCase(unittest.TestCase):
                 "mock_exposure_put_convert",
                 dimensions=[],
                 storageClass=storage_class,
-                universe=butler.registry.dimensions,
+                universe=butler.dimensions,
             )
             butler.registry.registerDatasetType(put_convert_dataset_type)
             put_convert_dataset_ref = DatasetRef(
                 put_convert_dataset_type,
-                DataCoordinate.makeEmpty(butler.registry.dimensions),
+                DataCoordinate.makeEmpty(butler.dimensions),
                 run=run,
             )
             put_convert_in = MockDataset(
@@ -133,12 +133,12 @@ class MockStorageClassTestCase(unittest.TestCase):
                 "mock_exposure_derived",
                 dimensions=[],
                 storageClass=derived_storage_class,
-                universe=butler.registry.dimensions,
+                universe=butler.dimensions,
             )
             butler.registry.registerDatasetType(derived_dataset_type)
             derived_dataset_ref = DatasetRef(
                 derived_dataset_type,
-                DataCoordinate.makeEmpty(butler.registry.dimensions),
+                DataCoordinate.makeEmpty(butler.dimensions),
                 run=run,
             )
             # It's a bit unfortunate that failure-to-convert is a ValueError on

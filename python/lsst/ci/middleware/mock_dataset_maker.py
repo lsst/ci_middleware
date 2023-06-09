@@ -47,7 +47,7 @@ class MockDatasetMaker:
 
     def __init__(self, butler: Butler):
         self.butler = butler
-        self.bounded_dimensions = butler.registry.dimensions.extract(self._BOUNDED_DIMENSIONS)
+        self.bounded_dimensions = butler.dimensions.extract(self._BOUNDED_DIMENSIONS)
         self.cached_data_ids: dict[DimensionGraph, frozenset[DataCoordinate]] = {}
         self._spatial_bounds = None
 
@@ -134,9 +134,7 @@ class MockDatasetMaker:
                 skypix_dimension = remaining_skypix_dimensions.pop()
                 pixelization = skypix_dimension.pixelization
                 next_data_ids = set()
-                next_dimensions = self.butler.registry.dimensions.extract(
-                    list(dimensions.names) + [skypix_dimension]
-                )
+                next_dimensions = self.butler.dimensions.extract(list(dimensions.names) + [skypix_dimension])
                 for data_id in data_ids:
                     for begin, end in pixelization.envelope(
                         data_id.region if dimensions.spatial else self.spatial_bounds
@@ -160,9 +158,9 @@ class MockDatasetMaker:
         """
         if self._spatial_bounds is None:
             spatial_bounds = Box()
-            for data_id in self._get_bounded_data_ids(self.butler.registry.dimensions["tract"].graph):
+            for data_id in self._get_bounded_data_ids(self.butler.dimensions["tract"].graph):
                 spatial_bounds.expandTo(cast(ConvexPolygon, data_id.region).getBoundingBox())
-            for data_id in self._get_bounded_data_ids(self.butler.registry.dimensions["visit"].graph):
+            for data_id in self._get_bounded_data_ids(self.butler.dimensions["visit"].graph):
                 spatial_bounds.expandTo(cast(ConvexPolygon, data_id.region).getBoundingBox())
             self._spatial_bounds = spatial_bounds
         return self._spatial_bounds
