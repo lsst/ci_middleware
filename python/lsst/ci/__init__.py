@@ -19,9 +19,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# This package intentionally imports only the _constants submodule
-# automatically (especially not the SCons-generated `version.py`) in order
-# to allow SCons build scripts to to import those constants without importing
-# any other LSST code.
+import pkgutil
 
-from ._constants import *
+__path__ = pkgutil.extend_path(__path__, __name__)

@@ -1,0 +1,7 @@
+# Ignore everything, as it's all generated...
+*
+
+
+# ...except the SConscript and this file.
+!SConscript
+!.gitignore

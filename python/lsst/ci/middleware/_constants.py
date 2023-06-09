@@ -19,9 +19,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# This package intentionally imports only the _constants submodule
-# automatically (especially not the SCons-generated `version.py`) in order
-# to allow SCons build scripts to to import those constants without importing
-# any other LSST code.
+from __future__ import annotations
 
-from ._constants import *
+__all__ = (
+    "INSTRUMENT",
+    "DETECTORS",
+    "BANDS",
+    "SKYMAP",
+    "UNMOCKED_DATASET_TYPES",
+    "DEFAULTS_COLLECTION",
+    "MISC_INPUT_RUN",
+)
+
+INSTRUMENT = "HSC"
+DETECTORS = (57, 58, 49, 50, 41, 42)
+BANDS = ("r", "i")
+SKYMAP = "ci_mw"
+UNMOCKED_DATASET_TYPES = ("skyMap",)
+DEFAULTS_COLLECTION = "HSC/defaults"
+MISC_INPUT_RUN = "HSC/misc"

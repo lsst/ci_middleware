@@ -1,0 +1,121 @@
+# -*- python -*-
+# This file is part of ci_middleware.
+#
+# Developed for the LSST Data Management System.
+# This product includes software developed by the LSST Project
+# (https://www.lsst.org).
+# See the COPYRIGHT file at the top-level directory of this distribution
+# for details of code ownership.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+from __future__ import annotations
+
+import os
+
+from lsst.ci.middleware.scons import PipelineCommands, python_cmd, tar_repo_cmd
+from lsst.sconsUtils import state
+
+# Ensure we can run butler CLI extension in build scripts by propagating the
+# necessary envvar.
+state.env.Append(ENV={"DAF_BUTLER_PLUGINS": os.environ["DAF_BUTLER_PLUGINS"]})
+
+# Set up a list of all build targets produced in this subdir.
+state.targets["data"] = []
+
+# Make a tarred-up repo with dimension records,skymap, and input datasets
+# common to most mock pipelines (raws, calibs, refcats, etc.).
+base_repo = state.env.Command(
+    "base-repo.tgz",
+    state.targets["version"],
+    [
+        python_cmd("-m", "lsst.ci.middleware", "make-base-repo", "--clobber", "${TARGET.base}"),
+        tar_repo_cmd("${TARGET.base}", "${TARGET}"),
+    ],
+)
+state.targets["data"].extend(base_repo)
+
+# ci_hsc is run as a full pipeline with no steps, with a constraint limiting
+# it to a single patch.  This leads to "tract slicing", in which detectors
+# that don't overlap that patch are dropped from steps that normally expect
+# complete visits.  We don't care here because the most important tasks that
+# care about tract slicing are not run in this pipeline, and for the remainder
+# we just live with any slight degradation in the quality of the results.
+ci_hsc = (
+    PipelineCommands(
+        "ci_hsc", os.path.join(os.environ["DRP_PIPE_DIR"], "pipelines", "HSC", "DRP-ci_hsc.yaml"), base_repo
+    )
+    .add(where="skymap='ci_mw' AND tract=0 AND patch=1")
+    .finish()
+)
+state.targets["data"].extend(ci_hsc)
+
+# RC2 is run in steps, with the target of the real pipeline being outputs for
+# just a few non-overlapping tracts.  We do care here about giving full visits
+# to steps that expect full visits (no "tract slicing"), and that's the main
+# reason for splitting up into steps.  For the mock version, we process just
+# one tract (0), and deliberately leave out the two visit here (18202, 96980)
+# that doesn't overlap it.
+rc2 = (
+    PipelineCommands(
+        "RC2", os.path.join(os.environ["DRP_PIPE_DIR"], "pipelines", "HSC", "DRP-RC2.yaml"), base_repo
+    )
+    .add("step1", where="instrument='HSC' AND exposure NOT IN (18202, 96980)")
+    .add("step2a", where="skymap='ci_mw'")
+    .add("step2b", where="skymap='ci_mw' AND tract=0")
+    .add("step2cde")
+    .add("step3", where="skymap='ci_mw' AND tract=0")
+    .add("step4")
+    .add("step5", where="skymap='ci_mw' AND tract=0")
+    .add("step6")
+    .add("step7")
+    .add("step8")
+    .finish()
+)
+state.targets["data"].extend(rc2)
+
+# The Prod pipeline is run in steps on very large amounts of data, in which we
+# expect each step to have to be split up into multiple submissions to keep QG
+# and workflow size under control.  We process all data in the input
+# repository, and split up steps into groups where appropriate.  We process
+# independent groups in serial - which is not realistic, but a useful
+# simplification - in order to keep up the practice of making a new repo for
+# each run, with no need to merge them.
+prod = (
+    PipelineCommands(
+        "Prod", os.path.join(os.environ["DRP_PIPE_DIR"], "pipelines", "HSC", "DRP-Prod.yaml"), base_repo
+    )
+    # Using band for grouping here is just a convenient to split our visits up
+    # into two groups, not a reflection of expected real pipeline usage.
+    .add("step1", group="r", where="band='r'")
+    .add("step1", group="i", where="band='i'")
+    .add("step2a", group="r", where="band='r'")
+    .add("step2a", group="i", where="band='i'")
+    .add("step2b", group="even", where="skymap='ci_mw' AND tract IN (0, 2)")
+    .add("step2b", group="odd", where="skymap='ci_mw' AND tract IN (1, 3)")
+    .add("step2c")
+    .add("step2d", group="r", where="band='r'")
+    .add("step2d", group="i", where="band='i'")
+    .add("step2e")
+    .add("step3", group="even", where="skymap='ci_mw' AND tract IN (0, 2)")
+    .add("step3", group="odd", where="skymap='ci_mw' AND tract IN (1, 3)")
+    .add("step4", group="r", where="band='r'")
+    .add("step4", group="i", where="band='i'")
+    .add("step7")
+    # step8 in DRP-Prod is not actually valid, because it has tasks that should
+    # be partitioned in different ways in order to scale up.  This is DM-39314.
+    .finish()
+)
+state.targets["data"].extend(prod)
+
+state.env.CleanTree([], ["ci_hsc", "RC2", "Prod"])

@@ -1,0 +1,1498 @@
+{
+  "exposure": [
+    {
+      "definition": "exposure",
+      "record": {
+        "instrument": "HSC",
+        "id": 18202,
+        "physical_filter": "HSC-I",
+        "obs_id": "HSCA01820200",
+        "exposure_time": 360.0,
+        "dark_time": 360.0,
+        "observation_type": "science",
+        "observation_reason": "science",
+        "day_obs": 20150117,
+        "seq_num": 18202,
+        "seq_start": 18202,
+        "seq_end": 18202,
+        "group_name": "18202",
+        "group_id": 18202,
+        "target_name": "COSMOS",
+        "science_program": "o14323",
+        "tracking_ra": 149.63076249999997,
+        "tracking_dec": 1.7132777777777777,
+        "sky_angle": 180.0,
+        "azimuth": null,
+        "zenith_angle": 50.89408062,
+        "has_simulated": false,
+        "timespan": [
+          1421486474579000000,
+          1421486836601000000
+        ]
+      }
+    },
+    {
+      "definition": "exposure",
+      "record": {
+        "instrument": "HSC",
+        "id": 19676,
+        "physical_filter": "HSC-I",
+        "obs_id": "HSCA01967600",
+        "exposure_time": 30.0,
+        "dark_time": 30.0,
+        "observation_type": "science",
+        "observation_reason": "science",
+        "day_obs": 20150121,
+        "seq_num": 19676,
+        "seq_start": 19676,
+        "seq_end": 19676,
+        "group_name": "19676",
+        "group_id": 19676,
+        "target_name": "SSP-Deep-COSMOS",
+        "science_program": "o14421",
+        "tracking_ra": 149.30041666666665,
+        "tracking_dec": 1.4095277777777777,
+        "sky_angle": 270.0,
+        "azimuth": null,
+        "zenith_angle": 30.65962758,
+        "has_simulated": false,
+        "timespan": [
+          1421848684102000000,
+          1421848716047000000
+        ]
+      }
+    },
+    {
+      "definition": "exposure",
+      "record": {
+        "instrument": "HSC",
+        "id": 23682,
+        "physical_filter": "HSC-R",
+        "obs_id": "HSCA02368200",
+        "exposure_time": 30.0,
+        "dark_time": 30.0,
+        "observation_type": "science",
+        "observation_reason": "science",
+        "day_obs": 20150318,
+        "seq_num": 23682,
+        "seq_start": 23682,
+        "seq_end": 23682,
+        "group_name": "23682",
+        "group_id": 23682,
+        "target_name": "SSP-Deep-COSMOS",
+        "science_program": "o15406",
+        "tracking_ra": 149.36876249999997,
+        "tracking_dec": 1.455836111111111,
+        "sky_angle": 270.0,
+        "azimuth": null,
+        "zenith_angle": 22.390318429999994,
+        "has_simulated": false,
+        "timespan": [
+          1426671009748000000,
+          1426671041481000000
+        ]
+      }
+    },
+    {
+      "definition": "exposure",
+      "record": {
+        "instrument": "HSC",
+        "id": 58260,
+        "physical_filter": "HSC-I2",
+        "obs_id": "HSCA05826000",
+        "exposure_time": 270.0,
+        "dark_time": 270.0,
+        "observation_type": "science",
+        "observation_reason": "science",
+        "day_obs": 20160304,
+        "seq_num": 58260,
+        "seq_start": 58260,
+        "seq_end": 58260,
+        "group_name": "58260",
+        "group_id": 58260,
+        "target_name": "SSP-Deep-COSMOS",
+        "science_program": "o16406",
+        "tracking_ra": 149.2853958333333,
+        "tracking_dec": 1.4350277777777778,
+        "sky_angle": 270.0,
+        "azimuth": null,
+        "zenith_angle": 21.776432470000003,
+        "has_simulated": false,
+        "timespan": [
+          1457086633932000000,
+          1457086905979000000
+        ]
+      }
+    },
+    {
+      "definition": "exposure",
+      "record": {
+        "instrument": "HSC",
+        "id": 59884,
+        "physical_filter": "HSC-R",
+        "obs_id": "HSCA05988400",
+        "exposure_time": 180.0,
+        "dark_time": 180.0,
+        "observation_type": "science",
+        "observation_reason": "science",
+        "day_obs": 20160309,
+        "seq_num": 59884,
+        "seq_start": 59884,
+        "seq_end": 59884,
+        "group_name": "59884",
+        "group_id": 59884,
+        "target_name": "SSP-Deep-COSMOS",
+        "science_program": "o16406",
+        "tracking_ra": 149.28540416666664,
+        "tracking_dec": 1.4349888888888889,
+        "sky_angle": 270.0,
+        "azimuth": null,
+        "zenith_angle": 36.27071562,
+        "has_simulated": false,
+        "timespan": [
+          1457506992758000000,
+          1457507174781000000
+        ]
+      }
+    },
+    {
+      "definition": "exposure",
+      "record": {
+        "instrument": "HSC",
+        "id": 93380,
+        "physical_filter": "HSC-R2",
+        "obs_id": "HSCE00093380",
+        "exposure_time": 180.0,
+        "dark_time": 180.0,
+        "observation_type": "science",
+        "observation_reason": "science",
+        "day_obs": 20161225,
+        "seq_num": 93380,
+        "seq_start": 93380,
+        "seq_end": 93380,
+        "group_name": "93380",
+        "group_id": 93380,
+        "target_name": "SSP-Deep-COSMOS",
+        "science_program": "o16426",
+        "tracking_ra": 149.54075416666663,
+        "tracking_dec": 1.4477916666666666,
+        "sky_angle": 270.0,
+        "azimuth": null,
+        "zenith_angle": 31.05035,
+        "has_simulated": false,
+        "timespan": [
+          1482668501340000000,
+          1482668683321000000
+        ]
+      }
+    },
+    {
+      "definition": "exposure",
+      "record": {
+        "instrument": "HSC",
+        "id": 95104,
+        "physical_filter": "HSC-I2",
+        "obs_id": "HSCE00095104",
+        "exposure_time": 30.0,
+        "dark_time": 30.0,
+        "observation_type": "science",
+        "observation_reason": "science",
+        "day_obs": 20170102,
+        "seq_num": 95104,
+        "seq_start": 95104,
+        "seq_end": 95104,
+        "group_name": "95104",
+        "group_id": 95104,
+        "target_name": "SSP-Wide",
+        "science_program": "o16426",
+        "tracking_ra": 149.38897916666664,
+        "tracking_dec": 0.9500055555555555,
+        "sky_angle": 270.0,
+        "azimuth": null,
+        "zenith_angle": 23.878919999999994,
+        "has_simulated": false,
+        "timespan": [
+          1483360339119000000,
+          1483360370986000000
+        ]
+      }
+    },
+    {
+      "definition": "exposure",
+      "record": {
+        "instrument": "HSC",
+        "id": 96860,
+        "physical_filter": "HSC-R2",
+        "obs_id": "HSCE00096860",
+        "exposure_time": 30.0,
+        "dark_time": 30.0,
+        "observation_type": "science",
+        "observation_reason": "science",
+        "day_obs": 20170123,
+        "seq_num": 96860,
+        "seq_start": 96860,
+        "seq_end": 96860,
+        "group_name": "96860",
+        "group_id": 96860,
+        "target_name": "SSP-Wide",
+        "science_program": "o16426",
+        "tracking_ra": 149.38896666666662,
+        "tracking_dec": 0.9499972222222223,
+        "sky_angle": 270.0,
+        "azimuth": null,
+        "zenith_angle": 53.45872,
+        "has_simulated": false,
+        "timespan": [
+          1485161096382000000,
+          1485161128334000000
+        ]
+      }
+    },
+    {
+      "definition": "exposure",
+      "record": {
+        "instrument": "HSC",
+        "id": 96862,
+        "physical_filter": "HSC-R2",
+        "obs_id": "HSCE00096862",
+        "exposure_time": 150.0,
+        "dark_time": 150.0,
+        "observation_type": "science",
+        "observation_reason": "science",
+        "day_obs": 20170123,
+        "seq_num": 96862,
+        "seq_start": 96862,
+        "seq_end": 96862,
+        "group_name": "96862",
+        "group_id": 96862,
+        "target_name": "SSP-Wide",
+        "science_program": "o16426",
+        "tracking_ra": 149.3889708333333,
+        "tracking_dec": 0.9500305555555555,
+        "sky_angle": 270.0,
+        "azimuth": null,
+        "zenith_angle": 53.21885,
+        "has_simulated": false,
+        "timespan": [
+          1485161159388000000,
+          1485161311240000000
+        ]
+      }
+    },
+    {
+      "definition": "exposure",
+      "record": {
+        "instrument": "HSC",
+        "id": 96908,
+        "physical_filter": "HSC-R2",
+        "obs_id": "HSCE00096908",
+        "exposure_time": 150.0,
+        "dark_time": 150.0,
+        "observation_type": "science",
+        "observation_reason": "science",
+        "day_obs": 20170123,
+        "seq_num": 96908,
+        "seq_start": 96908,
+        "seq_end": 96908,
+        "group_name": "96908",
+        "group_id": 96908,
+        "target_name": "SSP-Wide",
+        "science_program": "o16426",
+        "tracking_ra": 149.6615125,
+        "tracking_dec": 1.4847305555555557,
+        "sky_angle": 270.0,
+        "azimuth": null,
+        "zenith_angle": 38.2153,
+        "has_simulated": false,
+        "timespan": [
+          1485165203371000000,
+          1485165355208000000
+        ]
+      }
+    },
+    {
+      "definition": "exposure",
+      "record": {
+        "instrument": "HSC",
+        "id": 96954,
+        "physical_filter": "HSC-I2",
+        "obs_id": "HSCE00096954",
+        "exposure_time": 200.0,
+        "dark_time": 200.0,
+        "observation_type": "science",
+        "observation_reason": "science",
+        "day_obs": 20170123,
+        "seq_num": 96954,
+        "seq_start": 96954,
+        "seq_end": 96954,
+        "group_name": "96954",
+        "group_id": 96954,
+        "target_name": "SSP-Wide",
+        "science_program": "o16426",
+        "tracking_ra": 149.29507499999997,
+        "tracking_dec": 1.5425138888888887,
+        "sky_angle": 270.0,
+        "azimuth": null,
+        "zenith_angle": 20.231170000000006,
+        "has_simulated": false,
+        "timespan": [
+          1485171237657000000,
+          1485171439543000000
+        ]
+      }
+    },
+    {
+      "definition": "exposure",
+      "record": {
+        "instrument": "HSC",
+        "id": 96980,
+        "physical_filter": "HSC-I2",
+        "obs_id": "HSCE00096980",
+        "exposure_time": 200.0,
+        "dark_time": 200.0,
+        "observation_type": "science",
+        "observation_reason": "science",
+        "day_obs": 20170123,
+        "seq_num": 96980,
+        "seq_start": 96980,
+        "seq_end": 96980,
+        "group_name": "96980",
+        "group_id": 96980,
+        "target_name": "SSP-Wide",
+        "science_program": "o16426",
+        "tracking_ra": 148.79639166666664,
+        "tracking_dec": 1.043913888888889,
+        "sky_angle": 270.0,
+        "azimuth": null,
+        "zenith_angle": 19.970560000000006,
+        "has_simulated": false,
+        "timespan": [
+          1485174792952000000,
+          1485174994848000000
+        ]
+      }
+    }
+  ],
+  "visit": [
+    {
+      "definition": "visit",
+      "record": {
+        "instrument": "HSC",
+        "id": 18202,
+        "physical_filter": "HSC-I",
+        "name": "HSCA01820200",
+        "day_obs": 20150117,
+        "seq_num": 18202,
+        "exposure_time": 360.0,
+        "target_name": "COSMOS",
+        "observation_reason": "science",
+        "science_program": "o14323",
+        "azimuth": null,
+        "zenith_angle": 50.89408062,
+        "region": "70ab5befd265a3ebbf40608ecfd217e03f89734b1ffd13a13fdfbbf3bd499cebbf62fd19b60124e03f3ef2f1a3ad14a13ff4b220b12295ebbf5c618b7b3730e03fc61e8924eb14a13fce57c8818c8cebbf4b920ec3d03ee03f9880c2d23314a13ff9ab2a29618debbfdc09763b553fe03f2ea3b60fba459e3f411558f3158eebbfdf37adffae3fe03f0f4f89ad1cbe9a3f9edf59643b95ebbf9c86bae48a33e03f039ead591dbd9a3f47dd79e6ab96ebbf25edb6541731e03f73f3c447eebc9a3f2941bcd3cd9debbf7b610d2bea24e03f7c4aec67a5bc9a3f6e37a986eba4ebbf18357025b718e03fe57701082abe9a3f2674f24533a4ebbfb3652f9c3818e03f40d758be69a09e3f",
+        "timespan": [
+          1421486474579000000,
+          1421486836601000000
+        ]
+      }
+    },
+    {
+      "definition": "visit",
+      "record": {
+        "instrument": "HSC",
+        "id": 19676,
+        "physical_filter": "HSC-I",
+        "name": "HSCA01967600",
+        "day_obs": 20150121,
+        "seq_num": 19676,
+        "exposure_time": 30.0,
+        "target_name": "SSP-Deep-COSMOS",
+        "observation_reason": "science",
+        "science_program": "o14421",
+        "azimuth": null,
+        "zenith_angle": 30.65962758,
+        "region": "707d064fd1af90ebbf5fb354adec3ce03f8f38dec2985d963f31b214d36e90ebbf2ac2047db93ce03f649ff309df20983f907c4cae2490ebbfdd45bd03893ce03f68b97d768fe5993f7b4a84d6bc8febbf0df61e6e583ce03f514a417359039c3fb1e5d3cfe67febbfd8c13c4e1c57e03f5a29c12f3c049c3fbb9298496e71ebbf218463205f6fe03ff7cce02372029c3f3f99ce3dbc71ebbf942a8aee966fe03f9909aa2ac93f9a3faa488368cb71ebbf856f8daba16fe03fcf3ff16cd8e4993f32a24d1f1672ebbf5e6cb8a8d06fe03fe91698726821983f3e05bf0c6372ebbfdabaadf7ef6fe03f4508e744965d963fd7879ba44e82ebbfaef659d83d55e03faf46288aa15b963f",
+        "timespan": [
+          1421848684102000000,
+          1421848716047000000
+        ]
+      }
+    },
+    {
+      "definition": "visit",
+      "record": {
+        "instrument": "HSC",
+        "id": 23682,
+        "physical_filter": "HSC-R",
+        "name": "HSCA02368200",
+        "day_obs": 20150318,
+        "seq_num": 23682,
+        "exposure_time": 30.0,
+        "target_name": "SSP-Deep-COSMOS",
+        "observation_reason": "science",
+        "science_program": "o15406",
+        "azimuth": null,
+        "zenith_angle": 22.390318429999994,
+        "region": "706f78177f8395ebbf6df62bcb6d34e03fc575969a6a31973f6cbb80ee3f95ebbf636a20323934e03f51d8f6b8aef4983fd4192d36f394ebbf0732b7510734e03f2b17d9d15cb99a3fa22feb4b8894ebbf6135e412d533e03fe8c997cf23d79c3f84ad1371ba84ebbfffa5ffc69d4ee03fe7e536dd06d89c3f182cae564976ebbf835fc904e566e03f997a55713cd69c3f649bc8dd9976ebbf5a6131371e67e03f631235fa95139b3f6b4f4a8da976ebbfbf9f443c2967e03f8bdd13b9a5b89a3f5d9363d5f676ebbf7793569f5967e03f7910961038f5983f25ede54f4677ebbfab6cd9537a67e03ff6535b0c6831973f8f22dac22987ebbfc6f3d75ac34ce03f80b54eb7732f973f",
+        "timespan": [
+          1426671009748000000,
+          1426671041481000000
+        ]
+      }
+    },
+    {
+      "definition": "visit",
+      "record": {
+        "instrument": "HSC",
+        "id": 58260,
+        "physical_filter": "HSC-I2",
+        "name": "HSCA05826000",
+        "day_obs": 20160304,
+        "seq_num": 58260,
+        "exposure_time": 270.0,
+        "target_name": "SSP-Deep-COSMOS",
+        "observation_reason": "science",
+        "science_program": "o16406",
+        "azimuth": null,
+        "zenith_angle": 21.776432470000003,
+        "region": "70908d6d10878febbf4f0e02b9bb3ee03fc8b266b63cd2963f2f9702b4448febbf499d3eb2873ee03f9fdf85cf8195983f925fbf2ff98eebbf91d43d61563ee03f6b4875f6305a9a3fa63facb28f8eebbf5e0d6dc8243ee03f5f31ba4ff9779c3f516378dfb77eebbf5122fd97e758e03f29e3e638dc789c3f9a99d7b93d70ebbf7b574b722971e03f109326f811779c3fda91730b8d70ebbfa5e27a176271e03f3fa31e5e6ab49a3fd4e0b27c9c70ebbfebfed8ff6c71e03ff31086e479599a3f7ea31692e870ebbfdde631d49c71e03f4ab8cb2e0b96983f6ad37bdf3671ebbf00eea8fabc71e03fab977a2f3ad2963f024a81432481ebbf9ad9d4ed0b57e03f8c0fb9ac45d0963f",
+        "timespan": [
+          1457086633932000000,
+          1457086905979000000
+        ]
+      }
+    },
+    {
+      "definition": "visit",
+      "record": {
+        "instrument": "HSC",
+        "id": 59884,
+        "physical_filter": "HSC-R",
+        "name": "HSCA05988400",
+        "day_obs": 20160309,
+        "seq_num": 59884,
+        "exposure_time": 180.0,
+        "target_name": "SSP-Deep-COSMOS",
+        "observation_reason": "science",
+        "science_program": "o16406",
+        "azimuth": null,
+        "zenith_angle": 36.27071562,
+        "region": "7048cc0c3f878febbf9e61e779bb3ee03f8299b72c0fd2963f42662be3448febbf0d987673873ee03f84ce4d465495983f6434725ff98eebbfe5cec822563ee03f5b7bbd6d035a9a3fae5b04e38f8eebbf2a825b8a243ee03f0c8aa7c7cb779c3fc2111210b87eebbf2b69125ae758e03f53cbc2b0ae789c3fceecabea3d70ebbf939e83342971e03fad1e1770e4769c3f2490be3b8d70ebbf517f60d96171e03fa6ef84d53cb49a3f6827e2ac9c70ebbf7feeadc16c71e03f8b89d15b4c599a3fbc42bcc1e870ebbfb90fb4959c71e03ffb4f97a5dd95983ffb86970e3771ebbfdd38d8bbbc71e03f93fdcea50cd2963fcd425b722481ebbf11ecdcae0b57e03f4c98f72218d0963f",
+        "timespan": [
+          1457506992758000000,
+          1457507174781000000
+        ]
+      }
+    },
+    {
+      "definition": "visit",
+      "record": {
+        "instrument": "HSC",
+        "id": 93380,
+        "physical_filter": "HSC-R2",
+        "name": "HSCE00093380",
+        "day_obs": 20161225,
+        "seq_num": 93380,
+        "exposure_time": 180.0,
+        "target_name": "SSP-Deep-COSMOS",
+        "observation_reason": "science",
+        "science_program": "o16426",
+        "azimuth": null,
+        "zenith_angle": 31.05035,
+        "region": "70671f3f01f5a1ebbfad7661da391fe03fdea842d79e0c973f76b72ab8b1a1ebbf9b7118b7051fe03fe86d0957e3cf983fef2ecd4965a1ebbf02cbae53d41ee03f7f23c9d891949a3f062557bffaa0ebbf225e0cb6a21ee03f5b14705d59b29c3f7a7f857e4191ebbfcf5b79877739e03f104ff85c3cb39c3f66092410e382ebbffc3bedd6c951e03f96e1c20172b19c3f0a2468533383ebbf782bb2890252e03fccbeb519cbee9a3ff8ddd2f44283ebbf08fa72750d52e03f3c46a8c2da939a3fe23e20f28f83ebbf0c06465b3d52e03f41fd9db16cd0983f1ba3b015df83ebbfd211d0905d52e03fc8dbda4b9c0c973f98fff4fbad93ebbfaeceb7699a37e03f9d2f22e5a70a973f",
+        "timespan": [
+          1482668501340000000,
+          1482668683321000000
+        ]
+      }
+    },
+    {
+      "definition": "visit",
+      "record": {
+        "instrument": "HSC",
+        "id": 95104,
+        "physical_filter": "HSC-I2",
+        "name": "HSCE00095104",
+        "day_obs": 20170102,
+        "seq_num": 95104,
+        "exposure_time": 30.0,
+        "target_name": "SSP-Wide",
+        "observation_reason": "science",
+        "science_program": "o16426",
+        "azimuth": null,
+        "zenith_angle": 23.878919999999994,
+        "region": "70a2ca67b01c98ebbfb53a31cb9b32e03fbd1cf13d044f8c3f12dfd489f497ebbf3d8153737732e03f9f241777b3d58f3feff1d251c397ebbfcad9f8e15532e03f4cca78249daf913f19317f527997ebbfc1ef59293732e03f711f56f37fcd933fdc35c6f0ad87ebbfa70de952014de03faabdce885fce933f1bcb1cec3e79ebbfbf5324ce4965e03f1121bb3999cc933fe43d15137479ebbf96a3ccc37265e03f6160ae72db09923fb2a3593c7e79ebbf01631f827a65e03fd36aa0b3e6ae913f89a07917b079ebbf18519ca19a65e03f8a59ac97c7d68f3f47f0aa1de479ebbfc7c9d50eab65e03f36e0db84004f8c3fbe6b4108c589ebbff8527594f24ae03fe7ac30360f4b8c3f",
+        "timespan": [
+          1483360339119000000,
+          1483360370986000000
+        ]
+      }
+    },
+    {
+      "definition": "visit",
+      "record": {
+        "instrument": "HSC",
+        "id": 96860,
+        "physical_filter": "HSC-R2",
+        "name": "HSCE00096860",
+        "day_obs": 20170123,
+        "seq_num": 96860,
+        "exposure_time": 30.0,
+        "target_name": "SSP-Wide",
+        "observation_reason": "science",
+        "science_program": "o16426",
+        "azimuth": null,
+        "zenith_angle": 53.45872,
+        "region": "70ad160c761c98ebbf9322be309c32e03fcd1e07b9f04e8c3f0b4f974ff497ebbfa15cf1d87732e03f40854df29fd58f3f8d93b317c397ebbfa695a7475632e03ff31c266293af913f43d383187997ebbf4ba71c8f3732e03f6ea41b3176cd933f50d868b6ad87ebbf31fe71b8014de03f528190c655ce933f0e6e66b13e79ebbf115e78334a65e03f545a81778fcc933f1cb640d87379ebbff3ef0f297365e03f0e4960b0d109923f71077f017e79ebbf6a4c5fe77a65e03fbf744ef1dcae913ff6ec80dcaf79ebbfd268cb069b65e03ffb45e412b4d68f3f7e5894e2e379ebbfff13f473ab65e03f0462f3ffec4e8c3f7e808ccdc489ebbf18a8cdf9f24ae03fb2e43eb1fb4a8c3f",
+        "timespan": [
+          1485161096382000000,
+          1485161128334000000
+        ]
+      }
+    },
+    {
+      "definition": "visit",
+      "record": {
+        "instrument": "HSC",
+        "id": 96862,
+        "physical_filter": "HSC-R2",
+        "name": "HSCE00096862",
+        "day_obs": 20170123,
+        "seq_num": 96862,
+        "exposure_time": 150.0,
+        "target_name": "SSP-Wide",
+        "observation_reason": "science",
+        "science_program": "o16426",
+        "azimuth": null,
+        "zenith_angle": 53.21885,
+        "region": "704b0818861c98ebbf6299e00c9c32e03f1413afcc3e4f8c3fb3982c5ff497ebbf7ceacdb47732e03fc2fe7305eed58f3f22d9d126c397ebbf1a0d3e235632e03f1ed0706bbaaf913ff0b213277997ebbfef4e5f6a3732e03fed8d053a9dcd933fc12c19c5ad87ebbf56c8c793014de03f297089cf7cce933f51da34c03e79ebbff80ae00e4a65e03fc7726880b6cc933f94a785e77379ebbf0b5ebd047365e03f15a498b9f809923fe2e2db107e79ebbfa8ce1ac37a65e03fd34a96fa03af913f927654ecaf79ebbfeacecce29a65e03f4a90042602d78f3f7d96def2e379ebbf4c6a3b50ab65e03f545795133b4f8c3f15a9b6ddc489ebbf48ed01d6f24ae03f150206c5494b8c3f",
+        "timespan": [
+          1485161159388000000,
+          1485161311240000000
+        ]
+      }
+    },
+    {
+      "definition": "visit",
+      "record": {
+        "instrument": "HSC",
+        "id": 96908,
+        "physical_filter": "HSC-R2",
+        "name": "HSCE00096908",
+        "day_obs": 20170123,
+        "seq_num": 96908,
+        "exposure_time": 150.0,
+        "target_name": "SSP-Wide",
+        "observation_reason": "science",
+        "science_program": "o16426",
+        "azimuth": null,
+        "zenith_angle": 38.2153,
+        "region": "703a0dbe3289aaebbf825aac233f10e03fa9372dbd94b5973fc6d955cb43aaebbf158ac3f70910e03fd73fe678d778993ff62e853ef5a9ebbf448eb78fd70fe03f91f94c14843d9b3fff75f92f88a9ebbff41b46c2a40fe03fe405b527495b9d3fc253866add99ebbfa9340a0b822ae03f9116ed672c5c9d3fcf74b31f8c8bebbf36fbda18dc42e03f83902ec0615a9d3fd0a40b83de8bebbf535bd5cc1543e03fd21477e3bc979b3fb240f991ee8bebbf14a2cbec2043e03f3d500cf2cc3c9b3f16a57eab3d8cebbfb9661ed65143e03f51c0e3c56079993fc0dc3fe38e8cebbf772d430e7343e03f0804cc2492b5973facd3e1584f9cebbf5a7bd964a728e03fbc733e0f9eb3973f",
+        "timespan": [
+          1485165203371000000,
+          1485165355208000000
+        ]
+      }
+    },
+    {
+      "definition": "visit",
+      "record": {
+        "instrument": "HSC",
+        "id": 96954,
+        "physical_filter": "HSC-I2",
+        "name": "HSCE00096954",
+        "day_obs": 20170123,
+        "seq_num": 96954,
+        "exposure_time": 200.0,
+        "target_name": "SSP-Wide",
+        "observation_reason": "science",
+        "science_program": "o16426",
+        "azimuth": null,
+        "zenith_angle": 20.231170000000006,
+        "region": "70cf42c054ec8febbfa5144dec5b3de03faffe594fe1bd983fc31c6423a48febbf9f452073243de03f4565462f21819a3fd85aa2c5528febbf4b9655adef3ce03ff06227b9ca459c3f4e4bbc48e28eebbf9a323df2b93ce03fba86e4dc8b639e3fdd3ae49a0b7febbf1ae86f6f7d57e03fe9a540826f649e3fe8bfc0879270ebbf97b583edbf6fe03fb5cbe162a4629e3fdd6a77ace770ebbfdb625703fc6fe03ffb716fd102a09c3fe14f964af870ebbfbe06719d0770e03fa679f98313459c3fdaa045354a71ebbf56ee18e43a70e03f491ffa66aa819a3f9e118e589e71ebbf5596877d5e70e03faf48ada2debd983f766b819b8a81ebbf3f3a39c4ac55e03fd5b3330cebbb983f",
+        "timespan": [
+          1485171237657000000,
+          1485171439543000000
+        ]
+      }
+    },
+    {
+      "definition": "visit",
+      "record": {
+        "instrument": "HSC",
+        "id": 96980,
+        "physical_filter": "HSC-I2",
+        "name": "HSCE00096980",
+        "day_obs": 20170123,
+        "seq_num": 96980,
+        "exposure_time": 200.0,
+        "target_name": "SSP-Wide",
+        "observation_reason": "science",
+        "science_program": "o16426",
+        "azimuth": null,
+        "zenith_angle": 19.970560000000006,
+        "region": "7052b82e1dae6cebbfeb2a2f4e587be03f644cf7763baa8f3f54a98e47816cebbfdd799e7b307be03fe483e1677298913f982c32554b6cebbff6640c550b7be03fd2a0b18a325d933fdedc7194fb6bebbf1f36952ae87ae03f9a96ba00117b953fce1d7f79e95bebbf0cf538238895e03f750e6d3bf17b953fa30567613a4debbf83344715aaade03f1ff134282a7a953fa95d4b29744debbf469ff2a6d6ade03f3488150770b7933f2e1f0f437f4debbf11f43d1edfade03f13c165fa7b5c933f1489c2d8b54debbfe2e479d202aee03f598f1856fc98913f279024c4ee4debbf4a590fdb16aee03ffe5de67b37aa8f3f4bcbfb3b165eebbf20fe47cc8893e03f75427bc647a68f3f",
+        "timespan": [
+          1485174792952000000,
+          1485174994848000000
+        ]
+      }
+    }
+  ],
+  "visit_detector_region": [
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 41,
+        "visit": 18202,
+        "region": "70ab5befd265a3ebbf40608ecfd217e03f89734b1ffd13a13fc002fe10dc9aebbf3633821d7326e03fbf4ac6809014a13f241aa248b59bebbff59e9670f026e03f43de320d3e459e3ff39c0c1d43a4ebbf82aa86864818e03f13a604163e459e3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 41,
+        "visit": 19676,
+        "region": "707d064fd1af90ebbf5fb354adec3ce03f8f38dec2985d963f400cbb1a5f90ebbf8b4d9f4bb23ce03f01768d5f677b983f345674598480ebbf5438e59c7e57e03f475cc7193b7b983f6ad2b2e6d980ebbf016a9025b157e03f6637b48b585c963f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 41,
+        "visit": 23682,
+        "region": "706f78177f8395ebbf6df62bcb6d34e03fc575969a6a31973ffeee03b32f95ebbf1e1d2eb93134e03fdfefd09a364f993fdb46ac215d85ebbff984c7e0024fe03fc627cda70a4f993fa39c8dc3b585ebbf67ff2919374fe03fee7439b72a30973f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 41,
+        "visit": 58260,
+        "region": "70908d6d10878febbf4f0e02b9bb3ee03fc8b266b63cd2963fed3633b5348febbfd367a555803ee03fe589dde509f0983fd95eac27587febbf81828a964b59e03f8398a9cdddef983f0246f05aaf7febbff791b0217f59e03f893d60adfcd0963f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 41,
+        "visit": 59884,
+        "region": "7048cc0c3f878febbf9e61e779bb3ee03f8299b72c0fd2963f70a677e4348febbf0afeed16803ee03fdd65be5cdcef983f79223257587febbf06c5f9574b59e03fbda97844b0ef983f4271d089af7febbfa353bce27e59e03f0f209f23cfd0963f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 41,
+        "visit": 93380,
+        "region": "70671f3f01f5a1ebbfad7661da391fe03fdea842d79e0c973f1a0d658da1a1ebbf42e3d357fe1ee03f0d34464d6b2a993f7a0b509ce391ebbf0e0034a0db39e03f8de8e14b3f2a993fb4c7a9df3b92ebbfb91749450f3ae03ff3f755e55e0b973f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 41,
+        "visit": 95104,
+        "region": "70a2ca67b01c98ebbfb53a31cb9b32e03fbd1cf13d044f8c3f165d8ccee997ebbf62ac6b3d7332e03f4ccaacbb6545903fb9209da61988ebbf025b26d1454de03fc4ad15413645903f2da4ca4c5188ebbfc115f47a664de03fa6f44e567d4c8c3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 41,
+        "visit": 96860,
+        "region": "70ad160c761c98ebbf9322be309c32e03fcd1e07b9f04e8c3fbccd5494e997ebbf8de40ca37332e03f39734bf95b45903f0f61036c1988ebbf32b08d36464de03fa087b07e2c45903fb0ca0c125188ebbf5b2147e0664de03f584b5dd1694c8c3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 41,
+        "visit": 96862,
+        "region": "704b0818861c98ebbf6299e00c9c32e03f1413afcc3e4f8c3f364dd2a3e997ebbf3e6fdb7e7332e03f7dcdd0028345903fbca6a17b1988ebbf4f8d6f12464de03f2d1e45885345903f50c139225188ebbfa50f7dbc664de03f16ed23e5b74c8c3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 41,
+        "visit": 96908,
+        "region": "703a0dbe3289aaebbf825aac233f10e03fa9372dbd94b5973ffd7b6e3533aaebbfeab5d8640210e03f63b490105fd3993fb4ac7ec5839aebbfe909cb27e82ae03fd23e315133d3993f3746498fde9aebbfcbe946071d2be03f8ceb200e55b4973f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 41,
+        "visit": 96954,
+        "region": "70cf42c054ec8febbfa5144dec5b3de03faffe594fe1bd983f5f1c35f9928febbf7e5c9e651c3de03fce990e2ea8db9a3fcec0e694b77febbf2e126e56e857e03f9e6df7d57cdb9a3f1724b4cb1580ebbf36e9cd062058e03f6883fc08a2bc983f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 41,
+        "visit": 96980,
+        "region": "7052b82e1dae6cebbfeb2a2f4e587be03f644cf7763baa8f3f2bd79a93756cebbf962ce58b2b7be03fdaf63dc7fdf2913fd84b459f5e5cebbfbf5ecae3d395e03f302855f4cef2913f901317059c5cebbfa31cb7d0f895e03fce8428e1b5a78f3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 42,
+        "visit": 18202,
+        "region": "705186e202639cebbf382af7585627e03f30c4081129bd9a3f6e37a986eba4ebbf18357025b718e03fe57701082abe9a3f2674f24533a4ebbfb3652f9c3818e03f40d758be69a09e3fe67a7963a59bebbf35a0518ee026e03f853a4f2298a09e3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 42,
+        "visit": 19676,
+        "region": "70c7580d900972ebbfcf22d46fc46fe03f351b5f54327b983f3e05bf0c6372ebbfdabaadf7ef6fe03f4508e744965d963fd7879ba44e82ebbfaef659d83d55e03faf46288aa15b963f8c0959d7f981ebbf0067a7110a55e03f9627c2dc857a983f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 42,
+        "visit": 23682,
+        "region": "70551586c2e976ebbfb2388f1e4d67e03f79a09f7f014f993f25ede54f4677ebbfab6cd9537a67e03ff6535b0c6831973f8f22dac22987ebbfc6f3d75ac34ce03f80b54eb7732f973f2f1f91e0d186ebbf130c32e48d4ce03f15127b6c554e993f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 42,
+        "visit": 58260,
+        "region": "7060444cbddb70ebbfb6d6a8709071e03ff9c8ddd1d4ef983f6ad37bdf3671ebbf00eea8fabc71e03fab977a2f3ad2963f024a81432481ebbf9ad9d4ed0b57e03f8c0fb9ac45d0963fcb554dd0cd80ebbfac7cb324d756e03f4d08939128ef983f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 42,
+        "visit": 59884,
+        "region": "70843d0deddb70ebbfb2703b329071e03f1e16c248a7ef983ffb86970e3771ebbfdd38d8bbbc71e03f93fdcea50cd2963fcd425b722481ebbf11ecdcae0b57e03f4c98f72218d0963f7ae4ccffcd80ebbf780e1fe6d656e03fe5bb6108fbee983f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 42,
+        "visit": 93380,
+        "region": "706018eceb8283ebbfedbda4f13052e03f8bc7dc34362a993f1ba3b015df83ebbfd211d0905d52e03fc8dbda4b9c0c973f98fff4fbad93ebbfaeceb7699a37e03f9d2f22e5a70a973f5e3a3f775693ebbfc3adcc856537e03f0bae43108a29993f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 42,
+        "visit": 95104,
+        "region": "704d39c878a879ebbfc4d1bc5c9165e03ffe6adb4f3145903f47f0aa1de479ebbfc7c9d50eab65e03f36e0db84004f8c3fbe6b4108c589ebbff8527594f24ae03fe7ac30360f4b8c3f1df7aa218e89ebbf282163acd04ae03f3b44d7f48044903f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 42,
+        "visit": 96860,
+        "region": "70698cd53da879ebbf454aefc19165e03fd5d17a8d2745903f7e5894e2e379ebbfff13f473ab65e03f0462f3ffec4e8c3f7e808ccdc489ebbf18a8cdf9f24ae03fb2e43eb1fb4a8c3f5c2a1ae78d89ebbfa8c2cf11d14ae03fc40d72327744903f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 42,
+        "visit": 96862,
+        "region": "70af77914da879ebbffbc6e29d9165e03f7234fd964e45903f7d96def2e379ebbf4c6a3b50ab65e03f545795133b4f8c3f15a9b6ddc489ebbf48ed01d6f24ae03f150206c5494b8c3f08a0b5f68d89ebbf78f5afedd04ae03f97e5063c9e44903f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 42,
+        "visit": 96908,
+        "region": "70eb234938308cebbf9d7ca4374543e03f96f862eb29d3993fc0dc3fe38e8cebbf772d430e7343e03f0804cc2492b5973facd3e1584f9cebbf5a7bd964a728e03fbc733e0f9eb3973f390a0d4df59bebbf75b61f467128e03fb796f2167ed2993f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 42,
+        "visit": 96954,
+        "region": "70261759373c71ebbf93c1f9d02d70e03f5b2bebf472db9a3f9e118e589e71ebbf5596877d5e70e03faf48ada2debd983f766b819b8a81ebbf3f3a39c4ac55e03fd5b3330cebbb983f3a63b0242d81ebbfb04fd2d57355e03f87a2e89dc7da9a3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 42,
+        "visit": 96980,
+        "region": "70416fe250ad4debbf090363ddf8ade03f853cc93ac9f2913f279024c4ee4debbf4a590fdb16aee03ffe5de67b37aa8f3f4bcbfb3b165eebbf20fe47cc8893e03f75427bc647a68f3f5b0b0499d95debbfc25613a36293e03f360ef5aa19f2913f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 49,
+        "visit": 18202,
+        "region": "70dfbbf3bd499cebbf62fd19b60124e03f3ef2f1a3ad14a13f1aff149cb693ebbf75858bd0a332e03fce372b87b214a13fc57720368c94ebbf89519e422733e03f78304f06a1459e3f0326bbb7239debbfec09e0b47d24e03f4f5852c890459e3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 49,
+        "visit": 19676,
+        "region": "7031b214d36e90ebbf2ac2047db93ce03f649ff309df20983f3afa60251390ebbfb560fbb2823ce03f386dcd0f713f9a3f9c85d6bc3880ebbf50ba24194e57e03fe55e153728409a3f65021f7f9480ebbf65a69a2b8557e03f893aa0d08120983f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 49,
+        "visit": 23682,
+        "region": "706cbb80ee3f95ebbf636a20323934e03f51d8f6b8aef4983f0aa0502be194ebbf7de982ba0034e03fcc180ff03d139b3f407e29f10e85ebbfa4e424f6d04ee03f3beef268f5139b3fb11e8eca6d85ebbf11ba11b7094fe03fe23dafd251f4983f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 49,
+        "visit": 58260,
+        "region": "702f9702b4448febbf499d3eb2873ee03f9fdf85cf8195983f46bad160e78eebbfd3a076e54f3ee03fd59e754c12b49a3ff4b3642b0b7febbfc83edb3a1a59e03f11ccaea0c9b49a3f2d0cfe93687febbffad191505259e03fecd5ecc32495983f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 49,
+        "visit": 59884,
+        "region": "7042662be3448febbf0d987673873ee03f84ce4d465495983faafe9f90e78eebbfbb1c12a74f3ee03f5b53d8c3e4b39a3fc78f745b0b7febbf808f9dfc1959e03f40f5ff179cb49a3fd41e68c3687febbf1e6ff0115259e03f42eaa23af794983f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 49,
+        "visit": 93380,
+        "region": "7076b72ab8b1a1ebbf9b7118b7051fe03fe86d0957e3cf983f47842c5053a1ebbf18c673d7cd1ee03fbc3ca80c73ee9a3fa2f8cab59591ebbfabe1ba33aa39e03f32675f772aef9a3ffa7ff133f491ebbfc872755ce239e03f3366546286cf983f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 49,
+        "visit": 95104,
+        "region": "7012dfd489f497ebbf3d8153737732e03f9f241777b3d58f3f839e1ebdb697ebbf58fefa875232e03fb84cc5b28209923ff2d31dfae687ebbf6d65e437244de03f373196ae360a923fd32f42cc2488ebbf3f7d9962494de03ffc5bff95f2d48f3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 49,
+        "visit": 96860,
+        "region": "700b4f974ff497ebbfa15cf1d87732e03f40854df29fd58f3fbc320583b697ebbfc109aded5232e03f1a7276f07809923f0c4aa2bfe687ebbf21985c9d244de03f6a9043ec2c0a923fa16ea2912488ebbf4875fdc7494de03fb8192e11dfd48f3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 49,
+        "visit": 96862,
+        "region": "70b3982c5ff497ebbf7ceacdb47732e03fc2fe7305eed58f3fe3da0b92b697ebbf269a35c95232e03f4cdab1f99f09923f997bc9cee687ebbf2257f878244de03f56118ef5530a923f8d8a58a12488ebbfa55ceda3494de03fd11e73242dd58f3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 49,
+        "visit": 96908,
+        "region": "70c6d955cb43aaebbf158ac3f70910e03fd73fe678d778993fb39efbdae2a9ebbfc0173fe1d00fe03f49b4c0e364979b3ff0ad3cc0339aebbf4a1952b7b52ae03f5e378c8f1c989b3f789821c8949aebbf5fc39817ef2ae03fa4df71c67a78993f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 49,
+        "visit": 96954,
+        "region": "70c31c6423a48febbf9f452073243de03f4565462f21819a3fb4c385cd3f8febbfb9f30082e83ce03f1e269ce6aa9f9c3f9dc957be647febbf5e378e85b357e03f86532bf862a09c3f68b9322dc97febbf8360b9c1ef57e03f028e7ae4c4809a3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 49,
+        "visit": 96980,
+        "region": "7054a98e47816cebbfdd799e7b307be03fe483e1677298913f2eb970c73d6cebbf981a763d077be03f4ee0c86817b7933f9a5ed637275cebbf9fcf0cb1ae95e03f98caac0accb7933f1034d4bf6a5cebbf68fa7f30d895e03f3aee709f1298913f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 50,
+        "visit": 18202,
+        "region": "709edf59643b95ebbf9c86bae48a33e03f039ead591dbd9a3f2941bcd3cd9debbf7b610d2bea24e03f7c4aec67a5bc9a3f49e1799b139debbfdb729fa16e24e03fc8f2cc0cfa9f9e3fe412c8fc7b94ebbf0ada4a331833e03fa72c7f6075a09e3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 50,
+        "visit": 19676,
+        "region": "703f99ce3dbc71ebbf942a8aee966fe03f9909aa2ac93f9a3f32a24d1f1672ebbf5e6cb8a8d06fe03fe91698726821983f273b3a200682ebbf83d0c5161755e03f65d92360e61f983f8ee33d15ac81ebbfbf0e7b24dd54e03f17ef6d0b8f3f9a3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 50,
+        "visit": 23682,
+        "region": "70649bc8dd9976ebbf5a6131371e67e03f631235fa95139b3f5d9363d5f676ebbf7793569f5967e03f7910961038f5983fc4217eaede86ebbf1f20fd319b4ce03fb180c063b6f3983feba2818b8186ebbf4087b3905f4ce03fc6bfe63e5c139b3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 50,
+        "visit": 58260,
+        "region": "70da91730b8d70ebbfa5e27a176271e03f3fa31e5e6ab49a3f7ea31692e870ebbfdde631d49c71e03f4ab8cb2e0b96983fc04a525fda80ebbfae64d554e456e03faa984a548994983ff5b134ae7e80ebbfab6a665fa956e03f7b02e97530b49a3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 50,
+        "visit": 59884,
+        "region": "702490be3b8d70ebbf517f60d96171e03fa6ef84d53cb49a3fbc42bcc1e870ebbfb90fb4959c71e03ffb4f97a5dd95983f1c40b68eda80ebbf3a5f3016e456e03f705700cb5b94983f2d6a3ede7e80ebbf03152521a956e03f2dd339ed02b49a3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 50,
+        "visit": 93380,
+        "region": "700a2468533383ebbf782bb2890252e03fccbeb519cbee9a3fe23e20f28f83ebbf0c06465b3d52e03f41fd9db16cd0983f4794eb386393ebbf484a87bc7237e03f481b20f3eace983fab5ef76e0693ebbf5f3d20b23737e03f574f0b4d91ee9a3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 50,
+        "visit": 95104,
+        "region": "70e43d15137479ebbf96a3ccc37265e03f6160ae72db09923f89a07917b079ebbf18519ca19a65e03f8a59ac97c7d68f3f003d826e9589ebbfdbcd9db6da4ae03f69500499bbd38f3fa0c7a6525989ebbf223d79abb24ae03f913f61749d09923f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 50,
+        "visit": 96860,
+        "region": "701cb640d87379ebbff3ef0f297365e03f0e4960b0d109923ff6ec80dcaf79ebbfd268cb069b65e03ffb45e412b4d68f3fb958eb339589ebbf1e05071cdb4ae03fe8ef3214a8d38f3f522534185989ebbf6cb5f610b34ae03ff98e0eb29309923f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 50,
+        "visit": 96862,
+        "region": "7094a785e77379ebbf0b5ebd047365e03f15a498b9f809923f927654ecaf79ebbfeacecce29a65e03f4a90042602d78f3fc1a59e439589ebbfe142f5f7da4ae03ffb6d7827f6d38f3fdf8358275989ebbf62c890ecb24ae03f144f59bbba09923f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 50,
+        "visit": 96908,
+        "region": "70d0a40b83de8bebbf535bd5cc1543e03fd21477e3bc979b3f16a57eab3d8cebbfb9661ed65143e03f51c0e3c56079993ff6d91c7d029cebbf2b4566b27e28e03fe19d7e58df77993f1968d927a39bebbf5bad866f4228e03f7bf6836683979b3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 50,
+        "visit": 96954,
+        "region": "70dd6a77ace770ebbfdb625703fc6fe03ffb716fd102a09c3fdaa045354a71ebbf56ee18e43a70e03f491ffa66aa819a3fbdf4a1df3a81ebbf786130b78155e03ff3fb857829809a3f9f731b28d880ebbfed5c359b4255e03f2d8932d1c99f9c3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 50,
+        "visit": 96980,
+        "region": "70a95d4b29744debbf469ff2a6d6ade03f3488150770b7933f1489c2d8b54debbfe2e479d202aee03f598f1856fc98913f82fa65cfe15debbf64811d5e6d93e03fb9c99a237797913f975d4205a05debbf836fc9024193e03f84b03cd332b7933f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 57,
+        "visit": 18202,
+        "region": "70f4b220b12295ebbf5c618b7b3730e03fc61e8924eb14a13fce57c8818c8cebbf4b920ec3d03ee03f9880c2d23314a13ff9ab2a29618debbfdc09763b553fe03f2ea3b60fba459e3f3d5c0902fc95ebbfc86105adb430e03ffde5ebf6f8459e3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 57,
+        "visit": 19676,
+        "region": "70907c4cae2490ebbfdd45bd03893ce03f68b97d768fe5993f7b4a84d6bc8febbf0df61e6e583ce03f514a417359039c3fb1e5d3cfe67febbfd8c13c4e1c57e03f5a29c12f3c049c3fc5ce1f0a4a80ebbfce6211325557e03f46696cfd5de5993f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 57,
+        "visit": 23682,
+        "region": "70d4192d36f394ebbf0732b7510734e03f2b17d9d15cb99a3fa22feb4b8894ebbf6135e412d533e03fe8c997cf23d79c3f84ad1371ba84ebbfffa5ffc69d4ee03fe7e536dd06d89c3fce34ecc12085ebbf544d5a56d84ee03fe5c3b9ab2bb99a3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 57,
+        "visit": 58260,
+        "region": "70925fbf2ff98eebbf91d43d61563ee03f6b4875f6305a9a3fa63facb28f8eebbf5e0d6dc8243ee03f5f31ba4ff9779c3f516378dfb77eebbf5122fd97e758e03f29e3e638dc789c3f41fb58bf1c7febbf3981357f2159e03f5c5910abff599a3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 57,
+        "visit": 59884,
+        "region": "706434725ff98eebbfe5cec822563ee03f5b7bbd6d035a9a3fae5b04e38f8eebbf2a825b8a243ee03f0c8aa7c7cb779c3fc2111210b87eebbf2b69125ae758e03f53cbc2b0ae789c3f40224def1c7febbfab26e7402159e03f4fb74622d2599a3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 57,
+        "visit": 93380,
+        "region": "70ef2ecd4965a1ebbf02cbae53d41ee03f7f23c9d891949a3f062557bffaa0ebbf225e0cb6a21ee03f5b14705d59b29c3f7a7f857e4191ebbfcf5b79877739e03f104ff85c3cb39c3fe6bfb275a791ebbfff880179b139e03fd80041a460949a3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 57,
+        "visit": 95104,
+        "region": "70eff1d251c397ebbfcad9f8e15532e03f4cca78249daf913f19317f527997ebbfc1ef59293732e03f711f56f37fcd933fdc35c6f0ad87ebbfa70de952014de03faabdce885fce933f3357a646f387ebbff6b28a52284de03f8e83c97468af913f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 57,
+        "visit": 96860,
+        "region": "708d93b317c397ebbfa695a7475632e03ff31c266293af913f43d383187997ebbf4ba71c8f3732e03f6ea41b3176cd933f50d868b6ad87ebbf31fe71b8014de03f528190c655ce933fadc8240cf387ebbf098cffb7284de03f0d0573b25eaf913f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 57,
+        "visit": 96862,
+        "region": "7022d9d126c397ebbf1a0d3e235632e03f1ed0706bbaaf913ff0b213277997ebbfef4e5f6a3732e03fed8d053a9dcd933fc12c19c5ad87ebbf56c8c793014de03f297089cf7cce933fa7d5631bf387ebbf9756a993284de03fdbfcccbb85af913f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 57,
+        "visit": 96908,
+        "region": "70f62e853ef5a9ebbf448eb78fd70fe03f91f94c14843d9b3fff75f92f88a9ebbff41b46c2a40fe03fe405b527495b9d3fc253866add99ebbfa9340a0b822ae03f9116ed672c5c9d3f40f182eb459aebbf8f5d902fbd2ae03ffed3ef21533d9b3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 57,
+        "visit": 96954,
+        "region": "70d85aa2c5528febbf4b9655adef3ce03ff06227b9ca459c3f4e4bbc48e28eebbf9a323df2b93ce03fba86e4dc8b639e3fdd3ae49a0b7febbf1ae86f6f7d57e03fe9a540826f649e3f101d847e777febbfa5ce407bbb57e03f2a7e4e2e9a459c3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 57,
+        "visit": 96980,
+        "region": "70982c32554b6cebbff6640c550b7be03fd2a0b18a325d933fdedc7194fb6bebbf1f36952ae87ae03f9a96ba00117b953fce1d7f79e95bebbf0cf538238895e03f750e6d3bf17b953f29e80a7e345cebbf9a701e8ab395e03fae120d83fe5c933f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 58,
+        "visit": 18202,
+        "region": "70411558f3158eebbfdf37adffae3fe03f0f4f89ad1cbe9a3f47dd79e6ab96ebbf25edb6541731e03f73f3c447eebc9a3fdb6eca1bea95ebbf58bc69aba830e03f4e3862d65ea09e3f01e7162b4f8debbf2a83d742493fe03f834fd52966a09e3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 58,
+        "visit": 19676,
+        "region": "70bb9298496e71ebbf218463205f6fe03ff7cce02372029c3faa488368cb71ebbf856f8daba16fe03fcf3ff16cd8e4993f54ad2b8bbb81ebbf7b55d729e754e03ffb3c8e3134e5993f88c615705981ebbf0666df62ac54e03f889309de14049c3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 58,
+        "visit": 23682,
+        "region": "70182cae564976ebbf835fc904e566e03f997a55713cd69c3f6b4f4a8da976ebbfbf9f443c2967e03f8bdd13b9a5b89a3f85dc2e859186ebbff66d8add694ce03f9ee2dae001b99a3f7939f5522c86ebbf07c3b26a2d4ce03fce8a808cdfd79c3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 58,
+        "visit": 58260,
+        "region": "709a99d7b93d70ebbf7b574b722971e03f109326f811779c3fd4e0b27c9c70ebbfebfed8ff6c71e03ff31086e479599a3faff9436a8e80ebbfa6cddc8fb356e03f9488bedfd5599a3f4cdfb7a92a80ebbfb54093c57756e03f2ebdbce7b4789c3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 58,
+        "visit": 59884,
+        "region": "70ceecabea3d70ebbf939e83342971e03fad1e1770e4769c3f6827e2ac9c70ebbf7feeadc16c71e03f8b89d15b4c599a3f4a26329a8e80ebbf73e58a51b356e03f9faff456a8599a3f808f4bda2a80ebbf9ef7a4877756e03f036e985f87789c3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 58,
+        "visit": 93380,
+        "region": "7066092410e382ebbffc3bedd6c951e03f96e1c20172b19c3ff8ddd2f44283ebbf08fa72750d52e03f3c46a8c2da939a3fc91a255a1693ebbf7ec481e54137e03f8fa535d936949a3fee7b2380b192ebbfe23ca10f0637e03fc825150c15b39c3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 58,
+        "visit": 95104,
+        "region": "701bcb1cec3e79ebbfbf5324ce4965e03f1121bb3999cc933fb2a3593c7e79ebbf01631f827a65e03fd36aa0b3e6ae913f05ab22cf6389ebbf400eedb6b94ae03fda0a679f3eaf913fd04bdc971f89ebbf8c51cbd3904ae03f65e5792d38ce933f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 58,
+        "visit": 96860,
+        "region": "700e6e66b13e79ebbf115e78334a65e03f545a81778fcc933f71077f017e79ebbf6a4c5fe77a65e03fbf744ef1dcae913fa200aa946389ebbf9d2a671cba4ae03f718110dd34af913f7bd9875d1f89ebbf92895939914ae03f059e3b6b2ece933f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 58,
+        "visit": 96862,
+        "region": "7051da34c03e79ebbff80ae00e4a65e03fc7726880b6cc933fe2e2db107e79ebbfa8ce1ac37a65e03fd34a96fa03af913ff720e6a36389ebbf033a0ff8b94ae03fdba46ae65baf913f523e356c1f89ebbfd296ad14914ae03f05b9347455ce933f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 58,
+        "visit": 96908,
+        "region": "70cf74b31f8c8bebbf36fbda18dc42e03f83902ec0615a9d3fb240f991ee8bebbf14a2cbec2043e03f3d500cf2cc3c9b3fa7b37b7fb39bebbfbb0492d64c28e03f8d25b157293d9b3f1e67a21a4c9bebbfa54318cd0f28e03fd415d817055c9d3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 58,
+        "visit": 96954,
+        "region": "70e8bfc0879270ebbf97b583edbf6fe03fb5cbe162a4629e3fe14f964af870ebbfbe06719d0770e03fa679f98313459c3f0d3c130fe980ebbf23003e7c4d55e03f5644526570459c3f18c4aa4a7e80ebbfd0a24a8d0d55e03f1949703348649e3f"
+      }
+    },
+    {
+      "definition": "visit_detector_region",
+      "record": {
+        "instrument": "HSC",
+        "detector": 58,
+        "visit": 96980,
+        "region": "70a30567613a4debbf83344715aaade03f1ff134282a7a953f2e1f0f437f4debbf11f43d1edfade03f13c165fa7b5c933f95a66772ab5debbf5ae90fc74893e03f4a278eafd45c933f3eba6a91615debbf9778a37f1b93e03fb2b601e2c97b953f"
+      }
+    }
+  ],
+  "visit_system": [
+    {
+      "definition": "visit_system",
+      "record": {
+        "instrument": "HSC",
+        "id": 0,
+        "name": "one-to-one"
+      }
+    }
+  ],
+  "visit_system_membership": [
+    {
+      "definition": "visit_system_membership",
+      "record": {
+        "instrument": "HSC",
+        "visit_system": 0,
+        "visit": 18202
+      }
+    },
+    {
+      "definition": "visit_system_membership",
+      "record": {
+        "instrument": "HSC",
+        "visit_system": 0,
+        "visit": 19676
+      }
+    },
+    {
+      "definition": "visit_system_membership",
+      "record": {
+        "instrument": "HSC",
+        "visit_system": 0,
+        "visit": 23682
+      }
+    },
+    {
+      "definition": "visit_system_membership",
+      "record": {
+        "instrument": "HSC",
+        "visit_system": 0,
+        "visit": 58260
+      }
+    },
+    {
+      "definition": "visit_system_membership",
+      "record": {
+        "instrument": "HSC",
+        "visit_system": 0,
+        "visit": 59884
+      }
+    },
+    {
+      "definition": "visit_system_membership",
+      "record": {
+        "instrument": "HSC",
+        "visit_system": 0,
+        "visit": 93380
+      }
+    },
+    {
+      "definition": "visit_system_membership",
+      "record": {
+        "instrument": "HSC",
+        "visit_system": 0,
+        "visit": 95104
+      }
+    },
+    {
+      "definition": "visit_system_membership",
+      "record": {
+        "instrument": "HSC",
+        "visit_system": 0,
+        "visit": 96860
+      }
+    },
+    {
+      "definition": "visit_system_membership",
+      "record": {
+        "instrument": "HSC",
+        "visit_system": 0,
+        "visit": 96862
+      }
+    },
+    {
+      "definition": "visit_system_membership",
+      "record": {
+        "instrument": "HSC",
+        "visit_system": 0,
+        "visit": 96908
+      }
+    },
+    {
+      "definition": "visit_system_membership",
+      "record": {
+        "instrument": "HSC",
+        "visit_system": 0,
+        "visit": 96954
+      }
+    },
+    {
+      "definition": "visit_system_membership",
+      "record": {
+        "instrument": "HSC",
+        "visit_system": 0,
+        "visit": 96980
+      }
+    }
+  ],
+  "visit_definition": [
+    {
+      "definition": "visit_definition",
+      "record": {
+        "instrument": "HSC",
+        "exposure": 18202,
+        "visit": 18202
+      }
+    },
+    {
+      "definition": "visit_definition",
+      "record": {
+        "instrument": "HSC",
+        "exposure": 19676,
+        "visit": 19676
+      }
+    },
+    {
+      "definition": "visit_definition",
+      "record": {
+        "instrument": "HSC",
+        "exposure": 23682,
+        "visit": 23682
+      }
+    },
+    {
+      "definition": "visit_definition",
+      "record": {
+        "instrument": "HSC",
+        "exposure": 58260,
+        "visit": 58260
+      }
+    },
+    {
+      "definition": "visit_definition",
+      "record": {
+        "instrument": "HSC",
+        "exposure": 59884,
+        "visit": 59884
+      }
+    },
+    {
+      "definition": "visit_definition",
+      "record": {
+        "instrument": "HSC",
+        "exposure": 93380,
+        "visit": 93380
+      }
+    },
+    {
+      "definition": "visit_definition",
+      "record": {
+        "instrument": "HSC",
+        "exposure": 95104,
+        "visit": 95104
+      }
+    },
+    {
+      "definition": "visit_definition",
+      "record": {
+        "instrument": "HSC",
+        "exposure": 96860,
+        "visit": 96860
+      }
+    },
+    {
+      "definition": "visit_definition",
+      "record": {
+        "instrument": "HSC",
+        "exposure": 96862,
+        "visit": 96862
+      }
+    },
+    {
+      "definition": "visit_definition",
+      "record": {
+        "instrument": "HSC",
+        "exposure": 96908,
+        "visit": 96908
+      }
+    },
+    {
+      "definition": "visit_definition",
+      "record": {
+        "instrument": "HSC",
+        "exposure": 96954,
+        "visit": 96954
+      }
+    },
+    {
+      "definition": "visit_definition",
+      "record": {
+        "instrument": "HSC",
+        "exposure": 96980,
+        "visit": 96980
+      }
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+[tool.towncrier]
+    package = "lsst.ci_middleware"
+    package_dir = "python"
+    filename = "doc/lsst.ci_middleware/CHANGES.rst"
+    directory = "doc/changes"
+    title_format = "obs_base {version} ({project_date})"
+    issue_format = "`{issue} <https://jira.lsstcorp.org/browse/{issue}>`_"
+
+    [[tool.towncrier.type]]
+        directory = "feature"
+        name = "New Features"
+        showcontent = true
+
+    [[tool.towncrier.type]]
+        directory = "api"
+        name = "API Changes"
+        showcontent = true
+
+    [[tool.towncrier.type]]
+        directory = "bugfix"
+        name = "Bug Fixes"
+        showcontent = true
+
+    [[tool.towncrier.type]]
+        directory = "perf"
+        name = "Performance Enhancement"
+        showcontent = true
+
+    [[tool.towncrier.type]]
+        directory = "misc"
+        name = "Other Changes and Additions"
+        showcontent = true
+
+    [[tool.towncrier.type]]
+        directory = "removal"
+        name = "An API Removal or Deprecation"
+        showcontent = true
+
+[tool.black]
+line-length = 110
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+line_length = 110
+
+[tool.lsst_versions]
+write_to = "python/lsst/ci/middleware/version.py"
+
+[tool.pytest.ini_options]
+addopts = "--flake8"
+flake8-ignore = ["E203", "W503", "N802", "N803", "N806", "N812", "N815", "N816"]
+# Some unit tests open registry database and don't close it.
+open_files_ignore = ["gen3.sqlite3"]

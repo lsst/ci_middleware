@@ -1,0 +1,289 @@
+{
+  "REGISTER_ONLY": [
+    {
+      "name": "_mock_isr_metadata",
+      "storageClass": "PropertySet",
+      "dimensions": {
+        "names": [
+          "band",
+          "instrument",
+          "detector",
+          "physical_filter",
+          "exposure"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": false
+    },
+    {
+      "name": "_mock_objectTable",
+      "storageClass": "_mock_ArrowTable",
+      "dimensions": {
+        "names": [
+          "tract",
+          "patch"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": false
+    }
+  ],
+  "HSC/raw/all": [
+    {
+      "name": "_mock_raw",
+      "storageClass": "_mock_Exposure",
+      "dimensions": {
+        "names": [
+          "band",
+          "instrument",
+          "detector",
+          "physical_filter",
+          "exposure"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": false
+    }
+  ],
+  "HSC/calib/versioned": [
+    {
+      "name": "_mock_brighterFatterKernel",
+      "storageClass": "_mock_BrighterFatterKernel",
+      "dimensions": {
+        "names": [
+          "instrument",
+          "detector"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    },
+    {
+      "name": "_mock_transmission_filter",
+      "storageClass": "_mock_TransmissionCurve",
+      "dimensions": {
+        "names": [
+          "band",
+          "instrument",
+          "physical_filter"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    },
+    {
+      "name": "_mock_dark",
+      "storageClass": "_mock_ExposureF",
+      "dimensions": {
+        "names": [
+          "instrument",
+          "detector"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    },
+    {
+      "name": "_mock_flat",
+      "storageClass": "_mock_ExposureF",
+      "dimensions": {
+        "names": [
+          "band",
+          "instrument",
+          "detector",
+          "physical_filter"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    },
+    {
+      "name": "_mock_yBackground",
+      "storageClass": "_mock_StrayLightData",
+      "dimensions": {
+        "names": [
+          "band",
+          "instrument",
+          "detector",
+          "physical_filter"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    },
+    {
+      "name": "_mock_bfKernel",
+      "storageClass": "_mock_NumpyArray",
+      "dimensions": {
+        "names": [
+          "instrument"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    },
+    {
+      "name": "_mock_crosstalk",
+      "storageClass": "_mock_CrosstalkCalib",
+      "dimensions": {
+        "names": [
+          "instrument",
+          "detector"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    },
+    {
+      "name": "_mock_transmission_atmosphere",
+      "storageClass": "_mock_TransmissionCurve",
+      "dimensions": {
+        "names": [
+          "instrument"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    },
+    {
+      "name": "_mock_transmission_sensor",
+      "storageClass": "_mock_TransmissionCurve",
+      "dimensions": {
+        "names": [
+          "instrument",
+          "detector"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    },
+    {
+      "name": "_mock_linearizer",
+      "storageClass": "_mock_Linearizer",
+      "dimensions": {
+        "names": [
+          "instrument",
+          "detector"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    },
+    {
+      "name": "_mock_transmission_optics",
+      "storageClass": "_mock_TransmissionCurve",
+      "dimensions": {
+        "names": [
+          "instrument"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    },
+    {
+      "name": "_mock_defects",
+      "storageClass": "_mock_Defects",
+      "dimensions": {
+        "names": [
+          "instrument",
+          "detector"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    },
+    {
+      "name": "_mock_bias",
+      "storageClass": "_mock_ExposureF",
+      "dimensions": {
+        "names": [
+          "instrument",
+          "detector"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    },
+    {
+      "name": "_mock_fringe",
+      "storageClass": "_mock_ExposureF",
+      "dimensions": {
+        "names": [
+          "band",
+          "instrument",
+          "detector",
+          "physical_filter"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    },
+    {
+      "name": "_mock_sky",
+      "storageClass": "_mock_ExposureF",
+      "dimensions": {
+        "names": [
+          "band",
+          "instrument",
+          "detector",
+          "physical_filter"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    }
+  ],
+  "HSC/calib/unbounded": [
+    {
+      "name": "_mock_camera",
+      "storageClass": "_mock_Camera",
+      "dimensions": {
+        "names": [
+          "instrument"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": true
+    }
+  ],
+  "refcats": [
+    {
+      "name": "_mock_gaia_dr2_20200414",
+      "storageClass": "_mock_SimpleCatalog",
+      "dimensions": {
+        "names": [
+          "htm7"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": false
+    },
+    {
+      "name": "_mock_ps1_pv3_3pi_20170110",
+      "storageClass": "_mock_SimpleCatalog",
+      "dimensions": {
+        "names": [
+          "htm7"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": false
+    }
+  ],
+  "HSC/masks": [
+    {
+      "name": "_mock_brightObjectMask",
+      "storageClass": "_mock_ObjectMaskCatalog",
+      "dimensions": {
+        "names": [
+          "band",
+          "skymap",
+          "tract",
+          "patch"
+        ]
+      },
+      "parentStorageClass": null,
+      "isCalibration": false
+    }
+  ]
+}

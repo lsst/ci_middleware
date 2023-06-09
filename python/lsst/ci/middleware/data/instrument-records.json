@@ -1,0 +1,123 @@
+{
+  "instrument": {
+    "definition": "instrument",
+    "record": {
+      "name": "HSC",
+      "visit_max": 21474800,
+      "visit_system": 0,
+      "exposure_max": 21474800,
+      "detector_max": 200,
+      "class_name": "lsst.obs.subaru.HyperSuprimeCam"
+    }
+  },
+  "physical_filter": [
+    {
+      "definition": "physical_filter",
+      "record": {
+        "instrument": "HSC",
+        "name": "HSC-R",
+        "band": "r"
+      }
+    },
+    {
+      "definition": "physical_filter",
+      "record": {
+        "instrument": "HSC",
+        "name": "ENG-R1",
+        "band": "r"
+      }
+    },
+    {
+      "definition": "physical_filter",
+      "record": {
+        "instrument": "HSC",
+        "name": "HSC-I",
+        "band": "i"
+      }
+    },
+    {
+      "definition": "physical_filter",
+      "record": {
+        "instrument": "HSC",
+        "name": "HSC-I2",
+        "band": "i"
+      }
+    },
+    {
+      "definition": "physical_filter",
+      "record": {
+        "instrument": "HSC",
+        "name": "HSC-R2",
+        "band": "r"
+      }
+    }
+  ],
+  "detector": [
+    {
+      "definition": "detector",
+      "record": {
+        "instrument": "HSC",
+        "id": 41,
+        "full_name": "0_16",
+        "name_in_raft": "16",
+        "raft": "0",
+        "purpose": "SCIENCE"
+      }
+    },
+    {
+      "definition": "detector",
+      "record": {
+        "instrument": "HSC",
+        "id": 42,
+        "full_name": "1_08",
+        "name_in_raft": "08",
+        "raft": "1",
+        "purpose": "SCIENCE"
+      }
+    },
+    {
+      "definition": "detector",
+      "record": {
+        "instrument": "HSC",
+        "id": 49,
+        "full_name": "0_12",
+        "name_in_raft": "12",
+        "raft": "0",
+        "purpose": "SCIENCE"
+      }
+    },
+    {
+      "definition": "detector",
+      "record": {
+        "instrument": "HSC",
+        "id": 50,
+        "full_name": "1_12",
+        "name_in_raft": "12",
+        "raft": "1",
+        "purpose": "SCIENCE"
+      }
+    },
+    {
+      "definition": "detector",
+      "record": {
+        "instrument": "HSC",
+        "id": 57,
+        "full_name": "0_08",
+        "name_in_raft": "08",
+        "raft": "0",
+        "purpose": "SCIENCE"
+      }
+    },
+    {
+      "definition": "detector",
+      "record": {
+        "instrument": "HSC",
+        "id": 58,
+        "full_name": "1_16",
+        "name_in_raft": "16",
+        "raft": "1",
+        "purpose": "SCIENCE"
+      }
+    }
+  ]
+}

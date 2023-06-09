@@ -18,4 +18,6 @@ tests/.tests
 pytest_session.txt
 .cache/
 .pytest_cache
-.coverage
+
+# Coverage (from pytest and pipetask --coverage).
+.coverage*
