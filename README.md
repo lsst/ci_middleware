@@ -16,33 +16,43 @@ See the [`pipe_base` mocks documentation](https://pipelines.lsst.io/v/weekly/mod
 Package Structure and Overview
 ------------------------------
 
-`data`:
+- `data`:
     This directory's `SConscript` defines `scons` build targets that set up input data repositories and run mocked versions of the HSC `ci_hsc`, `RC2` and `Prod` pipelines from the [`drp_pipe`](https://github.com/lsst/drp_pipe.git) package.
     Data repositories are packed into and unpacked from `tar` archives for each step, preserving the exact state of the repository as processing proceeds and making build target dependency management cleaner (`scons` is much better at handling atomic files than directories as targets).
-`doc`:
+
+- `doc`:
     Scripts for building package documentation with [`documenteer`](https://documenteer.lsst.io/guides/index.html).
     At present this only includes API reference docs extracted from Python code, since this package is not part of the `pipelines.lsst.io` build and hence it makes more sense to put all overview documentation in this README.
-`python/lsst/ci/middleware/data`:
+
+- `python/lsst/ci/middleware/data`:
     Configuration and JSON data files for setting up initial data repositories.
     These are in a subdirectory of the Python package to allow access through `resource://` URIs and [`ResourcePath`](https://github.com/lsst/resources.git).
-`python/lsst/ci/middleware/__main__.py`:
+
+- `python/lsst/ci/middleware/__main__.py`:
     Command-line interface to certain test-data management tools, intended to be run via `python -m lsst.ci.middleware`.
     This includes making new data repositories with the packaged dimension records, adding mocked input datasets for a particular pipeline, and displaying the spatial relationships between dimensions.
     Use `--help` for more information.
-`python/lsst/ci/middleware/_constants.py`:
+
+- `python/lsst/ci/middleware/_constants.py`:
     Global constants used by both the main Python package modules and SCons build scripts.
     This is the only module imported automatically by the package, because we do not want SCons build scripts to import anything they don't absolutely need.
-`python/lsst/ci/middleware/display.py`:
+
+- `python/lsst/ci/middleware/display.py`:
     A simple display tool for inspecting the spatial relationships between the visits, detectors, tracts, patches, and HTM7 trixels.
-`python/lsst/ci/middleware/mock_dataset_maker.py`:
+ 
+- `python/lsst/ci/middleware/mock_dataset_maker.py`:
     The `MockDatasetMaker` class, which can populate a data repository with the inputs needed to run a pipeline.
-`python/lsst/ci/middleware/output_repo_tests.py`:
+ 
+- `python/lsst/ci/middleware/output_repo_tests.py`:
     Helper code for `unittest`-based tests that check the contents of the data repository `tar` files in the `data` directory.
-`python/lsst/ci/middleware/repo_data.py`:
+
+- `python/lsst/ci/middleware/repo_data.py`:
     Code for initializing up test data repositories and adjusting the `git`-managed test data itself.
-`python/lsst/ci/middleware/scons.py`:
+
+- `python/lsst/ci/middleware/scons.py`:
     The `PipelineCommands` class, which is used by `data/SConscript` to set up pipeline execution build targets.
-`tests`:
+
+- `tests`:
     Unit test scripts that are run after the data repository `tar` files in `data` have been created.
 
 Inspecting data repository `tar` files manually
