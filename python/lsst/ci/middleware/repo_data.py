@@ -438,9 +438,7 @@ class ObservationRecords:
         for element_name in ["exposure", "visit_definition", "visit_system", "visit_system_membership"]:
             getattr(self, element_name).extend(
                 d.records[element_name]
-                for d in data_ids.subset(
-                    butler.registry.dimensions[element_name].graph, unique=True
-                ).expanded()
+                for d in data_ids.subset(butler.dimensions[element_name].graph, unique=True).expanded()
             )
 
     def _fill_visit(self, butler: Butler, visit_ids: list[int], instrument: str) -> None:
@@ -604,14 +602,14 @@ class RepoData:
 
     def register_instrument(self, butler: Butler) -> None:
         """Add all instrument-managed records to the repository."""
-        instrument_records = InstrumentRecords.read(butler.registry.dimensions)
+        instrument_records = InstrumentRecords.read(butler.dimensions)
         butler.registry.insertDimensionData("instrument", instrument_records.instrument)
         butler.registry.insertDimensionData("physical_filter", *instrument_records.physical_filter)
         butler.registry.insertDimensionData("detector", *instrument_records.detector)
 
     def insert_observations(self, butler: Butler) -> None:
         """Add all observation records to the repository."""
-        observation_records = ObservationRecords.read(butler.registry.dimensions)
+        observation_records = ObservationRecords.read(butler.dimensions)
         for field in dataclasses.fields(observation_records):
             butler.registry.insertDimensionData(field.name, *getattr(observation_records, field.name))
 
@@ -623,7 +621,7 @@ class RepoData:
     def mock_input_datasets(self, butler: Butler) -> None:
         """Add mock input datasets that will be used by most pipelines."""
         mock_maker = MockDatasetMaker(butler)
-        for run, dataset_types in self.dataset_types.resolve(butler.registry.dimensions).items():
+        for run, dataset_types in self.dataset_types.resolve(butler.dimensions).items():
             if run == "REGISTER_ONLY":
                 for dataset_type in dataset_types:
                     butler.registry.registerDatasetType(dataset_type)

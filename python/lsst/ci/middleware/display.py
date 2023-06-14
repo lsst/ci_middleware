@@ -160,7 +160,7 @@ class DimensionDisplay:
         """
         for element in ["visit", "tract", "patch", "visit_detector_region"]:
             self.add_records(butler.registry.queryDimensionRecords(element))
-        self.add_skypix_grid(butler.registry.dimensions, butler.registry.dimensions.commonSkyPix.name)
+        self.add_skypix_grid(butler.dimensions, butler.dimensions.commonSkyPix.name)
 
     def add_skypix_grid(self, universe: DimensionUniverse, element: str | None = None) -> None:
         """Add a grid for a skypix dimension that covers the current bounding
