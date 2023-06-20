@@ -32,7 +32,7 @@ from typing import cast
 from lsst.daf.base import PropertySet
 from lsst.daf.butler import Butler, SerializedDataCoordinate
 from lsst.daf.butler.tests.utils import makeTestTempDir, removeTestTempDir
-from lsst.pipe.base import TaskMetadata
+from lsst.pipe.base import QuantumGraph, TaskMetadata
 from lsst.pipe.base.tests.mocks import MockDataset, MockDatasetQuantum, get_mock_name
 
 PRODUCT_DIR = Path(__file__).parent.parent.parent.parent.parent.absolute()
@@ -87,6 +87,19 @@ class OutputRepoTests:
                 archive.extractall(self._root)
             self._butler = Butler(self._root, collections=f"HSC/runs/{self.name}")
         return self._butler
+
+    def get_quantum_graph(self, step: str | None = None, group: str | None = None) -> QuantumGraph:
+        """Return the quantum graph for one step/group of this pipeline's
+        execution.
+
+        Note that there is only one QuantumGraph for all variants.
+        """
+        if step is None:
+            step = "full"
+        terms = [step]
+        if group is not None:
+            terms.append(group)
+        return QuantumGraph.loadUri(DATA_DIR.joinpath(self.name, "-".join(terms) + ".qgraph"))
 
     def close(self) -> None:
         """Delete the temporary data repository.
