@@ -29,6 +29,7 @@ __all__ = (
 )
 
 import os
+from collections.abc import Sequence
 
 from lsst.sconsUtils import state
 from lsst.sconsUtils.utils import libraryLoaderEnvironment
@@ -41,13 +42,16 @@ BUTLER_BIN = os.path.join(os.environ["DAF_BUTLER_DIR"], "bin/butler")
 COVERAGE_PACKAGES = ",".join(["lsst.daf.butler", "lsst.pipe.base", "lsst.ctrl.mpexec"])
 
 
-def python_cmd(*args: str) -> str:
+def python_cmd(*args: str, expect_failure: bool = False) -> str:
     """Return a command-line string that runs the Python executable.
 
     Parameters
     ----------
     *args
         Command-line arguments to pass to Python.
+    expect_failure : `bool`
+        If `True`, expect the pipetask command to fail with a nonzero exit
+        code, and guard it accordingly to keep the SCons build running.
 
     Returns
     -------
@@ -56,6 +60,8 @@ def python_cmd(*args: str) -> str:
     """
     terms = [libraryLoaderEnvironment(), "python"]
     terms.extend(args)
+    if expect_failure:
+        terms.extend(["||", "true"])
     return " ".join(terms)
 
 
@@ -172,7 +178,14 @@ class PipelineCommands:
         self.last_direct_repo: File = inputs_repo
         self.last_qbb_repo: File = inputs_repo
 
-    def add(self, step: str | None = None, group: str | None = None, where: str = "") -> PipelineCommands:
+    def add(
+        self,
+        step: str | None = None,
+        group: str | None = None,
+        where: str = "",
+        fail: Sequence[str] = (),
+        skip_existing_in_last: bool = False,
+    ) -> PipelineCommands:
         """Add a new QuantumGraph and its execution to the graph.
 
         Parameters
@@ -182,13 +195,20 @@ class PipelineCommands:
             (default), a graph is generated for the full pipeline.
         group : `str`, optional
             Additional identifier to include in the collection name and output
-            files that reflects how the ``where`` subdivides the data.  This is
-            used when a single pipeline step is being split up into multiple
-            graphs, to simulation production runs at scales where this is
-            necessary.
+            files that reflects how the ``where`` subdivides the data or the
+            attempt being made.  This is used when a single pipeline step is
+            being split up into multiple graphs, to simulation production runs
+            at scales where this is necessary, or when creating "rescue" graphs
+            to finish up processing that partially failed.
         where : `str`, optional
             Data ID constraint expression passed as the ``--data-query``
             argument to ``pipetask`` when building the graph.
+        fail : `~collections.abc.Sequence` [ `str` ]
+            Sequence of colon-separated ``task_label:error_type:where`` tuples
+            that identify quanta that should raise an exception.
+        skip_existing_in_last : `bool`, optional
+            If `True`, pass ``--skip-existing-in`` to the QuantumGraph
+            generation command with the input collections as the argument.
 
         Returns
         -------
@@ -203,9 +223,20 @@ class PipelineCommands:
         if group is not None:
             suffix = f"{suffix}-{group}"
         output_run = self.run_template.format(name=self.name, suffix=suffix)
-        qg = self._add_qg(suffix=suffix, output_run=output_run, step=step, where=where)
-        self.last_direct_repo = self._add_direct(qg, suffix=suffix, output_run=output_run)
-        self.last_qbb_repo = self._add_qbb(qg, suffix=suffix, output_run=output_run)
+        qg = self._add_qg(
+            suffix=suffix,
+            output_run=output_run,
+            step=step,
+            where=where,
+            fail=fail,
+            skip_existing_in_last=skip_existing_in_last,
+        )
+        self.last_direct_repo = self._add_direct(
+            qg, suffix=suffix, output_run=output_run, expect_failure=bool(fail)
+        )
+        self.last_qbb_repo = self._add_qbb(
+            qg, suffix=suffix, output_run=output_run, expect_failure=bool(fail)
+        )
         return self
 
     def finish(self) -> list[File]:
@@ -281,7 +312,15 @@ class PipelineCommands:
         self.all_targets.extend(targets)
         return targets[0]
 
-    def _add_qg(self, suffix: str, output_run: str, step: str | None, where: str) -> File:
+    def _add_qg(
+        self,
+        suffix: str,
+        output_run: str,
+        step: str | None,
+        where: str,
+        fail: Sequence[str] = (),
+        skip_existing_in_last: bool = False,
+    ) -> File:
         """Make a SCons target for the quantum graph file.
 
         Parameters
@@ -296,6 +335,12 @@ class PipelineCommands:
         where : `str`, optional
             Data ID constraint expression passed as the ``--data-query``
             argument to ``pipetask`` when building the graph.
+        fail : `~collections.abc.Sequence` [ `str` ]
+            Sequence of colon-separated ``task_label:error_type:where`` tuples
+            that identify quanta that should raise an exception.
+        skip_existing_in_last : `bool`, optional
+            If `True`, pass ``--skip-existing-in`` to the QuantumGraph
+            generation command with the input collections as the argument.
 
         Returns
         -------
@@ -305,6 +350,9 @@ class PipelineCommands:
         qg_file = os.path.join(self.name, suffix + ".qgraph")
         log = os.path.join(self.name, suffix + "-qgraph.log")
         repo_in_cmd = "${TARGETS[0].base}-qgraph-repo"
+        fail_and_retry_args = [f"--mock-failure {f}" for f in fail]
+        if skip_existing_in_last:
+            fail_and_retry_args.append(f"--skip-existing-in {self.chain}")
         targets = state.env.Command(
             [File(qg_file), File(log)],
             # We always build QGs and run direct processing using the previous
@@ -331,6 +379,7 @@ class PipelineCommands:
                     "--save-qgraph ${TARGETS[0]}",
                     "--qgraph-datastore-records",
                     "--mock",
+                    *fail_and_retry_args,
                     f"--unmocked-dataset-types '{','.join(UNMOCKED_DATASET_TYPES)}'",
                     log="${TARGETS[1]}",
                 ),
@@ -340,7 +389,7 @@ class PipelineCommands:
         self.all_targets.extend(targets)
         return targets[0]
 
-    def _add_direct(self, qg_file: File, suffix: str, output_run: str) -> File:
+    def _add_direct(self, qg_file: File, suffix: str, output_run: str, expect_failure: bool = False) -> File:
         """Make an SCons target for direct execution of the quantum graph
         with ``pipetask run`` and a full butler.
 
@@ -352,6 +401,9 @@ class PipelineCommands:
             Suffix that combines the step and group, if present.
         output_run : `str`
             Name of the output RUN collection.
+        expect_failure : `bool`, optional
+            If `True`, expect the pipetask command to fail with a nonzero exit
+            code, and guard it accordingly to keep the SCons build running.
 
         Returns
         -------
@@ -381,6 +433,7 @@ class PipelineCommands:
                     f"--output-run {output_run}",
                     "--register-dataset-types",
                     log="${TARGETS[1]}",
+                    expect_failure=expect_failure,
                 ),
                 tar_repo_cmd(repo_in_cmd, "${TARGETS[0]}"),
             ],
@@ -388,7 +441,7 @@ class PipelineCommands:
         self.all_targets.extend(targets)
         return targets[0]
 
-    def _add_qbb(self, qg_file: File, suffix: str, output_run: str) -> File:
+    def _add_qbb(self, qg_file: File, suffix: str, output_run: str, expect_failure: bool) -> File:
         """Make an SCons target for direct execution of the quantum graph
         with ``pipetask run-qbb`` and `lsst.daf.butler.QuantumBackedButler`.
 
@@ -400,6 +453,9 @@ class PipelineCommands:
             Suffix that combines the step and group, if present.
         output_run : `str`
             Name of the output RUN collection.
+        expect_failure : `bool`
+            If `True`, expect the pipetask command to fail with a nonzero exit
+            code, and guard it accordingly to keep the SCons build running.
 
         Returns
         -------
@@ -430,6 +486,7 @@ class PipelineCommands:
                     repo_in_cmd,
                     "${SOURCES[1]}",
                     log="${TARGETS[1]}",
+                    expect_failure=expect_failure,
                 ),
                 # Bring results home using butler transfer-from-graph.
                 python_cmd(
@@ -447,7 +504,7 @@ class PipelineCommands:
         self.all_targets.extend(targets)
         return targets[0]
 
-    def _pipetask_cmd(self, subcommand: str, *args: str, log: str) -> str:
+    def _pipetask_cmd(self, subcommand: str, *args: str, log: str, expect_failure: bool = False) -> str:
         """Return a command-line string that runs ``pipetask``` with options
         common to all invocations for this pipeline.
 
@@ -459,6 +516,9 @@ class PipelineCommands:
             Command-line arguments to pass to Python just after the subcommand.
         log : `str`
             Name of the file to write logs to.
+        expect_failure : `bool`
+            If `True`, expect the pipetask command to fail with a nonzero exit
+            code, and guard it accordingly to keep the SCons build running.
 
         Returns
         -------
@@ -475,4 +535,5 @@ class PipelineCommands:
             "--coverage",
             f"--cov-packages {COVERAGE_PACKAGES}",
             "--no-cov-report",
+            expect_failure=expect_failure,
         )
