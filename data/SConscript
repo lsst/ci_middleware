@@ -79,7 +79,10 @@ rc2 = (
     .add("step5", where="skymap='ci_mw' AND tract=0")
     .add("step6")
     .add("step7")
-    .add("step8")
+    # Test fail-and-rescue workflow by configuring one task fail on the first
+    # try, and then recover from that with a new run and --skip-existing-in.
+    .add("step8", group="attempt1", fail=["analyzeObjectTableCore::'skymap='ci_mw' AND tract=0'"])
+    .add("step8", group="attempt2", skip_existing_in_last=True)
     .finish()
 )
 state.targets["data"].extend(rc2)

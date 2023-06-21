@@ -106,6 +106,51 @@ class Rc2OutputsTestCase(unittest.TestCase):
     def test_property_set_metadata_qbb(self) -> None:
         self.qbb.check_property_set_metadata(self)
 
+    def check_step8_rescue(self, helper: OutputRepoTests) -> None:
+        """Test that the fail-and-recover attempts in step8 worked as expected,
+        by running all tasks but one in the first attempt.
+        """
+        # This task should have failed in attempt1 and should have been
+        # rescued in attempt2.
+        self.assertCountEqual(
+            [
+                ref.run
+                for ref in set(
+                    helper.butler.registry.queryDatasets(get_mock_name("analyzeObjectTableCore_metadata"))
+                )
+            ],
+            ["HSC/runs/RC2/step8-attempt2"],
+        )
+        # This task should have succeeded in attempt1 and should not have been
+        # included in attempt2.
+        self.assertCountEqual(
+            [
+                ref.run
+                for ref in set(
+                    helper.butler.registry.queryDatasets(
+                        get_mock_name("analyzeObjectTableSurveyCore_metadata")
+                    )
+                )
+            ],
+            ["HSC/runs/RC2/step8-attempt1"],
+        )
+
+    def test_step8_rescue_direct(self) -> None:
+        self.check_step8_rescue(self.direct)
+        # The attempt1 QG should have quanta for both tasks (and others, but we
+        # won't list them all to avoid breaking if new ones are added).
+        qg_1 = self.direct.get_quantum_graph("step8", "attempt1")
+        qg_2 = self.direct.get_quantum_graph("step8", "attempt2")
+        tasks_with_quanta_1 = {q.taskDef.label for q in qg_1}
+        tasks_with_quanta_2 = {q.taskDef.label for q in qg_2}
+        self.assertIn(get_mock_name("analyzeObjectTableCore"), tasks_with_quanta_1)
+        self.assertIn(get_mock_name("analyzeObjectTableCore"), tasks_with_quanta_2)
+        self.assertIn(get_mock_name("analyzeObjectTableSurveyCore"), tasks_with_quanta_1)
+        self.assertNotIn(get_mock_name("analyzeObjectTableSurveyCore"), tasks_with_quanta_2)
+
+    def test_step8_rescue_qbb(self) -> None:
+        self.check_step8_rescue(self.qbb)
+
 
 if __name__ == "__main__":
     unittest.main()
