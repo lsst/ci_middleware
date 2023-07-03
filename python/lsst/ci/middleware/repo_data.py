@@ -31,7 +31,11 @@ from collections import defaultdict
 from collections.abc import Iterable
 from typing import Any, cast
 
-import pydantic
+try:
+    import pydantic.v1 as pydantic
+except ModuleNotFoundError:
+    import pydantic
+
 from lsst.daf.butler import (
     Butler,
     CollectionType,
