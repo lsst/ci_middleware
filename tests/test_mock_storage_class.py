@@ -74,7 +74,7 @@ class MockStorageClassTestCase(unittest.TestCase):
             )
             # Make a dataset with this storage class and put it.
             in_memory_dataset = MockDataset(ref=dataset_ref.to_simple())
-            butler.put(in_memory_dataset, dataset_ref, run=run)
+            butler.put(in_memory_dataset, dataset_ref)
             # Get the original dataset back.
             got_direct: MockDataset = butler.get(dataset_ref)
             self.assertIsInstance(got_direct, MockDataset)
