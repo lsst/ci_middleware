@@ -31,11 +31,6 @@ from collections import defaultdict
 from collections.abc import Iterable
 from typing import Any, cast
 
-try:
-    import pydantic.v1 as pydantic
-except ModuleNotFoundError:
-    import pydantic  # type: ignore
-
 from lsst.daf.butler import (
     Butler,
     CollectionType,
@@ -45,6 +40,7 @@ from lsst.daf.butler import (
     SerializedDatasetType,
     SerializedDimensionRecord,
 )
+from lsst.daf.butler._compat import PYDANTIC_V2, _BaseModelCompat
 from lsst.resources import ResourcePath, ResourcePathExpression
 from lsst.skymap import BaseSkyMap, DiscreteSkyMap
 from lsst.sphgeom import ConvexPolygon
@@ -491,7 +487,23 @@ def make_skymap_instance(
     return DiscreteSkyMap(config)
 
 
-class InputDatasetTypes(pydantic.BaseModel):
+if PYDANTIC_V2:
+    from pydantic import RootModel  # type: ignore
+
+    class _InputDatasetTypes(RootModel):
+        root: dict[str, list[SerializedDatasetType]]
+
+else:
+
+    class _InputDatasetTypes(_BaseModelCompat):  # type: ignore
+        __root__: dict[str, list[SerializedDatasetType]]
+
+        @property
+        def root(self) -> dict[str, list[SerializedDatasetType]]:
+            return self.__root__
+
+
+class InputDatasetTypes(_InputDatasetTypes):
     """Datasets types used as overall inputs by most mocked pipelines.
 
     This is not expected to be exhaustive for all pipelines; it's a common
@@ -502,12 +514,10 @@ class InputDatasetTypes(pydantic.BaseModel):
     datasets should be inserted into.
     """
 
-    __root__: dict[str, list[SerializedDatasetType]]
-
     @property
     def runs(self) -> Iterable[str]:
         """The RUN collections datasets should be written to."""
-        return self.__root__.keys() - {"REGISTER_ONLY"}
+        return self.root.keys() - {"REGISTER_ONLY"}
 
     @classmethod
     def read(
@@ -530,7 +540,7 @@ class InputDatasetTypes(pydantic.BaseModel):
         uri = ResourcePath(uri)
         with uri.open() as stream:
             data = json.load(stream)
-        return cls.parse_obj(data)
+        return cls.model_validate(data)
 
     def resolve(self, universe: DimensionUniverse) -> dict[str, list[DatasetType]]:
         """Return dataset type objects with resolved dimensions.
@@ -548,7 +558,7 @@ class InputDatasetTypes(pydantic.BaseModel):
         """
         return {
             run: [DatasetType.from_simple(s, universe=universe) for s in serialized_dataset_types]
-            for run, serialized_dataset_types in self.__root__.items()
+            for run, serialized_dataset_types in self.root.items()
         }
 
 
