@@ -64,7 +64,7 @@ state.targets["data"].extend(ci_hsc)
 # just a few non-overlapping tracts.  We do care here about giving full visits
 # to steps that expect full visits (no "tract slicing"), and that's the main
 # reason for splitting up into steps.  For the mock version, we process just
-# one tract (0), and deliberately leave out the two visit here (18202, 96980)
+# one tract (0), and deliberately leave out the two visits here (18202, 96980)
 # that doesn't overlap it.
 rc2 = (
     PipelineCommands(
