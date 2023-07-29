@@ -32,7 +32,7 @@ from collections import defaultdict
 from collections.abc import Iterable
 from typing import Any, cast
 
-import bokeh.plotting.figure
+import bokeh.plotting
 import numpy as np
 from lsst.afw.geom import makeCdMatrix, makeSkyWcs
 from lsst.daf.butler import Butler, DataCoordinate, DimensionRecord, DimensionUniverse, SkyPixDimension
@@ -193,7 +193,7 @@ class DimensionDisplay:
                     universe[element].RecordClass(id=id, region=pixelization.pixel(id)), update_bbox=False
                 )
 
-    def draw(self) -> bokeh.plotting.Figure:
+    def draw(self) -> bokeh.plotting.figure:
         """Create a Bokeh figure object from the records that have been added.
 
         Returns
