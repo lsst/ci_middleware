@@ -23,7 +23,7 @@ import unittest
 from typing import ClassVar
 
 from lsst.ci.middleware.output_repo_tests import OutputRepoTests
-from lsst.pipe.base.tests.mocks import get_mock_name
+from lsst.pipe.base.tests.mocks import MockDataset, get_mock_name
 
 # (tract, patch, band): {input visits} for coadds produced here.
 # some visit lists elided because we're just spot-checking.
@@ -150,6 +150,20 @@ class Rc2OutputsTestCase(unittest.TestCase):
 
     def test_step8_rescue_qbb(self) -> None:
         self.check_step8_rescue(self.qbb)
+
+    def test_fgcm_refcats(self) -> None:
+        """Test that FGCM does not get refcats that don't overlap any of its
+        inputs or outputs, despite not having a spatial data ID.
+        """
+        fgcm_reference_stars: MockDataset = self.qbb.butler.get(
+            get_mock_name("fgcm_reference_stars"), instrument="HSC"
+        )
+        htm7_indices = {
+            input.ref.dataId.dataId["htm7"]  # type: ignore
+            for input in fgcm_reference_stars.quantum.inputs["ref_cat"]  # type: ignore
+        }
+        self.assertNotIn(231819, htm7_indices)
+        self.assertIn(231865, htm7_indices)
 
 
 if __name__ == "__main__":
