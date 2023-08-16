@@ -81,7 +81,7 @@ rc2 = (
     .add("step7")
     # Test fail-and-rescue workflow by configuring one task fail on the first
     # try, and then recover from that with a new run and --skip-existing-in.
-    .add("step8", group="attempt1", fail=["analyzeObjectTableCore::'skymap='ci_mw' AND tract=0'"])
+    .add("step8", group="attempt1", fail=['''analyzeObjectTableCore::"skymap='ci_mw' AND tract=0"'''])
     .add("step8", group="attempt2", skip_existing_in_last=True)
     .finish()
 )
@@ -101,7 +101,13 @@ prod = (
     # Using band for grouping here is just a convenient to split our visits up
     # into two groups, not a reflection of expected real pipeline usage.
     .add("step1", group="r", where="band='r'")
-    .add("step1", group="i", where="band='i'")
+    .add(
+        "step1",
+        group="i-attempt1",
+        where="band='i'",
+        fail=['''calibrate::"instrument='HSC' AND visit=18202"'''],
+    )
+    .add("step1", group="i-attempt2", where="band='i'", skip_existing_in_last=True)
     .add("step2a", group="r", where="band='r'")
     .add("step2a", group="i", where="band='i'")
     .add("step2b", group="even", where="skymap='ci_mw' AND tract IN (0, 2)")
