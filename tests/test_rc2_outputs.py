@@ -159,8 +159,7 @@ class Rc2OutputsTestCase(unittest.TestCase):
             get_mock_name("fgcm_reference_stars"), instrument="HSC"
         )
         htm7_indices = {
-            input.ref.dataId.dataId["htm7"]  # type: ignore
-            for input in fgcm_reference_stars.quantum.inputs["ref_cat"]  # type: ignore
+            input.data_id["htm7"] for input in fgcm_reference_stars.quantum.inputs["ref_cat"]  # type: ignore
         }
         self.assertNotIn(231819, htm7_indices)
         self.assertIn(231865, htm7_indices)

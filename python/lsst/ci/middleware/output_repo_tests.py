@@ -30,7 +30,7 @@ from pathlib import Path
 from typing import cast
 
 from lsst.daf.base import PropertySet
-from lsst.daf.butler import Butler, SerializedDataCoordinate
+from lsst.daf.butler import Butler
 from lsst.daf.butler.tests.utils import makeTestTempDir, removeTestTempDir
 from lsst.pipe.base import QuantumGraph, TaskMetadata
 from lsst.pipe.base.tests.mocks import MockDataset, MockDatasetQuantum, get_mock_name
@@ -134,9 +134,7 @@ class OutputRepoTests:
             test_case.assertIsNone(tract_dataset.converted_from)
             assert tract_dataset.quantum is not None
             for patch_dataset_as_input in tract_dataset.quantum.inputs["inputCatalogs"]:
-                patch = cast(
-                    int, cast(SerializedDataCoordinate, patch_dataset_as_input.ref.dataId).dataId["patch"]
-                )
+                patch = cast(int, patch_dataset_as_input.data_id["patch"])
                 patch_ref = patch_refs[tract, patch]
                 # We pre-registered this dataset type with ArrowTable as its
                 # storage class, even though the task connections all use
@@ -173,7 +171,7 @@ class OutputRepoTests:
             if (expected := self.expected[key]) is not None:
                 test_case.assertEqual(
                     {
-                        cast(SerializedDataCoordinate, input_dataset.ref.dataId).dataId["visit"]
+                        input_dataset.data_id["visit"]
                         for input_dataset in cast(MockDatasetQuantum, dataset.quantum).inputs["inputWarps"]
                     },
                     expected,

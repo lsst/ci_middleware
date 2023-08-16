@@ -73,7 +73,12 @@ class MockStorageClassTestCase(unittest.TestCase):
                 run=run,
             )
             # Make a dataset with this storage class and put it.
-            in_memory_dataset = MockDataset(ref=dataset_ref.to_simple())
+            in_memory_dataset = MockDataset(
+                dataset_id=dataset_ref.id,
+                dataset_type=dataset_ref.datasetType.to_simple(),
+                data_id=dataset_ref.dataId.full.byName(),
+                run=dataset_ref.run,
+            )
             butler.put(in_memory_dataset, dataset_ref)
             # Get the original dataset back.
             got_direct: MockDataset = butler.get(dataset_ref)
@@ -83,7 +88,7 @@ class MockStorageClassTestCase(unittest.TestCase):
             bbox = Box2I(Point2I(1, 2), Point2I(5, 4))
             got_parameterized: MockDataset = butler.get(dataset_ref, parameters={"bbox": bbox})
             self.assertIsInstance(got_parameterized, MockDataset)
-            self.assertEqual(got_parameterized.ref, in_memory_dataset.ref)
+            self.assertEqual(got_parameterized.dataset_id, in_memory_dataset.dataset_id)
             self.assertEqual(got_parameterized.parameters, {"bbox": repr(bbox)})
             # Get a regular component.
             got_wcs: MockDataset = butler.get(dataset_ref.makeComponentRef("wcs"))
@@ -114,7 +119,10 @@ class MockStorageClassTestCase(unittest.TestCase):
                 run=run,
             )
             put_convert_in = MockDataset(
-                ref=put_convert_dataset_ref.overrideStorageClass(derived_storage_class).to_simple()
+                dataset_id=put_convert_dataset_ref.id,
+                dataset_type=put_convert_dataset_type.overrideStorageClass(derived_storage_class).to_simple(),
+                data_id=put_convert_dataset_ref.dataId.full.byName(),
+                run=put_convert_dataset_ref.run,
             )
             butler.put(put_convert_in, put_convert_dataset_ref)
             put_convert_out: MockDataset = butler.get(put_convert_dataset_ref)
@@ -145,10 +153,20 @@ class MockStorageClassTestCase(unittest.TestCase):
             # put but a TypeError on get.
             with self.assertRaises(TypeError):
                 butler.put(
-                    MockDataset(ref=derived_dataset_ref.overrideStorageClass(storage_class).to_simple()),
+                    MockDataset(
+                        dataset_id=derived_dataset_ref.id,
+                        dataset_type=derived_dataset_type.overrideStorageClass(storage_class).to_simple(),
+                        data_id=derived_dataset_ref.dataId.full.byName(),
+                        run=derived_dataset_ref.run,
+                    ),
                     derived_dataset_ref,
                 )
-            derived_in = MockDataset(ref=derived_dataset_ref.to_simple())
+            derived_in = MockDataset(
+                dataset_id=derived_dataset_ref.id,
+                dataset_type=derived_dataset_type.to_simple(),
+                data_id=derived_dataset_ref.dataId.full.byName(),
+                run=derived_dataset_ref.run,
+            )
             butler.put(derived_in, derived_dataset_ref)
             got_converted: MockDataset = butler.get(derived_dataset_ref.overrideStorageClass(storage_class))
             self.assertIsInstance(got_converted, MockDataset)
