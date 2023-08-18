@@ -149,7 +149,15 @@ class MockDatasetMaker:
                 self.cached_data_ids[dimensions] = data_ids
         for data_id in data_ids:
             ref = DatasetRef(dataset_type, data_id, run=run)
-            self.butler.put(MockDataset(ref=ref.to_simple()), ref)
+            self.butler.put(
+                MockDataset(
+                    dataset_id=ref.id,
+                    dataset_type=dataset_type.to_simple(),
+                    data_id=data_id.full.byName(),
+                    run=run,
+                ),
+                ref,
+            )
 
     @property
     def spatial_bounds(self) -> Box:
