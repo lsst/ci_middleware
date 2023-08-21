@@ -71,6 +71,22 @@ rc2 = (
         "RC2", os.path.join(os.environ["DRP_PIPE_DIR"], "pipelines", "HSC", "DRP-RC2.yaml"), base_repo
     )
     .add("step1", where="instrument='HSC' AND exposure NOT IN (18202, 96980)")
+    # Add side runs (later runs do not build on these) to check --extend-run
+    # and --clobber-outputs.
+    .add_side_run(
+        "test-clobber-without-skip",
+        ["calibrate", "consolidatePreSourceTable"],
+        where="skymap='ci_mw'",
+        extend_run=True,
+        clobber_outputs=True,
+    )
+    .add_side_run(
+        "test-skip-and-clobber",
+        ["calibrate", "consolidatePreSourceTable"],
+        skip_existing_in_last=True,
+        extend_run=True,
+        clobber_outputs=True,
+    )
     .add("step2a", where="skymap='ci_mw'")
     .add("step2b", where="skymap='ci_mw' AND tract=0")
     .add("step2cde")
