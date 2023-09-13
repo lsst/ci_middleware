@@ -23,6 +23,7 @@ import unittest
 from typing import ClassVar
 
 from lsst.ci.middleware.output_repo_tests import OutputRepoTests
+from lsst.pipe.base.execution_reports import QuantumGraphExecutionReport
 from lsst.pipe.base.tests.mocks import get_mock_name
 
 # (tract, patch, band): {input visits} for coadds produced here.
@@ -127,6 +128,35 @@ class ProdOutputsTestCase(unittest.TestCase):
 
     def test_property_set_metadata_qbb(self) -> None:
         self.qbb.check_property_set_metadata(self)
+
+    def check_step1_manifest_checker(self, helper: OutputRepoTests) -> None:
+        """Test that the fail-and-recover attempts in step1 worked as expected
+        using the manifest checker.
+        """
+
+        # This task should have failed in attempt1 and should have been
+        # rescued in attempt2.
+        qg_1 = helper.get_quantum_graph("step1", "i-attempt1")
+        report_1 = QuantumGraphExecutionReport.make_reports(helper.butler, qg_1)
+        summary_1 = report_1.to_summary_dict(helper.butler)
+        failures = summary_1["_mock_calibrate"]["failed_quanta"]
+        failed_visits = set()
+        for quantum_summary in failures.values():
+            self.assertTrue(
+                quantum_summary["error"][0].startswith("Execution of task '_mock_calibrate' on quantum")
+            )
+            failed_visits.add(quantum_summary["data_id"]["visit"])
+        self.assertEqual(failed_visits, {18202})
+        self.assertEqual(summary_1["_mock_isr"]["outputs"]["_mock_postISRCCD"]["produced"], 36)
+        # This task should have succeeded in attempt1 and should not have been
+        # included in attempt2.
+        qg_2 = helper.get_quantum_graph("step1", "i-attempt2")
+        report_2 = QuantumGraphExecutionReport.make_reports(helper.butler, qg_2)
+        summary_2 = report_2.to_summary_dict(helper.butler)
+        self.assertDictEqual(summary_2["_mock_calibrate"]["failed_quanta"], {})  # is empty ??
+
+    def test_step1_manifest_checker_qbb(self) -> None:
+        self.check_step1_manifest_checker(self.qbb)
 
 
 if __name__ == "__main__":
