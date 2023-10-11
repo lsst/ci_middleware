@@ -1,0 +1,2 @@
+Add tests for QuantumGraphExecutionReports using "rescues" to test reporting on
+fail-and-recover attempts for step 1.
