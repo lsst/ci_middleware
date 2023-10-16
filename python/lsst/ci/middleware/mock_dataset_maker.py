@@ -23,13 +23,11 @@ from __future__ import annotations
 
 __all__ = ("MockDatasetMaker", "UNMOCKED_DATASET_TYPES")
 
-import itertools
-from collections.abc import Sequence
 from typing import Any, ClassVar, cast
 
 from lsst.daf.butler import Butler, DataCoordinate, DatasetRef, DatasetType, DimensionGraph, SkyPixDimension
-from lsst.pipe.base import Pipeline, PipelineDatasetTypes, TaskDef
-from lsst.pipe.base.tests.mocks import MockDataset, is_mock_name, mock_task_defs
+from lsst.pipe.base import Pipeline, PipelineGraph
+from lsst.pipe.base.tests.mocks import MockDataset, is_mock_name, mock_pipeline_graph
 from lsst.resources import ResourcePathExpression
 from lsst.sphgeom import Box, ConvexPolygon
 
@@ -80,19 +78,19 @@ class MockDatasetMaker:
         overall input dataset type of the pipeline is already registered, its
         datasets are assumed to already be present and will not be mocked.
         """
-        original = Pipeline.from_uri(uri).toExpandedPipeline()
-        mocked = mock_task_defs(original, unmocked_dataset_types=UNMOCKED_DATASET_TYPES)
+        original = Pipeline.from_uri(uri).to_graph()
+        mocked = mock_pipeline_graph(original, unmocked_dataset_types=UNMOCKED_DATASET_TYPES)
         butler = Butler(root, writeable=True, run=run)
         maker = cls(butler)
         maker.make_inputs(mocked, run)
 
-    def make_inputs(self, task_defs: Sequence[TaskDef], run: str = MISC_INPUT_RUN) -> PipelineDatasetTypes:
+    def make_inputs(self, graph: PipelineGraph, run: str = MISC_INPUT_RUN) -> None:
         """Add mock input datasets for a pipeline.
 
         Parameters
         ----------
-        task_defs : `collections.abc.Sequence` [ `lsst.pipe.base.TaskDef` ]
-            Expanded, already-mocked pipeline whose inputs should be created.
+        pipeline_graph : `lsst.pipe.base.PipelineGraph`
+            Already-mocked pipeline graph whose inputs should be created.
         run : `str`, optional
             RUN collection that mock datasets should be written to.
 
@@ -102,10 +100,10 @@ class MockDatasetMaker:
         overall input dataset type of the pipeline is already registered, its
         datasets are assumed to already be present and will not be mocked.
         """
-        dataset_types = PipelineDatasetTypes.fromPipeline(task_defs, registry=self.butler.registry)
-        for dataset_type in itertools.chain(dataset_types.inputs, dataset_types.prerequisites):
-            self.make_datasets(dataset_type, run)
-        return dataset_types
+        graph.resolve(self.butler.registry)
+        for _, dataset_type_node in graph.iter_overall_inputs():
+            assert dataset_type_node is not None, "Guaranteed by 'resolve' call above."
+            self.make_datasets(dataset_type_node.dataset_type, run)
 
     def make_datasets(self, dataset_type: DatasetType, run: str = MISC_INPUT_RUN) -> None:
         """Add mock datasets of the given type.
