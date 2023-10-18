@@ -80,7 +80,7 @@ class MockDatasetMaker:
         """
         original = Pipeline.from_uri(uri).to_graph()
         mocked = mock_pipeline_graph(original, unmocked_dataset_types=UNMOCKED_DATASET_TYPES)
-        butler = Butler(root, writeable=True, run=run)
+        butler = Butler.from_config(root, writeable=True, run=run)
         maker = cls(butler)
         maker.make_inputs(mocked, run)
 

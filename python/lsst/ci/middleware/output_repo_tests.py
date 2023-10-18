@@ -85,7 +85,7 @@ class OutputRepoTests:
             self._root = makeTestTempDir(str(TEST_DIR))
             with tarfile.open(DATA_DIR.joinpath(self.name, f"{self.variant}.tgz")) as archive:
                 archive.extractall(self._root)
-            self._butler = Butler(self._root, collections=f"HSC/runs/{self.name}")
+            self._butler = Butler.from_config(self._root, collections=f"HSC/runs/{self.name}")
         return self._butler
 
     def get_quantum_graph(self, step: str | None = None, group: str | None = None) -> QuantumGraph:

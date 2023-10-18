@@ -93,7 +93,7 @@ class Display(Tool):
 
         from .display import DimensionDisplay
 
-        butler = Butler(args.root)
+        butler = Butler.from_config(args.root)
         display = DimensionDisplay()
         display.add_repo(butler)
         fig = display.draw()

@@ -47,7 +47,7 @@ class MockStorageClassTestCase(unittest.TestCase):
             # storage class definitions via the in-memory StorageClassFactory
             # singleton, but the formatter entries for those storage classes
             # from the new config file.
-            butler = Butler(Butler.makeRepo(root), writeable=True)
+            butler = Butler.from_config(Butler.makeRepo(root), writeable=True)
             # Proceed with the rest of the tests.
             storage_class = MockStorageClass.get_or_register_mock("Exposure")
             self.assertNotEqual("Exposure", storage_class.name)

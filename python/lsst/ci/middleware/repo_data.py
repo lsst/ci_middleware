@@ -606,7 +606,7 @@ class RepoData:
             Butler client for the new repository.
         """
         helper = cls(root, clobber=clobber)
-        butler = Butler(helper.root, writeable=True)
+        butler = Butler.from_config(helper.root, writeable=True)
         helper.register_instrument(butler)
         helper.insert_observations(butler)
         helper.register_skymap(butler)
