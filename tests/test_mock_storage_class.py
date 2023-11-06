@@ -76,7 +76,7 @@ class MockStorageClassTestCase(unittest.TestCase):
             in_memory_dataset = MockDataset(
                 dataset_id=dataset_ref.id,
                 dataset_type=dataset_ref.datasetType.to_simple(),
-                data_id=dataset_ref.dataId.full.byName(),
+                data_id=dict(dataset_ref.dataId.mapping),
                 run=dataset_ref.run,
             )
             butler.put(in_memory_dataset, dataset_ref)
@@ -121,7 +121,7 @@ class MockStorageClassTestCase(unittest.TestCase):
             put_convert_in = MockDataset(
                 dataset_id=put_convert_dataset_ref.id,
                 dataset_type=put_convert_dataset_type.overrideStorageClass(derived_storage_class).to_simple(),
-                data_id=put_convert_dataset_ref.dataId.full.byName(),
+                data_id=dict(put_convert_dataset_ref.dataId.mapping),
                 run=put_convert_dataset_ref.run,
             )
             butler.put(put_convert_in, put_convert_dataset_ref)
@@ -156,7 +156,7 @@ class MockStorageClassTestCase(unittest.TestCase):
                     MockDataset(
                         dataset_id=derived_dataset_ref.id,
                         dataset_type=derived_dataset_type.overrideStorageClass(storage_class).to_simple(),
-                        data_id=derived_dataset_ref.dataId.full.byName(),
+                        data_id=dict(derived_dataset_ref.dataId.mapping),
                         run=derived_dataset_ref.run,
                     ),
                     derived_dataset_ref,
@@ -164,7 +164,7 @@ class MockStorageClassTestCase(unittest.TestCase):
             derived_in = MockDataset(
                 dataset_id=derived_dataset_ref.id,
                 dataset_type=derived_dataset_type.to_simple(),
-                data_id=derived_dataset_ref.dataId.full.byName(),
+                data_id=dict(derived_dataset_ref.dataId.mapping),
                 run=derived_dataset_ref.run,
             )
             butler.put(derived_in, derived_dataset_ref)
