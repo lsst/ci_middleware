@@ -69,7 +69,7 @@ class MockStorageClassTestCase(unittest.TestCase):
             butler.registry.registerCollection(run, CollectionType.RUN)
             dataset_ref = DatasetRef(
                 dataset_type,
-                DataCoordinate.makeEmpty(butler.dimensions),
+                DataCoordinate.make_empty(butler.dimensions),
                 run=run,
             )
             # Make a dataset with this storage class and put it.
@@ -115,7 +115,7 @@ class MockStorageClassTestCase(unittest.TestCase):
             butler.registry.registerDatasetType(put_convert_dataset_type)
             put_convert_dataset_ref = DatasetRef(
                 put_convert_dataset_type,
-                DataCoordinate.makeEmpty(butler.dimensions),
+                DataCoordinate.make_empty(butler.dimensions),
                 run=run,
             )
             put_convert_in = MockDataset(
@@ -146,7 +146,7 @@ class MockStorageClassTestCase(unittest.TestCase):
             butler.registry.registerDatasetType(derived_dataset_type)
             derived_dataset_ref = DatasetRef(
                 derived_dataset_type,
-                DataCoordinate.makeEmpty(butler.dimensions),
+                DataCoordinate.make_empty(butler.dimensions),
                 run=run,
             )
             # It's a bit unfortunate that failure-to-convert is a ValueError on
