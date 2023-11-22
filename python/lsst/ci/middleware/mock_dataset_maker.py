@@ -25,7 +25,7 @@ __all__ = ("MockDatasetMaker", "UNMOCKED_DATASET_TYPES")
 
 from typing import Any, ClassVar, cast
 
-from lsst.daf.butler import Butler, DataCoordinate, DatasetRef, DatasetType, DimensionGraph, SkyPixDimension
+from lsst.daf.butler import Butler, DataCoordinate, DatasetRef, DatasetType, DimensionGroup, SkyPixDimension
 from lsst.pipe.base import Pipeline, PipelineGraph
 from lsst.pipe.base.tests.mocks import MockDataset, is_mock_name, mock_pipeline_graph
 from lsst.resources import ResourcePathExpression
@@ -45,8 +45,8 @@ class MockDatasetMaker:
 
     def __init__(self, butler: Butler):
         self.butler = butler
-        self.bounded_dimensions = butler.dimensions.extract(self._BOUNDED_DIMENSIONS)
-        self.cached_data_ids: dict[DimensionGraph, frozenset[DataCoordinate]] = {}
+        self.bounded_dimensions = butler.dimensions.conform(self._BOUNDED_DIMENSIONS)
+        self.cached_data_ids: dict[DimensionGroup, frozenset[DataCoordinate]] = {}
         self._spatial_bounds = None
 
     _BOUNDED_DIMENSIONS: ClassVar[tuple[str, ...]] = (
@@ -125,14 +125,18 @@ class MockDatasetMaker:
             return
         if not self.butler.registry.registerDatasetType(dataset_type):
             return
-        if (data_ids := self.cached_data_ids.get(dataset_type.dimensions)) is None:
-            remaining_skypix_dimensions, dimensions = self._split_dimensions(dataset_type.dimensions)
+        if (data_ids := self.cached_data_ids.get(dataset_type.dimensions.as_group())) is None:
+            remaining_skypix_dimensions, dimensions = self._split_dimensions(
+                dataset_type.dimensions.as_group()
+            )
             data_ids = self._get_bounded_data_ids(dimensions)
             while remaining_skypix_dimensions:
                 skypix_dimension = remaining_skypix_dimensions.pop()
                 pixelization = skypix_dimension.pixelization
                 next_data_ids = set()
-                next_dimensions = self.butler.dimensions.extract(list(dimensions.names) + [skypix_dimension])
+                next_dimensions = self.butler.dimensions.conform(
+                    list(dimensions.names) + [skypix_dimension.name]
+                )
                 for data_id in data_ids:
                     for begin, end in pixelization.envelope(
                         data_id.region if dimensions.spatial else self.spatial_bounds
@@ -140,7 +144,9 @@ class MockDatasetMaker:
                         for index in range(begin, end):
                             kwargs: dict[str, Any] = {skypix_dimension.name: index}
                             next_data_ids.add(
-                                self.butler.registry.expandDataId(data_id, graph=next_dimensions, **kwargs)
+                                self.butler.registry.expandDataId(
+                                    data_id, dimensions=next_dimensions, **kwargs
+                                )
                             )
                 data_ids = frozenset(next_data_ids)
                 dimensions = next_dimensions
@@ -151,7 +157,7 @@ class MockDatasetMaker:
                 MockDataset(
                     dataset_id=ref.id,
                     dataset_type=dataset_type.to_simple(),
-                    data_id=data_id.full.byName(),
+                    data_id=dict(data_id.mapping),
                     run=run,
                 ),
                 ref,
@@ -164,20 +170,20 @@ class MockDatasetMaker:
         """
         if self._spatial_bounds is None:
             spatial_bounds = Box()
-            for data_id in self._get_bounded_data_ids(self.butler.dimensions["tract"].graph):
+            for data_id in self._get_bounded_data_ids(self.butler.dimensions["tract"].minimal_group):
                 spatial_bounds.expandTo(cast(ConvexPolygon, data_id.region).getBoundingBox())
-            for data_id in self._get_bounded_data_ids(self.butler.dimensions["visit"].graph):
+            for data_id in self._get_bounded_data_ids(self.butler.dimensions["visit"].minimal_group):
                 spatial_bounds.expandTo(cast(ConvexPolygon, data_id.region).getBoundingBox())
             self._spatial_bounds = spatial_bounds
         return self._spatial_bounds
 
-    def _get_bounded_data_ids(self, dimensions: DimensionGraph) -> frozenset[DataCoordinate]:
+    def _get_bounded_data_ids(self, dimensions: DimensionGroup) -> frozenset[DataCoordinate]:
         """Return data IDs bounded by the content of the data repository, and
         cache them.
 
         Parameters
         ----------
-        dimensions : `lsst.daf.butler.DimensionGraph`
+        dimensions : `lsst.daf.butler.DimensionGroup`
             Dimensions of returned data IDs.
 
         Returns
@@ -190,12 +196,12 @@ class MockDatasetMaker:
             self.cached_data_ids[dimensions] = data_ids
         return data_ids
 
-    def _split_dimensions(self, dimensions: DimensionGraph) -> tuple[set[SkyPixDimension], DimensionGraph]:
+    def _split_dimensions(self, dimensions: DimensionGroup) -> tuple[set[SkyPixDimension], DimensionGroup]:
         """Split dimensions into skypix dimensions and the rest.
 
         Parameters
         ----------
-        dimensions : `lsst.daf.butler.DimensionGraph`
+        dimensions : `lsst.daf.butler.DimensionGroup`
             Dimensions to split.
 
         Returns
@@ -203,19 +209,19 @@ class MockDatasetMaker:
         skypix : `set` [ `lsst.daf.butler.SkyPixDimension` ]
             SkyPix dimensions, which can only be bounded by the spatial
             extent of other data IDs.
-        bounded : `lsst.daf.butler.DimensionGraph`
+        bounded : `lsst.daf.butler.DimensionGroup`
             All other dimensions, which can be bounded by querying for the
             data IDs in the repository.
         """
         skypix_dimensions = set()
         bounded_dimensions = set()
-        for dimension in dimensions:
-            if isinstance(dimension, SkyPixDimension):
-                skypix_dimensions.add(dimension)
-            elif dimension not in self.bounded_dimensions:
+        for dimension_name in dimensions.names:
+            if skypix_dimension := dimensions.universe.skypix_dimensions.get(dimension_name):
+                skypix_dimensions.add(skypix_dimension)
+            elif dimension_name not in self.bounded_dimensions:
                 raise NotImplementedError(
-                    f"Cannot make mock dataset with unbounded dimension {dimension.name!r}"
+                    f"Cannot make mock dataset with unbounded dimension {dimension_name!r}"
                 )
             else:
-                bounded_dimensions.add(dimension)
-        return skypix_dimensions, self.butler.dimensions.extract(bounded_dimensions)
+                bounded_dimensions.add(dimension_name)
+        return skypix_dimensions, self.butler.dimensions.conform(bounded_dimensions)
