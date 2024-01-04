@@ -31,6 +31,7 @@ from collections import defaultdict
 from collections.abc import Iterable
 from typing import Any, cast
 
+import pydantic
 from lsst.daf.butler import (
     Butler,
     CollectionType,
@@ -40,7 +41,6 @@ from lsst.daf.butler import (
     SerializedDatasetType,
     SerializedDimensionRecord,
 )
-from lsst.daf.butler._compat import PYDANTIC_V2, _BaseModelCompat
 from lsst.resources import ResourcePath, ResourcePathExpression
 from lsst.skymap import BaseSkyMap, DiscreteSkyMap
 from lsst.sphgeom import ConvexPolygon
@@ -487,23 +487,7 @@ def make_skymap_instance(
     return DiscreteSkyMap(config)
 
 
-if PYDANTIC_V2:
-    from pydantic import RootModel  # type: ignore
-
-    class _InputDatasetTypes(RootModel):
-        root: dict[str, list[SerializedDatasetType]]
-
-else:
-
-    class _InputDatasetTypes(_BaseModelCompat):  # type: ignore
-        __root__: dict[str, list[SerializedDatasetType]]
-
-        @property
-        def root(self) -> dict[str, list[SerializedDatasetType]]:
-            return self.__root__
-
-
-class InputDatasetTypes(_InputDatasetTypes):
+class InputDatasetTypes(pydantic.RootModel):
     """Datasets types used as overall inputs by most mocked pipelines.
 
     This is not expected to be exhaustive for all pipelines; it's a common
@@ -513,6 +497,8 @@ class InputDatasetTypes(_InputDatasetTypes):
     This class also groups these dataset types by the collection names their
     datasets should be inserted into.
     """
+
+    root: dict[str, list[SerializedDatasetType]]
 
     @property
     def runs(self) -> Iterable[str]:
