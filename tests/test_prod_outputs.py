@@ -148,12 +148,23 @@ class ProdOutputsTestCase(unittest.TestCase):
             failed_visits.add(quantum_summary["data_id"]["visit"])
         self.assertEqual(failed_visits, {18202})
         self.assertEqual(summary_1["_mock_isr"]["outputs"]["_mock_postISRCCD"]["produced"], 36)
+        # Now we will make a human_readable report and assert that the outputs
+        # are where we expect them to be, a second time.
+        hr_summary_1 = report_1.to_summary_dict(helper.butler, human_readable=True)
+        failures = hr_summary_1["_mock_calibrate"]["errors"]
+        failed_visits = failures["data_id"]["visit"]
+        self.assertEqual(failed_visits, 18202)
+        self.assertTrue(failures["error"][0].startswith("Execution of task '_mock_calibrate' on quantum"))
+        self.assertEqual(hr_summary_1["_mock_isr"]["outputs"]["_mock_postISRCCD"]["produced"], 36)
         # This task should have succeeded in attempt1 and should not have been
         # included in attempt2.
         qg_2 = helper.get_quantum_graph("step1", "i-attempt2")
         report_2 = QuantumGraphExecutionReport.make_reports(helper.butler, qg_2)
         summary_2 = report_2.to_summary_dict(helper.butler)
         self.assertDictEqual(summary_2["_mock_calibrate"]["failed_quanta"], {})  # is empty ??
+        # Making sure it works with the human-readable version,
+        hr_summary_2 = report_2.to_summary_dict(helper.butler, human_readable=True)
+        self.assertDictEqual(hr_summary_2["_mock_calibrate"]["failed_quanta"], {})
 
     def test_step1_manifest_checker_qbb(self) -> None:
         self.check_step1_manifest_checker(self.qbb)
