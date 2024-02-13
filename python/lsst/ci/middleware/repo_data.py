@@ -196,6 +196,8 @@ class ObservationRecords:
     visit and exposure IDs are interchangeable.
     """
 
+    day_obs: list[DimensionRecord] = dataclasses.field(default_factory=list)
+    group: list[DimensionRecord] = dataclasses.field(default_factory=list)
     exposure: list[DimensionRecord] = dataclasses.field(default_factory=list)
     visit: list[DimensionRecord] = dataclasses.field(default_factory=list)
     visit_detector_region: list[DimensionRecord] = dataclasses.field(default_factory=list)
