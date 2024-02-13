@@ -612,7 +612,11 @@ class RepoData:
     def insert_observations(self, butler: Butler) -> None:
         """Add all observation records to the repository."""
         observation_records = ObservationRecords.read(butler.dimensions)
-        for field in dataclasses.fields(observation_records):
+        fields = {butler.dimensions[field.name]: field for field in dataclasses.fields(observation_records)}
+        # The fields should come out in the correct order but this ensures
+        # that they are inserted properly.
+        for element in butler.dimensions.sorted(fields.keys()):
+            field = fields[element]
             butler.registry.insertDimensionData(field.name, *getattr(observation_records, field.name))
 
     def register_skymap(self, butler: Butler) -> None:
