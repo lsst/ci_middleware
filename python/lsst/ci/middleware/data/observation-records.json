@@ -1,4 +1,156 @@
 {
+  "day_obs": [
+    {
+      "definition": "day_obs",
+      "record": {
+        "instrument": "HSC",
+        "timespan": [1421452800000000000, 1421539200000000000],
+        "id": 20150117
+      }
+    },
+    {
+      "definition": "day_obs",
+      "record": {
+        "instrument": "HSC",
+        "timespan": [1421798400000000000, 1421884800000000000],
+        "id": 20150121
+      }
+    },
+    {
+      "definition": "day_obs",
+      "record": {
+        "instrument": "HSC",
+        "timespan": [1426636800000000000, 1426723200000000000],
+        "id": 20150318
+      }
+    },
+    {
+      "definition": "day_obs",
+      "record": {
+        "instrument": "HSC",
+        "timespan": [1457049600000000000, 1457136000000000000],
+        "id": 20160304
+      }
+    },
+    {
+      "definition": "day_obs",
+      "record": {
+        "instrument": "HSC",
+        "timespan": [1457481600000000000, 1457568000000000000],
+        "id": 20160309
+      }
+    },
+    {
+      "definition": "day_obs",
+      "record": {
+        "instrument": "HSC",
+        "timespan": [1482624000000000000, 1482710400000000000],
+        "id": 20161225
+      }
+    },
+    {
+      "definition": "day_obs",
+      "record": {
+        "instrument": "HSC",
+        "timespan": [1483315200000000000, 1483401600000000000],
+        "id": 20170102
+      }
+    },
+    {
+      "definition": "day_obs",
+      "record": {
+        "instrument": "HSC",
+        "timespan": [1485129600000000000, 1485216000000000000],
+        "id": 20170123
+      }
+    }
+  ],
+  "group": [
+    {
+      "definition": "group",
+      "record": {
+        "instrument": "HSC",
+        "name": "18202"
+      }
+    },
+    {
+      "definition": "group",
+      "record": {
+        "instrument": "HSC",
+        "name": "19676"
+      }
+    },
+    {
+      "definition": "group",
+      "record": {
+        "instrument": "HSC",
+        "name": "23682"
+      }
+    },
+    {
+      "definition": "group",
+      "record": {
+        "instrument": "HSC",
+        "name": "58260"
+      }
+    },
+    {
+      "definition": "group",
+      "record": {
+        "instrument": "HSC",
+        "name": "59884"
+      }
+    },
+    {
+      "definition": "group",
+      "record": {
+        "instrument": "HSC",
+        "name": "93380"
+      }
+    },
+    {
+      "definition": "group",
+      "record": {
+        "instrument": "HSC",
+        "name": "95104"
+      }
+    },
+    {
+      "definition": "group",
+      "record": {
+        "instrument": "HSC",
+        "name": "96860"
+      }
+    },
+    {
+      "definition": "group",
+      "record": {
+        "instrument": "HSC",
+        "name": "96862"
+      }
+    },
+    {
+      "definition": "group",
+      "record": {
+        "instrument": "HSC",
+        "name": "96908"
+      }
+    },
+    {
+      "definition": "group",
+      "record": {
+        "instrument": "HSC",
+        "name": "96954"
+      }
+    },
+    {
+      "definition": "group",
+      "record": {
+        "instrument": "HSC",
+        "name": "96980"
+      }
+    }
+  ],
   "exposure": [
     {
       "definition": "exposure",
@@ -15,8 +167,7 @@
         "seq_num": 18202,
         "seq_start": 18202,
         "seq_end": 18202,
-        "group_name": "18202",
-        "group_id": 18202,
+        "group": "18202",
         "target_name": "COSMOS",
         "science_program": "o14323",
         "tracking_ra": 149.63076249999997,
@@ -46,8 +197,7 @@
         "seq_num": 19676,
         "seq_start": 19676,
         "seq_end": 19676,
-        "group_name": "19676",
-        "group_id": 19676,
+        "group": "19676",
         "target_name": "SSP-Deep-COSMOS",
         "science_program": "o14421",
         "tracking_ra": 149.30041666666665,
@@ -77,8 +227,7 @@
         "seq_num": 23682,
         "seq_start": 23682,
         "seq_end": 23682,
-        "group_name": "23682",
-        "group_id": 23682,
+        "group": "23682",
         "target_name": "SSP-Deep-COSMOS",
         "science_program": "o15406",
         "tracking_ra": 149.36876249999997,
@@ -108,8 +257,7 @@
         "seq_num": 58260,
         "seq_start": 58260,
         "seq_end": 58260,
-        "group_name": "58260",
-        "group_id": 58260,
+        "group": "58260",
         "target_name": "SSP-Deep-COSMOS",
         "science_program": "o16406",
         "tracking_ra": 149.2853958333333,
@@ -139,8 +287,7 @@
         "seq_num": 59884,
         "seq_start": 59884,
         "seq_end": 59884,
-        "group_name": "59884",
-        "group_id": 59884,
+        "group": "59884",
         "target_name": "SSP-Deep-COSMOS",
         "science_program": "o16406",
         "tracking_ra": 149.28540416666664,
@@ -170,8 +317,7 @@
         "seq_num": 93380,
         "seq_start": 93380,
         "seq_end": 93380,
-        "group_name": "93380",
-        "group_id": 93380,
+        "group": "93380",
         "target_name": "SSP-Deep-COSMOS",
         "science_program": "o16426",
         "tracking_ra": 149.54075416666663,
@@ -201,8 +347,7 @@
         "seq_num": 95104,
         "seq_start": 95104,
         "seq_end": 95104,
-        "group_name": "95104",
-        "group_id": 95104,
+        "group": "95104",
         "target_name": "SSP-Wide",
         "science_program": "o16426",
         "tracking_ra": 149.38897916666664,
@@ -232,8 +377,7 @@
         "seq_num": 96860,
         "seq_start": 96860,
         "seq_end": 96860,
-        "group_name": "96860",
-        "group_id": 96860,
+        "group": "96860",
         "target_name": "SSP-Wide",
         "science_program": "o16426",
         "tracking_ra": 149.38896666666662,
@@ -263,8 +407,7 @@
         "seq_num": 96862,
         "seq_start": 96862,
         "seq_end": 96862,
-        "group_name": "96862",
-        "group_id": 96862,
+        "group": "96862",
         "target_name": "SSP-Wide",
         "science_program": "o16426",
         "tracking_ra": 149.3889708333333,
@@ -294,8 +437,7 @@
         "seq_num": 96908,
         "seq_start": 96908,
         "seq_end": 96908,
-        "group_name": "96908",
-        "group_id": 96908,
+        "group": "96908",
         "target_name": "SSP-Wide",
         "science_program": "o16426",
         "tracking_ra": 149.6615125,
@@ -325,8 +467,7 @@
         "seq_num": 96954,
         "seq_start": 96954,
         "seq_end": 96954,
-        "group_name": "96954",
-        "group_id": 96954,
+        "group": "96954",
         "target_name": "SSP-Wide",
         "science_program": "o16426",
         "tracking_ra": 149.29507499999997,
@@ -356,8 +497,7 @@
         "seq_num": 96980,
         "seq_start": 96980,
         "seq_end": 96980,
-        "group_name": "96980",
-        "group_id": 96980,
+        "group": "96980",
         "target_name": "SSP-Wide",
         "science_program": "o16426",
         "tracking_ra": 148.79639166666664,
