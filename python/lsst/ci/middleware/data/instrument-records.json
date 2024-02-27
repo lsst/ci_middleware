@@ -7,7 +7,6 @@
       "visit_system": 0,
       "exposure_max": 21474800,
       "detector_max": 200,
-      "day_obs_offset": 0,
       "class_name": "lsst.obs.subaru.HyperSuprimeCam"
     }
   },
