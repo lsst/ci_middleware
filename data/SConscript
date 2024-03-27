@@ -90,7 +90,16 @@ rc2 = (
     .add("step2a", where="skymap='ci_mw'")
     .add("step2b", where="skymap='ci_mw' AND tract=0")
     .add("step2cde")
-    .add("step3", where="skymap='ci_mw' AND tract=0")
+    .add(
+        "step3",
+        where="skymap='ci_mw' AND tract=0",
+        fail=[
+            # Configure one quantum to fail on the first try and succeed on the
+            # second, simulating an out-of-memory failure and automatic retry.
+            '''assembleCoadd::"skymap='ci_mw' AND tract=0 AND patch=2 AND band='r'":6GB'''
+        ],
+        auto_retry_mem=("4GB", "8GB"),
+    )
     .add("step4")
     .add("step5", where="skymap='ci_mw' AND tract=0")
     .add("step6")

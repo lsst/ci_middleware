@@ -185,6 +185,7 @@ class PipelineCommands:
         where: str = "",
         fail: Sequence[str] = (),
         skip_existing_in_last: bool = False,
+        auto_retry_mem: tuple[str, str] | None = None,
     ) -> PipelineCommands:
         """Add a new QuantumGraph and its execution to the build.
 
@@ -209,6 +210,12 @@ class PipelineCommands:
         skip_existing_in_last : `bool`, optional
             If `True`, pass ``--skip-existing-in`` to the QuantumGraph
             generation command with the input collections as the argument.
+        auto_retry_mem : `tuple` [ `str`, `str` ], optional
+            If not `None`, run all quanta twice, with ``--memory-per-quantum``
+            passed with the given values.  This can be combined with a
+            ``fail`` setting that causes the first attempt for one or more
+            quanta to simulate an out-of-memory failure for the first value
+            only, effectively testing BPS auto-retry logic.
 
         Returns
         -------
@@ -232,10 +239,18 @@ class PipelineCommands:
             skip_existing_in_last=skip_existing_in_last,
         )
         self.last_direct_repo = self._add_direct(
-            qg, suffix=suffix, output_run=output_run, expect_failure=bool(fail)
+            qg,
+            suffix=suffix,
+            output_run=output_run,
+            expect_failure=bool(fail),
+            auto_retry_mem=auto_retry_mem,
         )
         self.last_qbb_repo = self._add_qbb(
-            qg, suffix=suffix, output_run=output_run, expect_failure=bool(fail)
+            qg,
+            suffix=suffix,
+            output_run=output_run,
+            expect_failure=bool(fail),
+            auto_retry_mem=auto_retry_mem,
         )
         self.last_output_run = output_run
         return self
@@ -490,6 +505,7 @@ class PipelineCommands:
         expect_failure: bool = False,
         extend_run: bool = False,
         clobber_outputs: bool = False,
+        auto_retry_mem: tuple[str, str] | None = None,
     ) -> File:
         """Make an SCons target for direct execution of the quantum graph
         with ``pipetask run`` and a full butler.
@@ -509,6 +525,8 @@ class PipelineCommands:
             If `True`, pass ``--extend-run`` to ``pipetask run``.
         clobber_outputs : `bool`, optional
             If `True`, pass ``--clobber-outputs`` to ``pipetask run``.
+        auto_retry_mem : `tuple` [ `str`, `str` ], optional
+            See argument of the same name on `add`.
 
         Returns
         -------
@@ -523,17 +541,29 @@ class PipelineCommands:
             extra_args.append("--extend-run")
         if clobber_outputs:
             extra_args.append("--clobber-outputs")
-        targets = state.env.Command(
-            [File(repo_file), File(log)],
-            # We use the last QBB repo as input, even for direct executions
-            # (see comments in _add_qg for why).
-            [self.last_qbb_repo, qg_file],
-            [
-                # Untar the input data repository, which naturally makes a copy
-                # of it, with the name we'll use for the output data
-                # repository.
-                untar_repo_cmd("${SOURCES[0]}", repo_in_cmd),
-                # Execute the QG using the full original butler.
+        if auto_retry_mem:
+            extra_args.append(f"--memory-per-quantum {auto_retry_mem[0]}")
+        cmds = [
+            # Untar the input data repository, which naturally makes a copy
+            # of it, with the name we'll use for the output data
+            # repository.
+            untar_repo_cmd("${SOURCES[0]}", repo_in_cmd),
+            # Execute the QG using the full original butler.
+            self._pipetask_cmd(
+                "run",
+                f"-b {repo_in_cmd}",
+                "-g ${SOURCES[1]}",
+                f"--input {DEFAULTS_COLLECTION}",
+                f"--output {self.chain}",
+                f"--output-run {output_run}",
+                "--register-dataset-types",
+                *extra_args,
+                log="${TARGETS[1]}",
+                expect_failure=expect_failure,
+            ),
+        ]
+        if auto_retry_mem:
+            cmds.append(
                 self._pipetask_cmd(
                     "run",
                     f"-b {repo_in_cmd}",
@@ -542,18 +572,32 @@ class PipelineCommands:
                     f"--output {self.chain}",
                     f"--output-run {output_run}",
                     "--register-dataset-types",
-                    *extra_args,
+                    "--extend-run",
+                    "--clobber-outputs",
+                    f"--memory-per-quantum {auto_retry_mem[1]}",
                     log="${TARGETS[1]}",
-                    expect_failure=expect_failure,
-                ),
-                tar_repo_cmd(repo_in_cmd, "${TARGETS[0]}"),
-            ],
+                    expect_failure=False,
+                )
+            )
+        cmds.append(tar_repo_cmd(repo_in_cmd, "${TARGETS[0]}"))
+        targets = state.env.Command(
+            [File(repo_file), File(log)],
+            # We use the last QBB repo as input, even for direct executions
+            # (see comments in _add_qg for why).
+            [self.last_qbb_repo, qg_file],
+            cmds,
         )
         self.all_targets.extend(targets)
         return targets[0]
 
     def _add_qbb(
-        self, qg_file: File, suffix: str, output_run: str, expect_failure: bool, pre_exec_init: bool = True
+        self,
+        qg_file: File,
+        suffix: str,
+        output_run: str,
+        expect_failure: bool,
+        pre_exec_init: bool = True,
+        auto_retry_mem: tuple[str, str] | None = None,
     ) -> File:
         """Make an SCons target for direct execution of the quantum graph
         with ``pipetask run-qbb`` and `lsst.daf.butler.QuantumBackedButler`.
@@ -571,6 +615,9 @@ class PipelineCommands:
             code, and guard it accordingly to keep the SCons build running.
         pre_exec_init : `bool`, optional
             If `False`, do not run ``pipetask pre-exec-init-qbb`` at all.
+        auto_retry_mem : `tuple` [ `str`, `str` ], optional
+            See argument of the same name on `add`.
+
 
         Returns
         -------
@@ -595,15 +642,32 @@ class PipelineCommands:
                     log="${TARGETS[1]}",
                 )
             )
-        commands += [
+        extra_args: list[str] = []
+        if auto_retry_mem:
+            extra_args.append(f"--memory-per-quantum {auto_retry_mem[0]}")
+        commands.append(
             # Execute the QG using QuantumBackedButler.
             self._pipetask_cmd(
                 "run-qbb",
                 repo_in_cmd,
                 "${SOURCES[1]}",
+                *extra_args,
                 log="${TARGETS[1]}",
                 expect_failure=expect_failure,
-            ),
+            )
+        )
+        if auto_retry_mem:
+            commands.append(
+                self._pipetask_cmd(
+                    "run-qbb",
+                    repo_in_cmd,
+                    "${SOURCES[1]}",
+                    f"--memory-per-quantum {auto_retry_mem[1]}",
+                    log="${TARGETS[1]}",
+                    expect_failure=False,
+                )
+            )
+        commands += [
             # Bring results home using butler transfer-from-graph.
             python_cmd(
                 BUTLER_BIN,
