@@ -53,10 +53,14 @@ addopts = "--import-mode=importlib"  # Recommended as best practice
 open_files_ignore = ["gen3.sqlite3"]
 
 [tool.ruff]
+line-length = 110
+target-version = "py310"
 exclude = [
     "__init__.py",
     "python/lsst/ci/middleware/data/*.py"
 ]
+
+[tool.ruff.lint]
 ignore = [
     "N802",
     "N803",
@@ -74,20 +78,18 @@ ignore = [
     "D205",
     "D400",
 ]
-line-length = 110
 select = [
     "E",  # pycodestyle
     "F",  # pyflakes
     "N",  # pep8-naming
     "W",  # pycodestyle
 ]
-target-version = "py310"
 extend-select = [
     "RUF100", # Warn about unused noqa
 ]
 
-[tool.ruff.pycodestyle]
+[tool.ruff.lint.pycodestyle]
 max-doc-length = 79
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "numpy"
