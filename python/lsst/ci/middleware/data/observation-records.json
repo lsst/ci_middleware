@@ -176,6 +176,7 @@
         "azimuth": null,
         "zenith_angle": 50.89408062,
         "has_simulated": false,
+        "can_see_sky": true,
         "timespan": [
           1421486474579000000,
           1421486836601000000
@@ -206,6 +207,7 @@
         "azimuth": null,
         "zenith_angle": 30.65962758,
         "has_simulated": false,
+        "can_see_sky": true,
         "timespan": [
           1421848684102000000,
           1421848716047000000
@@ -236,6 +238,7 @@
         "azimuth": null,
         "zenith_angle": 22.390318429999994,
         "has_simulated": false,
+        "can_see_sky": true,
         "timespan": [
           1426671009748000000,
           1426671041481000000
@@ -266,6 +269,7 @@
         "azimuth": null,
         "zenith_angle": 21.776432470000003,
         "has_simulated": false,
+        "can_see_sky": true,
         "timespan": [
           1457086633932000000,
           1457086905979000000
@@ -296,6 +300,7 @@
         "azimuth": null,
         "zenith_angle": 36.27071562,
         "has_simulated": false,
+        "can_see_sky": true,
         "timespan": [
           1457506992758000000,
           1457507174781000000
@@ -326,6 +331,7 @@
         "azimuth": null,
         "zenith_angle": 31.05035,
         "has_simulated": false,
+        "can_see_sky": true,
         "timespan": [
           1482668501340000000,
           1482668683321000000
@@ -356,6 +362,7 @@
         "azimuth": null,
         "zenith_angle": 23.878919999999994,
         "has_simulated": false,
+        "can_see_sky": true,
         "timespan": [
           1483360339119000000,
           1483360370986000000
@@ -386,6 +393,7 @@
         "azimuth": null,
         "zenith_angle": 53.45872,
         "has_simulated": false,
+        "can_see_sky": true,
         "timespan": [
           1485161096382000000,
           1485161128334000000
@@ -416,6 +424,7 @@
         "azimuth": null,
         "zenith_angle": 53.21885,
         "has_simulated": false,
+        "can_see_sky": true,
         "timespan": [
           1485161159388000000,
           1485161311240000000
@@ -446,6 +455,7 @@
         "azimuth": null,
         "zenith_angle": 38.2153,
         "has_simulated": false,
+        "can_see_sky": true,
         "timespan": [
           1485165203371000000,
           1485165355208000000
@@ -476,6 +486,7 @@
         "azimuth": null,
         "zenith_angle": 20.231170000000006,
         "has_simulated": false,
+        "can_see_sky": true,
         "timespan": [
           1485171237657000000,
           1485171439543000000
@@ -506,6 +517,7 @@
         "azimuth": null,
         "zenith_angle": 19.970560000000006,
         "has_simulated": false,
+        "can_see_sky": true,
         "timespan": [
           1485174792952000000,
           1485174994848000000
