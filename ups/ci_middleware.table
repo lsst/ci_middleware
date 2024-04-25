@@ -10,5 +10,12 @@ setupRequired(obs_subaru)
 setupRequired(skymap)
 setupRequired(ctrl_mpexec)
 setupRequired(drp_pipe)
+# daf_butler_migrate and dax_obscore are not actually needed by ci_middleware,
+# but they have frequently been broken by daf_butler changes.  People usually
+# test ci_middleware when changing daf_butler, so adding them as
+# pseudo-dependencies here should reduce the likelihood of breakage in these
+# packages.
+setupRequired(daf_butler_migrate)
+setupRequired(dax_obscore)
 
 envPrepend(PYTHONPATH, ${PRODUCT_DIR}/python)
