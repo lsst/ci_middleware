@@ -201,20 +201,36 @@ class ProdOutputsTestCase(unittest.TestCase):
 
         # Make the quantum provenance graph for the first attempt
         qg_1 = helper.get_quantum_graph("step1", "i-attempt1")
-        qpg = QuantumProvenanceGraph()
-        qpg.add_new_graph(helper.butler, qg_1)
-        qpg.resolve_duplicates(helper.butler, collections=
-                               ["HSC/runs/Prod/step1-i-attempt1"], where="instrument='HSC'")
-        qg_1_sum_only = qpg.to_summary(helper.butler)
+        qpg1 = QuantumProvenanceGraph()
+        qpg1.add_new_graph(helper.butler, qg_1)
+        qpg1.resolve_duplicates(
+            helper.butler, collections=["HSC/runs/Prod/step1-i-attempt1"], where="instrument='HSC'"
+        )
+        qg_1_sum_only = qpg1.to_summary(helper.butler)
         # Check that we start with the expected number of quanta
         self.assertEqual(qg_1_sum_only.tasks["_mock_isr"].n_expected, 36)
         # Check the counts for the expected failure
         self.assertEqual(qg_1_sum_only.tasks["_mock_calibrate"].n_failed, 6)
         self.assertEqual(qg_1_sum_only.tasks["_mock_calibrate"].n_successful, 30)
+        # Check that we are correctly reporting on failed quanta
+        for quantum in qg_1_sum_only.tasks["_mock_calibrate"].failed_quanta:
+            quantum_dict = quantum.model_dump()
+            self.assertEqual(quantum_dict["data_id"]["instrument"], "HSC")
+            self.assertIsInstance(quantum_dict["data_id"]["detector"], int)
+            self.assertEqual(quantum_dict["data_id"]["visit"], 18202)
+            self.assertDictEqual(quantum_dict["runs"], {"HSC/runs/Prod/step1-i-attempt1": "failed"})
+            self.assertIsInstance(quantum_dict["messages"], list)
+            for message in quantum_dict["messages"]:
+                self.assertIsInstance(message, str)
+                self.assertTrue(message.startswith("Execution of task '_mock_calibrate' on quantum"))
+                self.assertIn("Exception ValueError: Simulated failure: task=_mock_calibrate", message)
         # Check that the number of quanta add up (also covered by the above)
-        self.assertEqual(qg_1_sum_only.tasks["_mock_isr"].n_expected, 
-                         qg_1_sum_only.tasks["_mock_calibrate"].n_failed +
-                         qg_1_sum_only.tasks["_mock_calibrate"].n_successful)
+        self.assertEqual(
+            qg_1_sum_only.tasks["_mock_isr"].n_expected,
+            qg_1_sum_only.tasks["_mock_calibrate"].n_failed
+            + qg_1_sum_only.tasks["_mock_calibrate"].n_successful,
+        )
+
         # Check that the last task has the expected counts for every category
         end_task = qg_1_sum_only.tasks["_mock_transformPreSourceTable"]
         self.assertEqual(end_task.n_successful, 30)
@@ -224,25 +240,94 @@ class ProdOutputsTestCase(unittest.TestCase):
         self.assertEqual(end_task.n_wonky, 0)
         self.assertEqual(end_task.n_failed, 0)
         # Check that they all add up
-        self.assertEqual(end_task.n_expected, sum([end_task.n_successful,
-                                                  end_task.n_blocked,
-                                                  end_task.n_not_attempted,
-                                                  end_task.n_wonky,
-                                                  end_task.n_failed]))
-        with open("qgmodel1.json", "w") as buffer: 
+        summary_dict_1 = qg_1_sum_only.model_dump()
+        for task in summary_dict_1["tasks"]:
+            self.assertEqual(
+                summary_dict_1["tasks"][task]["n_expected"],
+                sum(
+                    [
+                        summary_dict_1["tasks"][task]["n_successful"],
+                        summary_dict_1["tasks"][task]["n_blocked"],
+                        summary_dict_1["tasks"][task]["n_not_attempted"],
+                        summary_dict_1["tasks"][task]["n_wonky"],
+                        summary_dict_1["tasks"][task]["n_failed"],
+                    ]
+                ),
+            )
+            self.assertIsInstance(summary_dict_1["tasks"][task]["failed_quanta"], list)
+            # Check that there are no wonky quanta
+            self.assertEqual(summary_dict_1["tasks"][task]["n_wonky"], 0)
+            self.assertListEqual(summary_dict_1["tasks"][task]["wonky_quanta"], [])
+
+        # This is the place where we should test datasets for the first QPG.
+
+        with open("qgmodel1.json", "w") as buffer:
             buffer.write(qg_1_sum_only.model_dump_json(indent=2))
 
-        # Add the recovery attempt to the QPG
+        # Make an overall QPG and add the recovery attempt to the QPG
+        qpg = QuantumProvenanceGraph()
         qg_2 = helper.get_quantum_graph("step1", "i-attempt2")
+        qpg.add_new_graph(helper.butler, qg_1)
         qpg.add_new_graph(helper.butler, qg_2)
-        qpg.resolve_duplicates(helper.butler, collections=
-                               ["HSC/runs/Prod/step1-i-attempt2",
-                                "HSC/runs/Prod/step1-i-attempt1"], 
-                                where="instrument='HSC'")
+        qpg.resolve_duplicates(
+            helper.butler,
+            collections=["HSC/runs/Prod/step1-i-attempt2", "HSC/runs/Prod/step1-i-attempt1"],
+            where="instrument='HSC'",
+        )
         qg_sum = qpg.to_summary(helper.butler)
-        with open("qgmodel2.json", "w") as buffer: 
-            buffer.write(qg_1_sum_only.model_dump_json(indent=2))
+        # Check that we start with the correct number of quanta
+        self.assertEqual(qg_sum.tasks["_mock_isr"].n_expected, 36)
 
+        # Check that the failures from our first attempt do not persist
+        self.assertEqual(qg_sum.tasks["_mock_calibrate"].n_failed, 0)
+        self.assertEqual(qg_sum.tasks["_mock_calibrate"].n_successful, 36)
+
+        # Check that we have recovered the quanta which failed in the first
+        # attempt
+        self.assertListEqual(qg_sum.tasks["_mock_calibrate"].failed_quanta, [])
+        self.assertIsInstance(qg_sum.tasks["_mock_calibrate"].recovered_quanta, list)
+        for initially_failed_quantum in qg_1_sum_only.tasks["_mock_calibrate"].failed_quanta:
+            initially_failed_quantum_dict = initially_failed_quantum.model_dump()
+            self.assertIn(
+                initially_failed_quantum_dict["data_id"], qg_sum.tasks["_mock_calibrate"].recovered_quanta
+            )
+        self.assertEqual(
+            len(qg_sum.tasks["_mock_calibrate"].recovered_quanta),
+            qg_1_sum_only.tasks["_mock_calibrate"].n_failed,
+        )
+
+        # Check that the last task has the expected counts for every category
+        end_task = qg_sum.tasks["_mock_transformPreSourceTable"]
+        self.assertEqual(end_task.n_successful, 36)
+        self.assertEqual(end_task.n_blocked, 0)
+        self.assertEqual(end_task.n_not_attempted, 0)
+        self.assertEqual(end_task.n_expected, 36)
+        self.assertEqual(end_task.n_wonky, 0)
+        self.assertEqual(end_task.n_failed, 0)
+        # Check that they all add up
+        summary_dict_2 = qg_sum.model_dump()
+        for task in summary_dict_2["tasks"]:
+            self.assertEqual(
+                summary_dict_2["tasks"][task]["n_expected"],
+                sum(
+                    [
+                        summary_dict_2["tasks"][task]["n_successful"],
+                        summary_dict_2["tasks"][task]["n_blocked"],
+                        summary_dict_2["tasks"][task]["n_not_attempted"],
+                        summary_dict_2["tasks"][task]["n_wonky"],
+                        summary_dict_2["tasks"][task]["n_failed"],
+                    ]
+                ),
+            )
+            # Check that there are no wonky quanta
+            self.assertEqual(summary_dict_2["tasks"][task]["n_wonky"], 0)
+            self.assertListEqual(summary_dict_2["tasks"][task]["wonky_quanta"], [])
+            self.assertListEqual(summary_dict_2["tasks"][task]["failed_quanta"], [])
+
+            # This is where we will test all the datasets
+
+        with open("qgmodel2.json", "w") as buffer:
+            buffer.write(qg_sum.model_dump_json(indent=2))
 
     def test_step1_quantum_provenance_graph_qbb(self) -> None:
         self.check_step1_qpg(self.qbb)
