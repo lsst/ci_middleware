@@ -24,6 +24,7 @@ from typing import ClassVar
 
 from lsst.ci.middleware.output_repo_tests import OutputRepoTests
 from lsst.pipe.base.execution_reports import QuantumGraphExecutionReport
+from lsst.pipe.base.quantum_provenance_graph import QuantumProvenanceGraph
 from lsst.pipe.base.tests.mocks import get_mock_name
 
 # (tract, patch, band): {input visits} for coadds produced here.
@@ -129,9 +130,9 @@ class ProdOutputsTestCase(unittest.TestCase):
     def test_property_set_metadata_qbb(self) -> None:
         self.qbb.check_property_set_metadata(self)
 
-    def check_step1_manifest_checker(self, helper: OutputRepoTests) -> None:
+    def check_step1_execution_reports(self, helper: OutputRepoTests) -> None:
         """Test that the fail-and-recover attempts in step1 worked as expected
-        using the manifest checker.
+        using the `QuantumGraphExecutionReport`.
         """
 
         # This task should have failed in attempt1 and should have been
@@ -166,8 +167,61 @@ class ProdOutputsTestCase(unittest.TestCase):
         hr_summary_2 = report_2.to_summary_dict(helper.butler, human_readable=True)
         self.assertEqual(hr_summary_2["_mock_calibrate"]["failed_quanta"], [])
 
-    def test_step1_manifest_checker_qbb(self) -> None:
-        self.check_step1_manifest_checker(self.qbb)
+    def test_step1_execution_reports_qbb(self) -> None:
+        self.check_step1_execution_reports(self.qbb)
+
+    def check_step1_qpg(self, helper: OutputRepoTests) -> None:
+        """Test that the fail-and-recover attempts in step1 worked as expected
+        over each attempt, using the `QuantumProvenanceGraph`.
+        """
+
+        # Make the quantum provenance graph for the first attempt
+        qg_1 = helper.get_quantum_graph("step1", "i-attempt1")
+        qpg = QuantumProvenanceGraph()
+        qpg.add_new_graph(helper.butler, qg_1)
+        qpg.resolve_duplicates(helper.butler, collections=
+                               ["HSC/runs/Prod/step1-i-attempt1"], where="instrument='HSC'")
+        qg_1_sum_only = qpg.to_summary(helper.butler)
+        # Check that we start with the expected number of quanta
+        self.assertEqual(qg_1_sum_only.tasks["_mock_isr"].n_expected, 36)
+        # Check the counts for the expected failure
+        self.assertEqual(qg_1_sum_only.tasks["_mock_calibrate"].n_failed, 6)
+        self.assertEqual(qg_1_sum_only.tasks["_mock_calibrate"].n_successful, 30)
+        # Check that the number of quanta add up (also covered by the above)
+        self.assertEqual(qg_1_sum_only.tasks["_mock_isr"].n_expected, 
+                         qg_1_sum_only.tasks["_mock_calibrate"].n_failed +
+                         qg_1_sum_only.tasks["_mock_calibrate"].n_successful)
+        # Check that the last task has the expected counts for every category
+        end_task = qg_1_sum_only.tasks["_mock_transformPreSourceTable"]
+        self.assertEqual(end_task.n_successful, 30)
+        self.assertEqual(end_task.n_blocked, 6)
+        self.assertEqual(end_task.n_not_attempted, 0)
+        self.assertEqual(end_task.n_expected, 36)
+        self.assertEqual(end_task.n_wonky, 0)
+        self.assertEqual(end_task.n_failed, 0)
+        # Check that they all add up
+        self.assertEqual(end_task.n_expected, sum([end_task.n_successful,
+                                                  end_task.n_blocked,
+                                                  end_task.n_not_attempted,
+                                                  end_task.n_wonky,
+                                                  end_task.n_failed]))
+        with open("qgmodel1.json", "w") as buffer: 
+            buffer.write(qg_1_sum_only.model_dump_json(indent=2))
+
+        # Add the recovery attempt to the QPG
+        qg_2 = helper.get_quantum_graph("step1", "i-attempt2")
+        qpg.add_new_graph(helper.butler, qg_2)
+        qpg.resolve_duplicates(helper.butler, collections=
+                               ["HSC/runs/Prod/step1-i-attempt2",
+                                "HSC/runs/Prod/step1-i-attempt1"], 
+                                where="instrument='HSC'")
+        qg_sum = qpg.to_summary(helper.butler)
+        with open("qgmodel2.json", "w") as buffer: 
+            buffer.write(qg_1_sum_only.model_dump_json(indent=2))
+
+
+    def test_step1_quantum_provenance_graph_qbb(self) -> None:
+        self.check_step1_qpg(self.qbb)
 
 
 if __name__ == "__main__":
