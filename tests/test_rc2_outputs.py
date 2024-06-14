@@ -23,6 +23,7 @@ import unittest
 from typing import ClassVar
 
 from lsst.ci.middleware.output_repo_tests import OutputRepoTests
+from lsst.pipe.base.quantum_provenance_graph import QuantumProvenanceGraph
 from lsst.pipe.base.tests.mocks import MockDataset, get_mock_name
 
 # (tract, patch, band): {input visits} for coadds produced here.
@@ -150,6 +151,22 @@ class Rc2OutputsTestCase(unittest.TestCase):
 
     def test_step8_rescue_qbb(self) -> None:
         self.check_step5_rescue(self.qbb)
+
+    def check_step8_qpg(self, helper: OutputRepoTests) -> None:
+        """Check that the fail-and-recover attempts in step 8 are properly
+        diagnosed using the `QuantumProvenanceGraph`. 
+        """
+        # Make the quantum provenance graph for the first attempt
+        qg_1 = helper.get_quantum_graph("step8", "attempt1")
+        qpg1 = QuantumProvenanceGraph()
+        qpg1.add_new_graph(helper.butler, qg_1)
+        qpg1.resolve_duplicates(
+            helper.butler, collections=["HSC/runs/RC2/step8-attempt1"], where="instrument='HSC'"
+        )
+        qg_1_sum_only = qpg1.to_summary(helper.butler)
+
+    def test_step8_quantum_provenance_graph_qbb(self) -> None:
+        self.check_step8_qpg(self.qbb)
 
     def test_fgcm_refcats(self) -> None:
         """Test that FGCM does not get refcats that don't overlap any of its

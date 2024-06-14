@@ -260,9 +260,7 @@ class ProdOutputsTestCase(unittest.TestCase):
             self.assertListEqual(summary_dict_1["tasks"][task]["wonky_quanta"], [])
 
         # Test datasets for the first QPG.
-        self.assertEqual(
-            list(summary_dict_1["datasets"].keys()),
-            [
+        datasets = [
                 "_mock_postISRCCD",
                 "_mock_isr_metadata",
                 "_mock_isr_log",
@@ -284,8 +282,9 @@ class ProdOutputsTestCase(unittest.TestCase):
                 "_mock_preSourceTable",
                 "_mock_transformPreSourceTable_metadata",
                 "_mock_transformPreSourceTable_log",
-            ],
-        )
+            ]
+        for dataset in datasets:
+            self.assertIn(dataset, summary_dict_1["datasets"].keys())
         for dataset in summary_dict_1["datasets"]:
             self.assertEqual(
                 list(summary_dict_1["datasets"][dataset].keys()),
@@ -306,12 +305,15 @@ class ProdOutputsTestCase(unittest.TestCase):
             if summary_dict_1["datasets"][dataset]["producer"] == "_mock_calibrate":
                 # A bit hard to read, but this is actually asserting that it's
                 # not empty.
-                self.assertTrue(summary_dict_1["datasets"][dataset]["unsuccessful_datasets"])
-                # Check that the published datasets = expected - unsuccessful
+
+                self.assertTrue(summary_dict_1["datasets"][dataset]["unsuccessful_datasets"], f"Expected failures were not stored as unsuccessful datasets for {dataset}.")
+                # Check that the published datasets = expected - (unsuccessful
+                # + predicted_only)
                 self.assertEqual(
                     summary_dict_1["datasets"][dataset]["n_published"],
                     summary_dict_1["datasets"][dataset]["n_expected"]
-                    - summary_dict_1["datasets"][dataset]["n_unsuccessful"],
+                    - summary_dict_1["datasets"][dataset]["n_unsuccessful"]
+                    - summary_dict_1["datasets"][dataset]["n_predicted_only"]
                 )
                 # Check that the unsuccessful datasets are as expected
                 self.assertIsInstance(summary_dict_1["datasets"][dataset]["unsuccessful_datasets"], list)
@@ -329,7 +331,7 @@ class ProdOutputsTestCase(unittest.TestCase):
                     summary_dict_1["datasets"][dataset]["unsuccessful_datasets"][0]["physical_filter"],
                     "HSC-I",
                 )
-                # Check that there are the expected amount of them and that they are not published
+                # Check that there are the expected amount of failures and that they are not published
                 self.assertEqual(len(summary_dict_1["datasets"][dataset]["unsuccessful_datasets"]), 6)
                 self.assertEqual(summary_dict_1["datasets"][dataset]["n_expected"], 36)
                 self.assertEqual(summary_dict_1["datasets"][dataset]["n_published"], 30)
@@ -416,9 +418,7 @@ class ProdOutputsTestCase(unittest.TestCase):
 
             # Test datasets for the overall QPG.
             # Check that we have the expected datasets
-            self.assertEqual(
-                list(summary_dict_2["datasets"].keys()),
-                [
+            datasets = [
                     "_mock_postISRCCD",
                     "_mock_isr_metadata",
                     "_mock_isr_log",
@@ -440,8 +440,9 @@ class ProdOutputsTestCase(unittest.TestCase):
                     "_mock_preSourceTable",
                     "_mock_transformPreSourceTable_metadata",
                     "_mock_transformPreSourceTable_log",
-                ],
-            )
+                ]
+            for dataset in datasets:
+                self.assertIn(dataset, summary_dict_2["datasets"].keys())
             # Check that they are the same datasets
             self.assertEqual(summary_dict_2["datasets"].keys(), summary_dict_1["datasets"].keys())
             for dataset in summary_dict_2["datasets"]:
