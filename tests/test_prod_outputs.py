@@ -282,12 +282,15 @@ class ProdOutputsTestCase(unittest.TestCase):
             if summary_dict_1["datasets"][dataset]["producer"] == "_mock_calibrate":
                 # A bit hard to read, but this is actually asserting that it's
                 # not empty.
-                self.assertTrue(summary_dict_1["datasets"][dataset]["unsuccessful_datasets"])
-                # Check that the published datasets = expected - unsuccessful
+
+                self.assertTrue(summary_dict_1["datasets"][dataset]["unsuccessful_datasets"], f"Expected failures were not stored as unsuccessful datasets for {dataset}.")
+                # Check that the published datasets = expected - (unsuccessful
+                # + predicted_only)
                 self.assertEqual(
                     summary_dict_1["datasets"][dataset]["n_published"],
                     summary_dict_1["datasets"][dataset]["n_expected"]
-                    - summary_dict_1["datasets"][dataset]["n_unsuccessful"],
+                    - summary_dict_1["datasets"][dataset]["n_unsuccessful"]
+                    - summary_dict_1["datasets"][dataset]["n_predicted_only"]
                 )
                 # Check that the unsuccessful datasets are as expected
                 self.assertIsInstance(summary_dict_1["datasets"][dataset]["unsuccessful_datasets"], list)
@@ -305,7 +308,7 @@ class ProdOutputsTestCase(unittest.TestCase):
                     summary_dict_1["datasets"][dataset]["unsuccessful_datasets"][0]["physical_filter"],
                     "HSC-I",
                 )
-                # Check that there are the expected amount of them and that they are not published
+                # Check that there are the expected amount of failures and that they are not published
                 self.assertEqual(len(summary_dict_1["datasets"][dataset]["unsuccessful_datasets"]), 6)
                 self.assertEqual(summary_dict_1["datasets"][dataset]["n_expected"], 36)
                 self.assertEqual(summary_dict_1["datasets"][dataset]["n_published"], 30)
