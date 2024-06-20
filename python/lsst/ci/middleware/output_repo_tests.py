@@ -134,6 +134,8 @@ class OutputRepoTests:
             test_case.assertIsNone(tract_dataset.converted_from)
             assert tract_dataset.quantum is not None
             for patch_dataset_as_input in tract_dataset.quantum.inputs["inputCatalogs"]:
+                if not isinstance(patch_dataset_as_input, MockDataset):
+                    continue
                 patch = cast(int, patch_dataset_as_input.data_id["patch"])
                 patch_ref = patch_refs[tract, patch]
                 # We pre-registered this dataset type with ArrowTable as its
@@ -171,7 +173,7 @@ class OutputRepoTests:
             if (expected := self.expected[key]) is not None:
                 test_case.assertEqual(
                     {
-                        input_dataset.data_id["visit"]
+                        cast(MockDataset, input_dataset).data_id["visit"]
                         for input_dataset in cast(MockDatasetQuantum, dataset.quantum).inputs["inputWarps"]
                     },
                     expected,
