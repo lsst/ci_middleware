@@ -165,8 +165,7 @@ class Rc2OutputsTestCase(unittest.TestCase):
         )
         qg_1_sum_only = qpg1.to_summary(helper.butler)
         qg_1_dict = qg_1_sum_only.model_dump()
-        with open("qgmodel3.json", "w") as buffer:
-            buffer.write(qg_1_sum_only.model_dump_json(indent=2))
+        
         # Check that expected, wonky and not attempted do not occur throughout
         # tasks:
         for task in qg_1_dict["tasks"]:
@@ -270,8 +269,6 @@ class Rc2OutputsTestCase(unittest.TestCase):
 
         qpg_u_sum = qpg_unpublished.to_summary(helper.butler)
         qpg_u = qpg_u_sum.model_dump()
-        with open("qgmodel5.json", "w") as buffer:
-            buffer.write(qpg_u_sum.model_dump_json(indent=2))
 
         for dataset in qpg_u["datasets"]:
             if qpg_u["datasets"][dataset]["producer"] == "_mock_analyzeObjectTableCore":
@@ -295,8 +292,7 @@ class Rc2OutputsTestCase(unittest.TestCase):
         )
         qg_2_sum_only = qpg2.to_summary(helper.butler)
         qg_2_dict = qg_2_sum_only.model_dump()
-        with open("qgmodel4.json", "w") as buffer:
-            buffer.write(qg_2_sum_only.model_dump_json(indent=2))
+
         for task in qg_2_dict["tasks"]:
             self.assertEqual(qg_2_dict["tasks"][task]["n_not_attempted"], 0)
             self.assertEqual(qg_2_dict["tasks"][task]["n_wonky"], 0)
