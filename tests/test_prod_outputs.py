@@ -207,60 +207,195 @@ class ProdOutputsTestCase(unittest.TestCase):
             helper.butler, collections=["HSC/runs/Prod/step1-i-attempt1"], where="instrument='HSC'"
         )
         qg_1_sum_only = qpg1.to_summary(helper.butler)
-        # Check that we start with the expected number of quanta
-        self.assertEqual(qg_1_sum_only.tasks["_mock_isr"].n_expected, 36)
-        # Check the counts for the expected failure
-        self.assertEqual(qg_1_sum_only.tasks["_mock_calibrate"].n_failed, 6)
-        self.assertEqual(qg_1_sum_only.tasks["_mock_calibrate"].n_successful, 30)
-        # Check that we are correctly reporting on failed quanta
-        for quantum in qg_1_sum_only.tasks["_mock_calibrate"].failed_quanta:
-            quantum_dict = quantum.model_dump()
-            self.assertEqual(quantum_dict["data_id"]["instrument"], "HSC")
-            self.assertIsInstance(quantum_dict["data_id"]["detector"], int)
-            self.assertEqual(quantum_dict["data_id"]["visit"], 18202)
-            self.assertDictEqual(quantum_dict["runs"], {"HSC/runs/Prod/step1-i-attempt1": "failed"})
-            self.assertIsInstance(quantum_dict["messages"], list)
-            for message in quantum_dict["messages"]:
-                self.assertIsInstance(message, str)
-                self.assertTrue(message.startswith("Execution of task '_mock_calibrate' on quantum"))
-                self.assertIn("Exception ValueError: Simulated failure: task=_mock_calibrate", message)
-        # Check that the number of quanta add up (also covered by the above)
-        self.assertEqual(
-            qg_1_sum_only.tasks["_mock_isr"].n_expected,
-            qg_1_sum_only.tasks["_mock_calibrate"].n_failed
-            + qg_1_sum_only.tasks["_mock_calibrate"].n_successful,
-        )
+        qg_1_dict = qg_1_sum_only.model_dump()
 
-        # Check that the last task has the expected counts for every category
-        end_task = qg_1_sum_only.tasks["_mock_transformPreSourceTable"]
-        self.assertEqual(end_task.n_successful, 30)
-        self.assertEqual(end_task.n_blocked, 6)
-        self.assertEqual(end_task.n_not_attempted, 0)
-        self.assertEqual(end_task.n_expected, 36)
-        self.assertEqual(end_task.n_wonky, 0)
-        self.assertEqual(end_task.n_failed, 0)
-        # Check that they all add up
-        summary_dict_1 = qg_1_sum_only.model_dump()
-        for task in summary_dict_1["tasks"]:
+        # Loop through the tasks in the dict
+        for task in qg_1_dict["tasks"]:
+            self.assertEqual(qg_1_dict["tasks"][task]["n_not_attempted"], 0)
+            self.assertEqual(qg_1_dict["tasks"][task]["n_wonky"], 0)
+            self.assertEqual(qg_1_dict["tasks"][task]["n_expected"], 36)
+            self.assertListEqual(qg_1_dict["tasks"][task]["wonky_quanta"], [])
+            self.assertListEqual(qg_1_dict["tasks"][task]["recovered_quanta"], [])
             self.assertEqual(
-                summary_dict_1["tasks"][task]["n_expected"],
-                sum(
-                    [
-                        summary_dict_1["tasks"][task]["n_successful"],
-                        summary_dict_1["tasks"][task]["n_blocked"],
-                        summary_dict_1["tasks"][task]["n_not_attempted"],
-                        summary_dict_1["tasks"][task]["n_wonky"],
-                        summary_dict_1["tasks"][task]["n_failed"],
-                    ]
-                ),
+                qg_1_dict["tasks"][task]["n_expected"],
+                qg_1_dict["tasks"][task]["n_successful"]
+                + qg_1_dict["tasks"][task]["n_blocked"]
+                + qg_1_dict["tasks"][task]["n_not_attempted"]
+                + qg_1_dict["tasks"][task]["n_wonky"]
+                + qg_1_dict["tasks"][task]["n_failed"],
             )
-            self.assertIsInstance(summary_dict_1["tasks"][task]["failed_quanta"], list)
-            # Check that there are no wonky quanta
-            self.assertEqual(summary_dict_1["tasks"][task]["n_wonky"], 0)
-            self.assertListEqual(summary_dict_1["tasks"][task]["wonky_quanta"], [])
+            match task:
+                case "_mock_calibrate":
+                    self.assertEqual(qg_1_dict["tasks"][task]["n_successful"], 30)
+                    self.assertEqual(qg_1_dict["tasks"][task]["n_blocked"], 0)
+                    self.assertEqual(qg_1_dict["tasks"][task]["n_failed"], 6)
+                    for quantum in qg_1_dict["tasks"][task]["failed_quanta"]:
+                        self.assertEqual(quantum["data_id"]["instrument"], "HSC")
+                        self.assertIsInstance(quantum["data_id"]["detector"], int)
+                        self.assertEqual(quantum["data_id"]["visit"], 18202)
+                        self.assertDictEqual(quantum["runs"], {"HSC/runs/Prod/step1-i-attempt1": "failed"})
+                        self.assertIsInstance(quantum["messages"], list)
+                        for message in quantum["messages"]:
+                            self.assertIsInstance(message, str)
+                            self.assertTrue(
+                                message.startswith("Execution of task '_mock_calibrate' on quantum")
+                            )
+                            self.assertIn(
+                                "Exception ValueError: Simulated failure: task=_mock_calibrate", message
+                            )
+                case _:
+                    if task == "_mock_writePreSourceTable" or task == "_mock_transformPreSourceTable":
+                        self.assertEqual(qg_1_dict["tasks"][task]["n_successful"], 30)
+                        self.assertEqual(qg_1_dict["tasks"][task]["n_blocked"], 6)
+                        self.assertEqual(qg_1_dict["tasks"][task]["n_failed"], 0)
+                        self.assertListEqual(qg_1_dict["tasks"][task]["failed_quanta"], [])
+                    else:
+                        self.assertEqual(qg_1_dict["tasks"][task]["n_successful"], 36)
+                        self.assertEqual(qg_1_dict["tasks"][task]["n_blocked"], 0)
+                        self.assertEqual(qg_1_dict["tasks"][task]["n_failed"], 0)
+                        self.assertListEqual(qg_1_dict["tasks"][task]["failed_quanta"], [])
 
         # Test datasets for the first QPG.
         datasets = [
+            "_mock_postISRCCD",
+            "_mock_isr_metadata",
+            "_mock_isr_log",
+            "_mock_icExp",
+            "_mock_icSrc",
+            "_mock_icExpBackground",
+            "_mock_characterizeImage_metadata",
+            "_mock_characterizeImage_log",
+            "_mock_calexpBackground",
+            "_mock_srcMatch",
+            "_mock_calexp",
+            "_mock_src",
+            "_mock_srcMatchFull",
+            "_mock_calibrate_metadata",
+            "_mock_calibrate_log",
+            "_mock_preSource",
+            "_mock_writePreSourceTable_metadata",
+            "_mock_writePreSourceTable_log",
+            "_mock_preSourceTable",
+            "_mock_transformPreSourceTable_metadata",
+            "_mock_transformPreSourceTable_log",
+        ]
+        for dataset in datasets:
+            self.assertIn(dataset, qg_1_dict["datasets"].keys())
+        for dataset in qg_1_dict["datasets"]:
+            self.assertEqual(
+                list(qg_1_dict["datasets"][dataset].keys()),
+                [
+                    "producer",
+                    "n_published",
+                    "n_unpublished",
+                    "n_predicted_only",
+                    "n_expected",
+                    "cursed_datasets",
+                    "unsuccessful_datasets",
+                    "n_cursed",
+                    "n_unsuccessful",
+                ],
+            )
+            self.assertIsInstance(qg_1_dict["datasets"][dataset]["producer"], str)
+            # For the expected failure
+            if qg_1_dict["datasets"][dataset]["producer"] == "_mock_calibrate":
+                # A bit hard to read, but this is actually asserting that it's
+                # not empty.
+
+                self.assertTrue(
+                    qg_1_dict["datasets"][dataset]["unsuccessful_datasets"],
+                    f"Expected failures were not stored as unsuccessful datasets for {dataset}.",
+                )
+                # Check that the published datasets = expected - (unsuccessful
+                # + predicted_only)
+                self.assertEqual(
+                    qg_1_dict["datasets"][dataset]["n_published"],
+                    qg_1_dict["datasets"][dataset]["n_expected"]
+                    - qg_1_dict["datasets"][dataset]["n_unsuccessful"]
+                    - qg_1_dict["datasets"][dataset]["n_predicted_only"],
+                )
+                # Check that the unsuccessful datasets are as expected
+                self.assertIsInstance(qg_1_dict["datasets"][dataset]["unsuccessful_datasets"], list)
+                self.assertEqual(
+                    qg_1_dict["datasets"][dataset]["unsuccessful_datasets"][0]["instrument"], "HSC"
+                )
+                self.assertEqual(qg_1_dict["datasets"][dataset]["unsuccessful_datasets"][0]["visit"], 18202)
+                self.assertEqual(qg_1_dict["datasets"][dataset]["unsuccessful_datasets"][0]["band"], "i")
+                self.assertEqual(
+                    qg_1_dict["datasets"][dataset]["unsuccessful_datasets"][0]["day_obs"], 20150117
+                )
+                self.assertEqual(
+                    qg_1_dict["datasets"][dataset]["unsuccessful_datasets"][0]["physical_filter"],
+                    "HSC-I",
+                )
+                # Check that there are the expected amount of failures
+                # and that they are not published
+                self.assertEqual(len(qg_1_dict["datasets"][dataset]["unsuccessful_datasets"]), 6)
+                self.assertEqual(qg_1_dict["datasets"][dataset]["n_expected"], 36)
+                self.assertEqual(qg_1_dict["datasets"][dataset]["n_published"], 30)
+
+            # Check that all the counts add up for every task
+            self.assertEqual(
+                qg_1_dict["datasets"][dataset]["n_expected"],
+                sum(
+                    [
+                        qg_1_dict["datasets"][dataset]["n_published"],
+                        qg_1_dict["datasets"][dataset]["n_unpublished"],
+                        qg_1_dict["datasets"][dataset]["n_predicted_only"],
+                        qg_1_dict["datasets"][dataset]["n_cursed"],
+                        qg_1_dict["datasets"][dataset]["n_unsuccessful"],
+                    ]
+                ),
+            )
+            # Check that there are no cursed datasets
+            self.assertEqual(qg_1_dict["datasets"][dataset]["n_cursed"], 0)
+            self.assertListEqual(qg_1_dict["datasets"][dataset]["cursed_datasets"], [])
+
+        # Make an overall QPG and add the recovery attempt to the QPG
+        qpg = QuantumProvenanceGraph()
+        qg_2 = helper.get_quantum_graph("step1", "i-attempt2")
+        qpg.add_new_graph(helper.butler, qg_1)
+        qpg.add_new_graph(helper.butler, qg_2)
+        qpg.resolve_duplicates(
+            helper.butler,
+            collections=["HSC/runs/Prod/step1-i-attempt2", "HSC/runs/Prod/step1-i-attempt1"],
+            where="instrument='HSC'",
+        )
+        qg_sum = qpg.to_summary(helper.butler)
+
+        qg_2_dict = qg_sum.model_dump()
+
+        for task in qg_2_dict["tasks"]:
+            self.assertEqual(qg_2_dict["tasks"][task]["n_successful"], 36)
+            self.assertEqual(qg_2_dict["tasks"][task]["n_blocked"], 0)
+            self.assertEqual(qg_2_dict["tasks"][task]["n_failed"], 0)
+            self.assertEqual(qg_2_dict["tasks"][task]["n_not_attempted"], 0)
+            self.assertEqual(qg_2_dict["tasks"][task]["n_wonky"], 0)
+            self.assertEqual(qg_2_dict["tasks"][task]["n_expected"], 36)
+            self.assertListEqual(qg_2_dict["tasks"][task]["wonky_quanta"], [])
+            self.assertListEqual(qg_2_dict["tasks"][task]["failed_quanta"], [])
+            self.assertEqual(
+                qg_2_dict["tasks"][task]["n_expected"],
+                qg_2_dict["tasks"][task]["n_successful"]
+                + qg_2_dict["tasks"][task]["n_blocked"]
+                + qg_2_dict["tasks"][task]["n_not_attempted"]
+                + qg_2_dict["tasks"][task]["n_wonky"]
+                + qg_2_dict["tasks"][task]["n_failed"],
+            )
+            if (
+                task == "_mock_calibrate"
+                or task == "_mock_writePreSourceTable"
+                or task == "_mock_transformPreSourceTable"
+            ):
+                for quantum in qg_2_dict["tasks"][task]["recovered_quanta"]:
+                    self.assertEqual(quantum["instrument"], "HSC")
+                    self.assertEqual(quantum["visit"], 18202)
+            else:
+                self.assertListEqual(qg_2_dict["tasks"][task]["recovered_quanta"], [])
+
+            # Test datasets for the overall QPG.
+            # Check that we have the expected datasets
+            datasets = [
                 "_mock_postISRCCD",
                 "_mock_isr_metadata",
                 "_mock_isr_log",
@@ -283,172 +418,14 @@ class ProdOutputsTestCase(unittest.TestCase):
                 "_mock_transformPreSourceTable_metadata",
                 "_mock_transformPreSourceTable_log",
             ]
-        for dataset in datasets:
-            self.assertIn(dataset, summary_dict_1["datasets"].keys())
-        for dataset in summary_dict_1["datasets"]:
-            self.assertEqual(
-                list(summary_dict_1["datasets"][dataset].keys()),
-                [
-                    "producer",
-                    "n_published",
-                    "n_unpublished",
-                    "n_predicted_only",
-                    "n_expected",
-                    "cursed_datasets",
-                    "unsuccessful_datasets",
-                    "n_cursed",
-                    "n_unsuccessful",
-                ],
-            )
-            self.assertIsInstance(summary_dict_1["datasets"][dataset]["producer"], str)
-            # For the expected failure
-            if summary_dict_1["datasets"][dataset]["producer"] == "_mock_calibrate":
-                # A bit hard to read, but this is actually asserting that it's
-                # not empty.
-
-                self.assertTrue(summary_dict_1["datasets"][dataset]["unsuccessful_datasets"], f"Expected failures were not stored as unsuccessful datasets for {dataset}.")
-                # Check that the published datasets = expected - (unsuccessful
-                # + predicted_only)
-                self.assertEqual(
-                    summary_dict_1["datasets"][dataset]["n_published"],
-                    summary_dict_1["datasets"][dataset]["n_expected"]
-                    - summary_dict_1["datasets"][dataset]["n_unsuccessful"]
-                    - summary_dict_1["datasets"][dataset]["n_predicted_only"]
-                )
-                # Check that the unsuccessful datasets are as expected
-                self.assertIsInstance(summary_dict_1["datasets"][dataset]["unsuccessful_datasets"], list)
-                self.assertEqual(
-                    summary_dict_1["datasets"][dataset]["unsuccessful_datasets"][0]["instrument"], "HSC"
-                )
-                self.assertEqual(
-                    summary_dict_1["datasets"][dataset]["unsuccessful_datasets"][0]["visit"], 18202
-                )
-                self.assertEqual(summary_dict_1["datasets"][dataset]["unsuccessful_datasets"][0]["band"], "i")
-                self.assertEqual(
-                    summary_dict_1["datasets"][dataset]["unsuccessful_datasets"][0]["day_obs"], 20150117
-                )
-                self.assertEqual(
-                    summary_dict_1["datasets"][dataset]["unsuccessful_datasets"][0]["physical_filter"],
-                    "HSC-I",
-                )
-                # Check that there are the expected amount of failures and that they are not published
-                self.assertEqual(len(summary_dict_1["datasets"][dataset]["unsuccessful_datasets"]), 6)
-                self.assertEqual(summary_dict_1["datasets"][dataset]["n_expected"], 36)
-                self.assertEqual(summary_dict_1["datasets"][dataset]["n_published"], 30)
-
-            # Check that all the counts add up for every task
-            self.assertEqual(
-                summary_dict_1["datasets"][dataset]["n_expected"],
-                sum(
-                    [
-                        summary_dict_1["datasets"][dataset]["n_published"],
-                        summary_dict_1["datasets"][dataset]["n_unpublished"],
-                        summary_dict_1["datasets"][dataset]["n_predicted_only"],
-                        summary_dict_1["datasets"][dataset]["n_cursed"],
-                        summary_dict_1["datasets"][dataset]["n_unsuccessful"],
-                    ]
-                ),
-            )
-            # Check that there are no cursed datasets
-            self.assertEqual(summary_dict_1["datasets"][dataset]["n_cursed"], 0)
-            self.assertListEqual(summary_dict_1["datasets"][dataset]["cursed_datasets"], [])
-
-        with open("qgmodel1.json", "w") as buffer:
-            buffer.write(qg_1_sum_only.model_dump_json(indent=2))
-
-        # Make an overall QPG and add the recovery attempt to the QPG
-        qpg = QuantumProvenanceGraph()
-        qg_2 = helper.get_quantum_graph("step1", "i-attempt2")
-        qpg.add_new_graph(helper.butler, qg_1)
-        qpg.add_new_graph(helper.butler, qg_2)
-        qpg.resolve_duplicates(
-            helper.butler,
-            collections=["HSC/runs/Prod/step1-i-attempt2", "HSC/runs/Prod/step1-i-attempt1"],
-            where="instrument='HSC'",
-        )
-        qg_sum = qpg.to_summary(helper.butler)
-        # Check that we start with the correct number of quanta
-        self.assertEqual(qg_sum.tasks["_mock_isr"].n_expected, 36)
-
-        # Check that the failures from our first attempt do not persist
-        self.assertEqual(qg_sum.tasks["_mock_calibrate"].n_failed, 0)
-        self.assertEqual(qg_sum.tasks["_mock_calibrate"].n_successful, 36)
-
-        # Check that we have recovered the quanta which failed in the first
-        # attempt
-        self.assertListEqual(qg_sum.tasks["_mock_calibrate"].failed_quanta, [])
-        self.assertIsInstance(qg_sum.tasks["_mock_calibrate"].recovered_quanta, list)
-        for initially_failed_quantum in qg_1_sum_only.tasks["_mock_calibrate"].failed_quanta:
-            initially_failed_quantum_dict = initially_failed_quantum.model_dump()
-            self.assertIn(
-                initially_failed_quantum_dict["data_id"], qg_sum.tasks["_mock_calibrate"].recovered_quanta
-            )
-        self.assertEqual(
-            len(qg_sum.tasks["_mock_calibrate"].recovered_quanta),
-            qg_1_sum_only.tasks["_mock_calibrate"].n_failed,
-        )
-
-        # Check that the last task has the expected counts for every category
-        end_task = qg_sum.tasks["_mock_transformPreSourceTable"]
-        self.assertEqual(end_task.n_successful, 36)
-        self.assertEqual(end_task.n_blocked, 0)
-        self.assertEqual(end_task.n_not_attempted, 0)
-        self.assertEqual(end_task.n_expected, 36)
-        self.assertEqual(end_task.n_wonky, 0)
-        self.assertEqual(end_task.n_failed, 0)
-        # Check that they all add up
-        summary_dict_2 = qg_sum.model_dump()
-        for task in summary_dict_2["tasks"]:
-            self.assertEqual(
-                summary_dict_2["tasks"][task]["n_expected"],
-                sum(
-                    [
-                        summary_dict_2["tasks"][task]["n_successful"],
-                        summary_dict_2["tasks"][task]["n_blocked"],
-                        summary_dict_2["tasks"][task]["n_not_attempted"],
-                        summary_dict_2["tasks"][task]["n_wonky"],
-                        summary_dict_2["tasks"][task]["n_failed"],
-                    ]
-                ),
-            )
-            # Check that there are no wonky quanta
-            self.assertEqual(summary_dict_2["tasks"][task]["n_wonky"], 0)
-            self.assertListEqual(summary_dict_2["tasks"][task]["wonky_quanta"], [])
-            self.assertListEqual(summary_dict_2["tasks"][task]["failed_quanta"], [])
-
-            # Test datasets for the overall QPG.
-            # Check that we have the expected datasets
-            datasets = [
-                    "_mock_postISRCCD",
-                    "_mock_isr_metadata",
-                    "_mock_isr_log",
-                    "_mock_icExp",
-                    "_mock_icSrc",
-                    "_mock_icExpBackground",
-                    "_mock_characterizeImage_metadata",
-                    "_mock_characterizeImage_log",
-                    "_mock_calexpBackground",
-                    "_mock_srcMatch",
-                    "_mock_calexp",
-                    "_mock_src",
-                    "_mock_srcMatchFull",
-                    "_mock_calibrate_metadata",
-                    "_mock_calibrate_log",
-                    "_mock_preSource",
-                    "_mock_writePreSourceTable_metadata",
-                    "_mock_writePreSourceTable_log",
-                    "_mock_preSourceTable",
-                    "_mock_transformPreSourceTable_metadata",
-                    "_mock_transformPreSourceTable_log",
-                ]
             for dataset in datasets:
-                self.assertIn(dataset, summary_dict_2["datasets"].keys())
+                self.assertIn(dataset, qg_2_dict["datasets"].keys())
             # Check that they are the same datasets
-            self.assertEqual(summary_dict_2["datasets"].keys(), summary_dict_1["datasets"].keys())
-            for dataset in summary_dict_2["datasets"]:
+            self.assertEqual(qg_2_dict["datasets"].keys(), qg_1_dict["datasets"].keys())
+            for dataset in qg_2_dict["datasets"]:
                 # Check that each dataset has the same information
                 self.assertEqual(
-                    list(summary_dict_2["datasets"][dataset].keys()),
+                    list(qg_2_dict["datasets"][dataset].keys()),
                     [
                         "producer",
                         "n_published",
@@ -461,42 +438,40 @@ class ProdOutputsTestCase(unittest.TestCase):
                         "n_unsuccessful",
                     ],
                 )
-                self.assertIsInstance(summary_dict_2["datasets"][dataset]["producer"], str)
+                self.assertIsInstance(qg_2_dict["datasets"][dataset]["producer"], str)
                 # Check counts: we should have recovered everything, so
                 # published should equal expected for each dataset.
                 self.assertEqual(
-                    summary_dict_2["datasets"][dataset]["n_expected"],
-                    summary_dict_2["datasets"][dataset]["n_published"],
+                    qg_2_dict["datasets"][dataset]["n_expected"],
+                    qg_2_dict["datasets"][dataset]["n_published"],
                 )
                 # Check that this is the expected number
-                self.assertEqual(summary_dict_2["datasets"][dataset]["n_published"], 36)
+                self.assertEqual(qg_2_dict["datasets"][dataset]["n_published"], 36)
                 # Check that they all add up
                 self.assertEqual(
-                    summary_dict_2["datasets"][dataset]["n_expected"],
+                    qg_2_dict["datasets"][dataset]["n_expected"],
                     sum(
                         [
-                            summary_dict_2["datasets"][dataset]["n_published"],
-                            summary_dict_2["datasets"][dataset]["n_unpublished"],
-                            summary_dict_2["datasets"][dataset]["n_predicted_only"],
-                            summary_dict_2["datasets"][dataset]["n_cursed"],
-                            summary_dict_2["datasets"][dataset]["n_unsuccessful"],
+                            qg_2_dict["datasets"][dataset]["n_published"],
+                            qg_2_dict["datasets"][dataset]["n_unpublished"],
+                            qg_2_dict["datasets"][dataset]["n_predicted_only"],
+                            qg_2_dict["datasets"][dataset]["n_cursed"],
+                            qg_2_dict["datasets"][dataset]["n_unsuccessful"],
                         ]
                     ),
                 )
                 # Check that there are no cursed or unsuccessful datasets
-                self.assertEqual(summary_dict_2["datasets"][dataset]["n_cursed"], 0)
-                self.assertListEqual(summary_dict_2["datasets"][dataset]["cursed_datasets"], [])
-                self.assertEqual(summary_dict_2["datasets"][dataset]["n_unsuccessful"], 0)
-                self.assertListEqual(summary_dict_2["datasets"][dataset]["unsuccessful_datasets"], [])
+                self.assertEqual(qg_2_dict["datasets"][dataset]["n_cursed"], 0)
+                self.assertListEqual(qg_2_dict["datasets"][dataset]["cursed_datasets"], [])
+                self.assertEqual(qg_2_dict["datasets"][dataset]["n_unsuccessful"], 0)
+                self.assertListEqual(qg_2_dict["datasets"][dataset]["unsuccessful_datasets"], [])
 
-                # Since we have recovered everything, we should have the same numbers for every task:
-                self.assertEqual(summary_dict_2["datasets"][dataset]["n_expected"], 36)
-                self.assertEqual(summary_dict_2["datasets"][dataset]["n_published"], 36)
-                self.assertEqual(summary_dict_2["datasets"][dataset]["n_unpublished"], 0)
-                self.assertEqual(summary_dict_2["datasets"][dataset]["n_predicted_only"], 0)
-
-        with open("qgmodel2.json", "w") as buffer:
-            buffer.write(qg_sum.model_dump_json(indent=2))
+                # Since we have recovered everything, we should have the same
+                # numbers for every task:
+                self.assertEqual(qg_2_dict["datasets"][dataset]["n_expected"], 36)
+                self.assertEqual(qg_2_dict["datasets"][dataset]["n_published"], 36)
+                self.assertEqual(qg_2_dict["datasets"][dataset]["n_unpublished"], 0)
+                self.assertEqual(qg_2_dict["datasets"][dataset]["n_predicted_only"], 0)
 
     def test_step1_quantum_provenance_graph_qbb(self) -> None:
         self.check_step1_qpg(self.qbb)
