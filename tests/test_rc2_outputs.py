@@ -256,6 +256,37 @@ class Rc2OutputsTestCase(unittest.TestCase):
         # has been made.
         # Make the quantum provenance graph for the first attempt
         qg_2 = helper.get_quantum_graph("step8", "attempt2")
+
+        # Before we get into that, let's see if we correctly label a successful
+        # task whose data products do not make it into the output collection
+        # given as unpublished.
+
+        qpg_unpublished = QuantumProvenanceGraph()
+        qpg_unpublished.add_new_graph(helper.butler, qg_1)
+        qpg_unpublished.add_new_graph(helper.butler, qg_2)
+        qpg_unpublished.resolve_duplicates(
+            helper.butler, collections=["HSC/runs/RC2/step8-attempt1"], where="instrument='HSC'"
+        )
+
+        qpg_u_sum = qpg_unpublished.to_summary(helper.butler)
+        qpg_u = qpg_u_sum.model_dump()
+        with open("qgmodel5.json", "w") as buffer:
+            buffer.write(qpg_u_sum.model_dump_json(indent=2))
+
+        for dataset in qpg_u["datasets"]:
+            if qpg_u["datasets"][dataset]["producer"] == "_mock_analyzeObjectTableCore":
+                if dataset == "_mock_analyzeObjectTableCore_log":
+                    continue
+                else:
+                    self.assertEqual(qpg_u["datasets"][dataset]["n_published"], 0)
+                    self.assertEqual(qpg_u["datasets"][dataset]["n_unpublished"], 1)
+                    self.assertEqual(qpg_u["datasets"][dataset]["n_expected"], 1)
+                    self.assertEqual(qpg_u["datasets"][dataset]["n_cursed"], 0)
+                    self.assertEqual(qpg_u["datasets"][dataset]["n_predicted_only"], 0)
+                    self.assertEqual(qpg_u["datasets"][dataset]["n_unsuccessful"], 0)
+
+        # Now for verifying the recovery properly -- the graph below is made
+        # as intended.
         qpg2 = QuantumProvenanceGraph()
         qpg2.add_new_graph(helper.butler, qg_1)
         qpg2.add_new_graph(helper.butler, qg_2)
