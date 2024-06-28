@@ -139,6 +139,18 @@ class ProdOutputsTestCase(unittest.TestCase):
         qg_1 = helper.get_quantum_graph("step1", "i-attempt1")
         report_1 = QuantumGraphExecutionReport.make_reports(helper.butler, qg_1)
         summary_1 = report_1.to_summary_dict(helper.butler)
+        # Check that total between successful, blocked and failed is expected
+        for task in summary_1:
+            self.assertEqual(
+                summary_1[task]["n_expected"],
+                sum(
+                    [
+                        summary_1[task]["n_succeeded"],
+                        summary_1[task]["n_quanta_blocked"],
+                        len(summary_1[task]["failed_quanta"]),
+                    ]
+                ),
+            )
         failures = summary_1["_mock_calibrate"]["failed_quanta"]
         failed_visits = set()
         for quantum_summary in failures.values():
@@ -161,6 +173,18 @@ class ProdOutputsTestCase(unittest.TestCase):
         qg_2 = helper.get_quantum_graph("step1", "i-attempt2")
         report_2 = QuantumGraphExecutionReport.make_reports(helper.butler, qg_2)
         summary_2 = report_2.to_summary_dict(helper.butler)
+        # Check that total between successful, blocked and failed is expected
+        for task in summary_2:
+            self.assertEqual(
+                summary_2[task]["n_expected"],
+                sum(
+                    [
+                        summary_2[task]["n_succeeded"],
+                        summary_2[task]["n_quanta_blocked"],
+                        len(summary_2[task]["failed_quanta"]),
+                    ]
+                ),
+            )
         self.assertEqual(summary_2["_mock_calibrate"]["failed_quanta"], {})  # is empty ??
         # Making sure it works with the human-readable version,
         hr_summary_2 = report_2.to_summary_dict(helper.butler, human_readable=True)
