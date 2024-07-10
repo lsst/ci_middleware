@@ -125,10 +125,8 @@ class MockDatasetMaker:
             return
         if not self.butler.registry.registerDatasetType(dataset_type):
             return
-        if (data_ids := self.cached_data_ids.get(dataset_type.dimensions.as_group())) is None:
-            remaining_skypix_dimensions, dimensions = self._split_dimensions(
-                dataset_type.dimensions.as_group()
-            )
+        if (data_ids := self.cached_data_ids.get(dataset_type.dimensions)) is None:
+            remaining_skypix_dimensions, dimensions = self._split_dimensions(dataset_type.dimensions)
             data_ids = self._get_bounded_data_ids(dimensions)
             while remaining_skypix_dimensions:
                 skypix_dimension = remaining_skypix_dimensions.pop()
