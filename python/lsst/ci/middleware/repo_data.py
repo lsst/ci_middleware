@@ -440,7 +440,9 @@ class ObservationRecords:
         for element_name in ["exposure", "visit_definition", "visit_system", "visit_system_membership"]:
             getattr(self, element_name).extend(
                 d.records[element_name]
-                for d in data_ids.subset(butler.dimensions[element_name].graph, unique=True).expanded()
+                for d in data_ids.subset(
+                    butler.dimensions[element_name].minimal_group, unique=True
+                ).expanded()
             )
 
     def _fill_visit(self, butler: Butler, visit_ids: list[int], instrument: str) -> None:
