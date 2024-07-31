@@ -328,7 +328,8 @@ class ProdOutputsTestCase(unittest.TestCase):
                     qg_1_dict["datasets"][dataset]["unsuccessful_datasets"][0]["physical_filter"],
                     "HSC-I",
                 )
-                # Check that there are the expected amount of failures and that they are not published
+                # Check that there are the expected amount of failures
+                # and that they are not published
                 self.assertEqual(len(qg_1_dict["datasets"][dataset]["unsuccessful_datasets"]), 6)
                 self.assertEqual(qg_1_dict["datasets"][dataset]["n_expected"], 36)
                 self.assertEqual(qg_1_dict["datasets"][dataset]["n_published"], 30)
@@ -465,7 +466,8 @@ class ProdOutputsTestCase(unittest.TestCase):
                 self.assertEqual(qg_2_dict["datasets"][dataset]["n_unsuccessful"], 0)
                 self.assertListEqual(qg_2_dict["datasets"][dataset]["unsuccessful_datasets"], [])
 
-                # Since we have recovered everything, we should have the same numbers for every task:
+                # Since we have recovered everything, we should have the same
+                # numbers for every task:
                 self.assertEqual(qg_2_dict["datasets"][dataset]["n_expected"], 36)
                 self.assertEqual(qg_2_dict["datasets"][dataset]["n_published"], 36)
                 self.assertEqual(qg_2_dict["datasets"][dataset]["n_unpublished"], 0)

@@ -154,7 +154,7 @@ class Rc2OutputsTestCase(unittest.TestCase):
 
     def check_step8_qpg(self, helper: OutputRepoTests) -> None:
         """Check that the fail-and-recover attempts in step 8 are properly
-        diagnosed using the `QuantumProvenanceGraph`. 
+        diagnosed using the `QuantumProvenanceGraph`.
         """
         # Make the quantum provenance graph for the first attempt
         qg_1 = helper.get_quantum_graph("step8", "attempt1")
@@ -165,7 +165,7 @@ class Rc2OutputsTestCase(unittest.TestCase):
         )
         qg_1_sum_only = qpg1.to_summary(helper.butler)
         qg_1_dict = qg_1_sum_only.model_dump()
-        
+
         # Check that expected, wonky and not attempted do not occur throughout
         # tasks:
         for task in qg_1_dict["tasks"]:
@@ -180,19 +180,20 @@ class Rc2OutputsTestCase(unittest.TestCase):
                     self.assertEqual(qg_1_dict["tasks"][task]["n_expected"], 1)
                     self.assertEqual(qg_1_dict["tasks"]["_mock_analyzeObjectTableCore"]["n_failed"], 1)
                     self.assertEqual(qg_1_dict["tasks"]["_mock_analyzeObjectTableCore"]["n_successful"], 0)
-                    self.assertEqual(qg_1_dict["tasks"]["_mock_analyzeObjectTableCore"]["failed_quanta"], 
-                                        [{
-                                            "data_id": {
-                                                "skymap": "ci_mw",
-                                                "tract": 0
-                                            },
-                                            "runs": {
-                                                "HSC/runs/RC2/step8-attempt1": "failed"
-                                            },
-                                            "messages": [
-                                                "Execution of task '_mock_analyzeObjectTableCore' on quantum {skymap: 'ci_mw', tract: 0} failed. Exception ValueError: Simulated failure: task=_mock_analyzeObjectTableCore dataId={skymap: 'ci_mw', tract: 0}"
-                                            ]
-                                        }])
+                    self.assertEqual(
+                        qg_1_dict["tasks"]["_mock_analyzeObjectTableCore"]["failed_quanta"],
+                        [
+                            {
+                                "data_id": {"skymap": "ci_mw", "tract": 0},
+                                "runs": {"HSC/runs/RC2/step8-attempt1": "failed"},
+                                "messages": [
+                                    "Execution of task '_mock_analyzeObjectTableCore' on quantum {skymap: "
+                                    "'ci_mw', tract: 0} failed. Exception ValueError: Simulated failure: "
+                                    "task=_mock_analyzeObjectTableCore dataId={skymap: 'ci_mw', tract: 0}"
+                                ],
+                            }
+                        ],
+                    )
                     self.assertEqual(qg_1_dict["tasks"]["_mock_analyzeObjectTableCore"]["n_blocked"], 0)
                 case _:
                     # If it's not the failed task, there should be no failures
@@ -211,7 +212,7 @@ class Rc2OutputsTestCase(unittest.TestCase):
                         self.assertEqual(qg_1_dict["tasks"][task]["n_successful"], 2)
                     else:
                         self.assertEqual(qg_1_dict["tasks"][task]["n_expected"], 1)
-                        self.assertEqual(qg_1_dict["tasks"][task]["n_successful"], 1) 
+                        self.assertEqual(qg_1_dict["tasks"][task]["n_successful"], 1)
         # Check on datasets
         # This used to be a self.assertIn but the list was annoyingly long.
         self.assertEqual(len(qg_1_dict["datasets"].keys()), 218)
@@ -230,18 +231,18 @@ class Rc2OutputsTestCase(unittest.TestCase):
                     self.assertEqual(qg_1_dict["datasets"][dataset]["n_published"], 0)
                     self.assertEqual(qg_1_dict["datasets"][dataset]["n_expected"], 1)
                     self.assertEqual(qg_1_dict["datasets"][dataset]["n_unsuccessful"], 1)
-                    self.assertListEqual(qg_1_dict["datasets"][dataset]["unsuccessful_datasets"],
-                                          [
-                                                {
-                                                "skymap": "ci_mw",
-                                                "tract": 0
-                                                }
-                                            ],)
+                    self.assertListEqual(
+                        qg_1_dict["datasets"][dataset]["unsuccessful_datasets"],
+                        [{"skymap": "ci_mw", "tract": 0}],
+                    )
                 # These are the non-failed tasks:
                 case _:
                     self.assertEqual(qg_1_dict["datasets"][dataset]["n_unsuccessful"], 0)
                     self.assertListEqual(qg_1_dict["datasets"][dataset]["unsuccessful_datasets"], [])
-                    if qg_1_dict["datasets"][dataset]["producer"] == "_mock_analyzeMatchedPreVisitCore" or qg_1_dict["datasets"][dataset]["producer"] == "_mock_analyzeMatchedVisitCore":
+                    if (
+                        qg_1_dict["datasets"][dataset]["producer"] == "_mock_analyzeMatchedPreVisitCore"
+                        or qg_1_dict["datasets"][dataset]["producer"] == "_mock_analyzeMatchedVisitCore"
+                    ):
                         self.assertEqual(qg_1_dict["datasets"][dataset]["n_published"], 4)
                         self.assertEqual(qg_1_dict["datasets"][dataset]["n_expected"], 4)
                     elif qg_1_dict["datasets"][dataset]["producer"] == "_mock_plotPropertyMapTract":
@@ -250,7 +251,7 @@ class Rc2OutputsTestCase(unittest.TestCase):
                     else:
                         self.assertEqual(qg_1_dict["datasets"][dataset]["n_published"], 1)
                         self.assertEqual(qg_1_dict["datasets"][dataset]["n_expected"], 1)
-        
+
         # Now examine the quantum provenance graph after the recovery attempt
         # has been made.
         # Make the quantum provenance graph for the first attempt
@@ -288,7 +289,9 @@ class Rc2OutputsTestCase(unittest.TestCase):
         qpg2.add_new_graph(helper.butler, qg_1)
         qpg2.add_new_graph(helper.butler, qg_2)
         qpg2.resolve_duplicates(
-            helper.butler, collections=["HSC/runs/RC2/step8-attempt2", "HSC/runs/RC2/step8-attempt1"], where="instrument='HSC'"
+            helper.butler,
+            collections=["HSC/runs/RC2/step8-attempt2", "HSC/runs/RC2/step8-attempt1"],
+            where="instrument='HSC'",
         )
         qg_2_sum_only = qpg2.to_summary(helper.butler)
         qg_2_dict = qg_2_sum_only.model_dump()
@@ -299,8 +302,7 @@ class Rc2OutputsTestCase(unittest.TestCase):
             self.assertEqual(qg_2_dict["tasks"][task]["n_blocked"], 0)
             self.assertListEqual(qg_2_dict["tasks"][task]["wonky_quanta"], [])
             # There should be no failures, so we can say for all tasks:
-            self.assertEqual(qg_2_dict["tasks"][task]["n_successful"],
-                             qg_2_dict["tasks"][task]["n_expected"])
+            self.assertEqual(qg_2_dict["tasks"][task]["n_successful"], qg_2_dict["tasks"][task]["n_expected"])
             self.assertEqual(qg_2_dict["tasks"][task]["n_failed"], 0)
             self.assertListEqual(qg_2_dict["tasks"][task]["failed_quanta"], [])
             match task:
@@ -308,15 +310,14 @@ class Rc2OutputsTestCase(unittest.TestCase):
                 case "_mock_analyzeObjectTableCore":
                     self.assertEqual(qg_2_dict["tasks"][task]["n_expected"], 1)
                     self.assertEqual(qg_2_dict["tasks"]["_mock_analyzeObjectTableCore"]["n_successful"], 1)
-                    self.assertEqual(qg_2_dict["tasks"]["_mock_analyzeObjectTableCore"]["recovered_quanta"], 
-                                        [{
-                                            "skymap": "ci_mw",
-                                            "tract": 0
-                                        }])
+                    self.assertEqual(
+                        qg_2_dict["tasks"]["_mock_analyzeObjectTableCore"]["recovered_quanta"],
+                        [{"skymap": "ci_mw", "tract": 0}],
+                    )
                     self.assertEqual(qg_2_dict["tasks"]["_mock_analyzeObjectTableCore"]["n_blocked"], 0)
                 case _:
                     self.assertListEqual(qg_2_dict["tasks"][task]["recovered_quanta"], [])
-        
+
         # Check on datasets
         # This used to be a self.assertIn but the list was annoyingly long.
         self.assertEqual(len(qg_2_dict["datasets"].keys()), 218)
@@ -329,10 +330,10 @@ class Rc2OutputsTestCase(unittest.TestCase):
             self.assertEqual(qg_2_dict["datasets"][dataset]["n_unsuccessful"], 0)
             self.assertListEqual(qg_2_dict["datasets"][dataset]["unsuccessful_datasets"], [])
             self.assertEqual(qg_2_dict["datasets"][dataset]["n_unpublished"], 0)
-            self.assertEqual(qg_2_dict["datasets"][dataset]["n_published"],
-                             qg_2_dict["datasets"][dataset]["n_expected"])
-        
-        
+            self.assertEqual(
+                qg_2_dict["datasets"][dataset]["n_published"], qg_2_dict["datasets"][dataset]["n_expected"]
+            )
+
     def test_step8_quantum_provenance_graph_qbb(self) -> None:
         self.check_step8_qpg(self.qbb)
 
