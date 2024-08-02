@@ -23,7 +23,7 @@ import unittest
 from typing import ClassVar
 
 from lsst.ci.middleware.output_repo_tests import OutputRepoTests
-from lsst.pipe.base.quantum_provenance_graph import QuantumProvenanceGraph
+from lsst.pipe.base.quantum_provenance_graph import QuantumProvenanceGraph, UnsuccessfulQuantumSummary
 from lsst.pipe.base.tests.mocks import MockDataset, get_mock_name
 
 # (tract, patch, band): {input visits} for coadds produced here.
@@ -163,94 +163,119 @@ class Rc2OutputsTestCase(unittest.TestCase):
         qpg1.resolve_duplicates(
             helper.butler, collections=["HSC/runs/RC2/step8-attempt1"], where="instrument='HSC'"
         )
-        qg_1_sum_only = qpg1.to_summary(helper.butler)
-        qg_1_dict = qg_1_sum_only.model_dump()
+        qg_1_sum = qpg1.to_summary(helper.butler)
 
         # Check that expected, wonky and not attempted do not occur throughout
         # tasks:
-        for task in qg_1_dict["tasks"]:
-            self.assertEqual(qg_1_dict["tasks"][task]["n_not_attempted"], 0)
-            self.assertEqual(qg_1_dict["tasks"][task]["n_wonky"], 0)
-            self.assertEqual(qg_1_dict["tasks"][task]["n_blocked"], 0)
-            self.assertListEqual(qg_1_dict["tasks"][task]["wonky_quanta"], [])
-            self.assertListEqual(qg_1_dict["tasks"][task]["recovered_quanta"], [])
-            match task:
+        for label, task_summary in qg_1_sum.tasks.items():
+            self.assertEqual(task_summary.n_not_attempted, 0)
+            self.assertEqual(task_summary.n_wonky, 0)
+            self.assertListEqual(task_summary.wonky_quanta, [])
+            self.assertListEqual(task_summary.recovered_quanta, [])
+            match label:
                 # Check that the failure was documented in expected ways:
                 case "_mock_analyzeObjectTableCore":
-                    self.assertEqual(qg_1_dict["tasks"][task]["n_expected"], 1)
-                    self.assertEqual(qg_1_dict["tasks"]["_mock_analyzeObjectTableCore"]["n_failed"], 1)
-                    self.assertEqual(qg_1_dict["tasks"]["_mock_analyzeObjectTableCore"]["n_successful"], 0)
+                    self.assertEqual(task_summary.n_expected, 1)
+                    self.assertEqual(task_summary.n_failed, 1)
+                    self.assertEqual(task_summary.n_successful, 0)
                     self.assertEqual(
-                        qg_1_dict["tasks"]["_mock_analyzeObjectTableCore"]["failed_quanta"],
+                        task_summary.failed_quanta,
                         [
-                            {
-                                "data_id": {"skymap": "ci_mw", "tract": 0},
-                                "runs": {"HSC/runs/RC2/step8-attempt1": "failed"},
-                                "messages": [
+                            UnsuccessfulQuantumSummary(
+                                data_id={"skymap": "ci_mw", "tract": 0},
+                                runs={"HSC/runs/RC2/step8-attempt1": "failed"},
+                                messages=[
                                     "Execution of task '_mock_analyzeObjectTableCore' on quantum {skymap: "
                                     "'ci_mw', tract: 0} failed. Exception ValueError: Simulated failure: "
                                     "task=_mock_analyzeObjectTableCore dataId={skymap: 'ci_mw', tract: 0}"
                                 ],
-                            }
+                            )
                         ],
                     )
-                    self.assertEqual(qg_1_dict["tasks"]["_mock_analyzeObjectTableCore"]["n_blocked"], 0)
+                    self.assertEqual(task_summary.n_blocked, 0)
                 case _:
                     # If it's not the failed task, there should be no failures
-                    self.assertEqual(qg_1_dict["tasks"][task]["n_failed"], 0)
-                    self.assertListEqual(qg_1_dict["tasks"][task]["failed_quanta"], [])
+                    self.assertEqual(task_summary.n_failed, 0)
+                    self.assertListEqual(task_summary.failed_quanta, [])
                     # We also shouldn't have had anything to recover
-                    self.assertListEqual(qg_1_dict["tasks"][task]["recovered_quanta"], [])
+                    self.assertListEqual(task_summary.recovered_quanta, [])
                     # The next few if's are making sure we have the same
                     # number of expected and successful quanta. We could also
                     # just assert that n_expected == n_successful.
-                    if task == "_mock_analyzeMatchedPreVisitCore" or task == "_mock_analyzeMatchedVisitCore":
-                        self.assertEqual(qg_1_dict["tasks"][task]["n_expected"], 4)
-                        self.assertEqual(qg_1_dict["tasks"][task]["n_successful"], 4)
-                    elif task == "_mock_plotPropertyMapTract":
-                        self.assertEqual(qg_1_dict["tasks"][task]["n_expected"], 2)
-                        self.assertEqual(qg_1_dict["tasks"][task]["n_successful"], 2)
+                    if label in ["_mock_analyzeMatchedPreVisitCore", "_mock_analyzeMatchedVisitCore"]:
+                        self.assertEqual(task_summary.n_expected, 4)
+                        self.assertEqual(task_summary.n_successful, 4)
+                        self.assertEqual(task_summary.n_blocked, 0)
+                    elif label == "_mock_plotPropertyMapTract":
+                        self.assertEqual(task_summary.n_expected, 2)
+                        self.assertEqual(task_summary.n_successful, 2)
+                        self.assertEqual(task_summary.n_blocked, 0)
+                    elif label in [
+                        "_mock_makeMetricTableObjectTableCore",
+                        "_mock_objectTableCoreWholeSkyPlot",
+                    ]:
+                        self.assertEqual(task_summary.n_blocked, 1)
+                        self.assertEqual(task_summary.n_successful, 0)
+                    elif label == "_mock_analyzeAmpOffsetMetadata":
+                        self.assertEqual(task_summary.n_expected, 60)
+                        self.assertEqual(task_summary.n_successful, 60)
+                        self.assertEqual(task_summary.n_blocked, 0)
                     else:
-                        self.assertEqual(qg_1_dict["tasks"][task]["n_expected"], 1)
-                        self.assertEqual(qg_1_dict["tasks"][task]["n_successful"], 1)
+                        self.assertEqual(
+                            task_summary.n_expected, 1, f"{label} had {task_summary.n_expected} tasks."
+                        )
+                        self.assertEqual(
+                            task_summary.n_successful,
+                            1,
+                            f"{label} had {task_summary.n_successful} successful tasks.",
+                        )
+                        self.assertEqual(
+                            task_summary.n_blocked, 0, f"{label} had {task_summary.n_blocked} blocked tasks."
+                        )
         # Check on datasets
-        # This used to be a self.assertIn but the list was annoyingly long.
-        self.assertEqual(len(qg_1_dict["datasets"].keys()), 218)
-        for dataset in qg_1_dict["datasets"]:
+        for dataset_type_summary in qg_1_sum.datasets.values():
             # We shouldn't run into predicted only, unpublished or cursed.
             # Unpublished suggests that the dataset exists but is not included
             # in the final collection; cursed suggests that the dataset is
             # published but unsuccessful.
-            self.assertEqual(qg_1_dict["datasets"][dataset]["n_predicted_only"], 0)
-            self.assertEqual(qg_1_dict["datasets"][dataset]["n_unpublished"], 0)
-            self.assertEqual(qg_1_dict["datasets"][dataset]["n_cursed"], 0)
-            self.assertListEqual(qg_1_dict["datasets"][dataset]["cursed_datasets"], [])
-            match qg_1_dict["datasets"][dataset]["producer"]:
+            self.assertEqual(dataset_type_summary.n_predicted_only, 0)
+            self.assertEqual(dataset_type_summary.n_unpublished, 0)
+            self.assertEqual(dataset_type_summary.n_cursed, 0)
+            self.assertListEqual(dataset_type_summary.cursed_datasets, [])
+            match dataset_type_summary.producer:
                 # Check that the failure was documented in expected ways:
                 case "_mock_analyzeObjectTableCore":
-                    self.assertEqual(qg_1_dict["datasets"][dataset]["n_published"], 0)
-                    self.assertEqual(qg_1_dict["datasets"][dataset]["n_expected"], 1)
-                    self.assertEqual(qg_1_dict["datasets"][dataset]["n_unsuccessful"], 1)
+                    self.assertEqual(dataset_type_summary.n_published, 0)
+                    self.assertEqual(dataset_type_summary.n_expected, 1)
+                    self.assertEqual(dataset_type_summary.n_unsuccessful, 1)
                     self.assertListEqual(
-                        qg_1_dict["datasets"][dataset]["unsuccessful_datasets"],
+                        dataset_type_summary.unsuccessful_datasets,
                         [{"skymap": "ci_mw", "tract": 0}],
                     )
+                case label if label in [
+                    "_mock_makeMetricTableObjectTableCore",
+                    "_mock_objectTableCoreWholeSkyPlot",
+                ]:
+                    self.assertEqual(dataset_type_summary.n_unsuccessful, 1)
                 # These are the non-failed tasks:
                 case _:
-                    self.assertEqual(qg_1_dict["datasets"][dataset]["n_unsuccessful"], 0)
-                    self.assertListEqual(qg_1_dict["datasets"][dataset]["unsuccessful_datasets"], [])
+                    self.assertEqual(dataset_type_summary.n_unsuccessful, 0)
+                    self.assertListEqual(dataset_type_summary.unsuccessful_datasets, [])
                     if (
-                        qg_1_dict["datasets"][dataset]["producer"] == "_mock_analyzeMatchedPreVisitCore"
-                        or qg_1_dict["datasets"][dataset]["producer"] == "_mock_analyzeMatchedVisitCore"
+                        dataset_type_summary.producer == "_mock_analyzeMatchedPreVisitCore"
+                        or dataset_type_summary.producer == "_mock_analyzeMatchedVisitCore"
                     ):
-                        self.assertEqual(qg_1_dict["datasets"][dataset]["n_published"], 4)
-                        self.assertEqual(qg_1_dict["datasets"][dataset]["n_expected"], 4)
-                    elif qg_1_dict["datasets"][dataset]["producer"] == "_mock_plotPropertyMapTract":
-                        self.assertEqual(qg_1_dict["datasets"][dataset]["n_published"], 2)
-                        self.assertEqual(qg_1_dict["datasets"][dataset]["n_expected"], 2)
+                        self.assertEqual(dataset_type_summary.n_published, 4)
+                        self.assertEqual(dataset_type_summary.n_expected, 4)
+                    elif dataset_type_summary.producer == "_mock_plotPropertyMapTract":
+                        self.assertEqual(dataset_type_summary.n_published, 2)
+                        self.assertEqual(dataset_type_summary.n_expected, 2)
+                    elif dataset_type_summary.producer == "_mock_analyzeAmpOffsetMetadata":
+                        self.assertEqual(dataset_type_summary.n_published, 60)
+                        self.assertEqual(dataset_type_summary.n_expected, 60)
                     else:
-                        self.assertEqual(qg_1_dict["datasets"][dataset]["n_published"], 1)
-                        self.assertEqual(qg_1_dict["datasets"][dataset]["n_expected"], 1)
+                        self.assertEqual(dataset_type_summary.n_published, 1)
+                        self.assertEqual(dataset_type_summary.n_expected, 1)
 
         # Now examine the quantum provenance graph after the recovery attempt
         # has been made.
@@ -269,19 +294,18 @@ class Rc2OutputsTestCase(unittest.TestCase):
         )
 
         qpg_u_sum = qpg_unpublished.to_summary(helper.butler)
-        qpg_u = qpg_u_sum.model_dump()
 
-        for dataset in qpg_u["datasets"]:
-            if qpg_u["datasets"][dataset]["producer"] == "_mock_analyzeObjectTableCore":
-                if dataset == "_mock_analyzeObjectTableCore_log":
+        for dataset_type_name, dataset_type_summary in qpg_u_sum.datasets.items():
+            if dataset_type_summary.producer == "_mock_analyzeObjectTableCore":
+                if dataset_type_name == "_mock_analyzeObjectTableCore_log":
                     continue
                 else:
-                    self.assertEqual(qpg_u["datasets"][dataset]["n_published"], 0)
-                    self.assertEqual(qpg_u["datasets"][dataset]["n_unpublished"], 1)
-                    self.assertEqual(qpg_u["datasets"][dataset]["n_expected"], 1)
-                    self.assertEqual(qpg_u["datasets"][dataset]["n_cursed"], 0)
-                    self.assertEqual(qpg_u["datasets"][dataset]["n_predicted_only"], 0)
-                    self.assertEqual(qpg_u["datasets"][dataset]["n_unsuccessful"], 0)
+                    self.assertEqual(dataset_type_summary.n_published, 0)
+                    self.assertEqual(dataset_type_summary.n_unpublished, 1)
+                    self.assertEqual(dataset_type_summary.n_expected, 1)
+                    self.assertEqual(dataset_type_summary.n_cursed, 0)
+                    self.assertEqual(dataset_type_summary.n_predicted_only, 0)
+                    self.assertEqual(dataset_type_summary.n_unsuccessful, 0)
 
         # Now for verifying the recovery properly -- the graph below is made
         # as intended.
@@ -293,46 +317,51 @@ class Rc2OutputsTestCase(unittest.TestCase):
             collections=["HSC/runs/RC2/step8-attempt2", "HSC/runs/RC2/step8-attempt1"],
             where="instrument='HSC'",
         )
-        qg_2_sum_only = qpg2.to_summary(helper.butler)
-        qg_2_dict = qg_2_sum_only.model_dump()
+        qg_2_sum = qpg2.to_summary(helper.butler)
 
-        for task in qg_2_dict["tasks"]:
-            self.assertEqual(qg_2_dict["tasks"][task]["n_not_attempted"], 0)
-            self.assertEqual(qg_2_dict["tasks"][task]["n_wonky"], 0)
-            self.assertEqual(qg_2_dict["tasks"][task]["n_blocked"], 0)
-            self.assertListEqual(qg_2_dict["tasks"][task]["wonky_quanta"], [])
+        for label, task_summary in qg_2_sum.tasks.items():
+            self.assertEqual(task_summary.n_not_attempted, 0)
+            self.assertEqual(task_summary.n_wonky, 0)
+            self.assertEqual(task_summary.n_blocked, 0)
+            self.assertListEqual(task_summary.wonky_quanta, [])
             # There should be no failures, so we can say for all tasks:
-            self.assertEqual(qg_2_dict["tasks"][task]["n_successful"], qg_2_dict["tasks"][task]["n_expected"])
-            self.assertEqual(qg_2_dict["tasks"][task]["n_failed"], 0)
-            self.assertListEqual(qg_2_dict["tasks"][task]["failed_quanta"], [])
-            match task:
+            self.assertEqual(task_summary.n_successful, task_summary.n_expected)
+            self.assertEqual(task_summary.n_failed, 0)
+            self.assertListEqual(task_summary.failed_quanta, [])
+            match label:
                 # Check that the failure was recovered:
-                case "_mock_analyzeObjectTableCore":
-                    self.assertEqual(qg_2_dict["tasks"][task]["n_expected"], 1)
-                    self.assertEqual(qg_2_dict["tasks"]["_mock_analyzeObjectTableCore"]["n_successful"], 1)
-                    self.assertEqual(
-                        qg_2_dict["tasks"]["_mock_analyzeObjectTableCore"]["recovered_quanta"],
-                        [{"skymap": "ci_mw", "tract": 0}],
-                    )
-                    self.assertEqual(qg_2_dict["tasks"]["_mock_analyzeObjectTableCore"]["n_blocked"], 0)
+                case label if label in [
+                    "_mock_analyzeObjectTableCore",
+                    "_mock_makeMetricTableObjectTableCore",
+                    "_mock_objectTableCoreWholeSkyPlot",
+                ]:
+                    self.assertEqual(task_summary.n_expected, 1)
+                    self.assertEqual(task_summary.n_successful, 1)
+                    self.assertEqual(task_summary.n_blocked, 0)
+                    if label == "_mock_analyzeObjectTableCore":
+                        self.assertEqual(
+                            task_summary.recovered_quanta,
+                            [{"skymap": "ci_mw", "tract": 0}],
+                        )
+                    if label in ["_mock_makeMetricTableObjectTableCore", "_mock_objectTableCoreWholeSkyPlot"]:
+                        self.assertEqual(
+                            task_summary.recovered_quanta,
+                            [{"skymap": "ci_mw"}],
+                        )
                 case _:
-                    self.assertListEqual(qg_2_dict["tasks"][task]["recovered_quanta"], [])
+                    self.assertListEqual(task_summary.recovered_quanta, [])
 
         # Check on datasets
-        # This used to be a self.assertIn but the list was annoyingly long.
-        self.assertEqual(len(qg_2_dict["datasets"].keys()), 218)
-        for dataset in qg_2_dict["datasets"]:
+        for dataset_type_summary in qg_2_sum.datasets.values():
             # Check that all the data products are present and successful for
             # all tasks.
-            self.assertEqual(qg_2_dict["datasets"][dataset]["n_predicted_only"], 0)
-            self.assertEqual(qg_2_dict["datasets"][dataset]["n_cursed"], 0)
-            self.assertListEqual(qg_2_dict["datasets"][dataset]["cursed_datasets"], [])
-            self.assertEqual(qg_2_dict["datasets"][dataset]["n_unsuccessful"], 0)
-            self.assertListEqual(qg_2_dict["datasets"][dataset]["unsuccessful_datasets"], [])
-            self.assertEqual(qg_2_dict["datasets"][dataset]["n_unpublished"], 0)
-            self.assertEqual(
-                qg_2_dict["datasets"][dataset]["n_published"], qg_2_dict["datasets"][dataset]["n_expected"]
-            )
+            self.assertEqual(dataset_type_summary.n_predicted_only, 0)
+            self.assertEqual(dataset_type_summary.n_cursed, 0)
+            self.assertListEqual(dataset_type_summary.cursed_datasets, [])
+            self.assertEqual(dataset_type_summary.n_unsuccessful, 0)
+            self.assertListEqual(dataset_type_summary.unsuccessful_datasets, [])
+            self.assertEqual(dataset_type_summary.n_unpublished, 0)
+            self.assertEqual(dataset_type_summary.n_published, dataset_type_summary.n_expected)
 
     def test_step8_quantum_provenance_graph_qbb(self) -> None:
         self.check_step8_qpg(self.qbb)
