@@ -23,7 +23,7 @@ import unittest
 from typing import ClassVar
 
 from lsst.ci.middleware.output_repo_tests import OutputRepoTests
-from lsst.pipe.base.quantum_provenance_graph import QuantumProvenanceGraph, Summary, TaskSummary, DatasetTypeSummary
+from lsst.pipe.base.quantum_provenance_graph import QuantumProvenanceGraph, Summary, TaskSummary, DatasetTypeSummary, UnsuccessfulQuantumSummary
 from lsst.pipe.base.tests.mocks import MockDataset, get_mock_name
 
 # (tract, patch, band): {input visits} for coadds produced here.
@@ -171,7 +171,6 @@ class Rc2OutputsTestCase(unittest.TestCase):
         for label, task_summary in qg_1_sum.tasks.items():
             self.assertEqual(task_summary.n_not_attempted, 0)
             self.assertEqual(task_summary.n_wonky, 0)
-            self.assertEqual(task_summary.n_blocked, 0)
             self.assertListEqual(task_summary.wonky_quanta, [])
             self.assertListEqual(task_summary.recovered_quanta, [])
             match label:
@@ -182,17 +181,15 @@ class Rc2OutputsTestCase(unittest.TestCase):
                     self.assertEqual(task_summary.n_successful, 0)
                     self.assertEqual(
                         task_summary.failed_quanta,
-                        [
-                            {
-                                "data_id": {"skymap": "ci_mw", "tract": 0},
-                                "runs": {"HSC/runs/RC2/step8-attempt1": "failed"},
-                                "messages": [
-                                    "Execution of task '_mock_analyzeObjectTableCore' on quantum {skymap: "
-                                    "'ci_mw', tract: 0} failed. Exception ValueError: Simulated failure: "
-                                    "task=_mock_analyzeObjectTableCore dataId={skymap: 'ci_mw', tract: 0}"
-                                ],
-                            }
-                        ],
+                        [UnsuccessfulQuantumSummary(
+                            data_id =  {"skymap": "ci_mw", "tract": 0},
+                            runs = {"HSC/runs/RC2/step8-attempt1": "failed"},
+                            messages = [
+                                "Execution of task '_mock_analyzeObjectTableCore' on quantum {skymap: "
+                                "'ci_mw', tract: 0} failed. Exception ValueError: Simulated failure: "
+                                "task=_mock_analyzeObjectTableCore dataId={skymap: 'ci_mw', tract: 0}"
+                            ]
+                        )],
                     )
                     self.assertEqual(task_summary.n_blocked, 0)
                 case _:
@@ -210,9 +207,13 @@ class Rc2OutputsTestCase(unittest.TestCase):
                     elif label == "_mock_plotPropertyMapTract":
                         self.assertEqual(task_summary.n_expected, 2)
                         self.assertEqual(task_summary.n_successful, 2)
+                    elif label in ["_mock_makeMetricTableObjectTableCore", "_mock_objectTableCoreWholeSkyPlot"]:
+                        self.assertEqual(task_summary.n_blocked, 1)
+                        self.assertEqual(task_summary.n_successful, 0)
                     else:
                         self.assertEqual(task_summary.n_expected, 1)
                         self.assertEqual(task_summary.n_successful, 1)
+                        self.assertEqual(task_summary.n_blocked, 0)
         # Check on datasets
         DatasetTypeSummary.model_validate(qg_1_sum.datasets)
         for dataset_type_summary in qg_1_sum.datasets.values():
@@ -234,6 +235,8 @@ class Rc2OutputsTestCase(unittest.TestCase):
                         dataset_type_summary.unsuccessful_datasets,
                         [{"skymap": "ci_mw", "tract": 0}],
                     )
+                case label if label in ["_mock_makeMetricTableObjectTableCore", "_mock_objectTableCoreWholeSkyPlot"]:
+                    self.assertEqual(dataset_type_summary.n_unsuccessful, 1)
                 # These are the non-failed tasks:
                 case _:
                     self.assertEqual(dataset_type_summary.n_unsuccessful, 0)
@@ -310,14 +313,20 @@ class Rc2OutputsTestCase(unittest.TestCase):
             self.assertListEqual(task_summary.failed_quanta, [])
             match label:
                 # Check that the failure was recovered:
-                case "_mock_analyzeObjectTableCore":
+                case label if label in ["_mock_analyzeObjectTableCore", "_mock_makeMetricTableObjectTableCore", "_mock_objectTableCoreWholeSkyPlot"]:
                     self.assertEqual(task_summary.n_expected, 1)
                     self.assertEqual(task_summary.n_successful, 1)
-                    self.assertEqual(
-                        task_summary.recovered_quanta,
-                        [{"skymap": "ci_mw", "tract": 0}],
-                    )
                     self.assertEqual(task_summary.n_blocked, 0)
+                    if label == "_mock_analyzeObjectTableCore":
+                        self.assertEqual(
+                            task_summary.recovered_quanta,
+                            [{"skymap": "ci_mw", "tract": 0}],
+                        )
+                    if label in ["_mock_makeMetricTableObjectTableCore", "_mock_objectTableCoreWholeSkyPlot"]:
+                        self.assertEqual(
+                            task_summary.recovered_quanta,
+                            [{"skymap": "ci_mw"}],
+                        )
                 case _:
                     self.assertListEqual(task_summary.recovered_quanta, [])
 
