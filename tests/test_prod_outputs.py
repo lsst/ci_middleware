@@ -24,7 +24,12 @@ from typing import ClassVar
 
 from lsst.ci.middleware.output_repo_tests import OutputRepoTests
 from lsst.pipe.base.execution_reports import QuantumGraphExecutionReport
-from lsst.pipe.base.quantum_provenance_graph import QuantumProvenanceGraph, Summary, TaskSummary, DatasetTypeSummary
+from lsst.pipe.base.quantum_provenance_graph import (
+    DatasetTypeSummary,
+    QuantumProvenanceGraph,
+    Summary,
+    TaskSummary,
+)
 from lsst.pipe.base.tests.mocks import get_mock_name
 
 # (tract, patch, band): {input visits} for coadds produced here.
@@ -207,9 +212,7 @@ class ProdOutputsTestCase(unittest.TestCase):
             helper.butler, collections=["HSC/runs/Prod/step1-i-attempt1"], where="instrument='HSC'"
         )
         qg_1_sum = qpg1.to_summary(helper.butler)
-        Summary.model_validate(qg_1_sum)
 
-        TaskSummary.model_validate(qg_1_sum.tasks)
         # Loop through the tasks in the dict
         for label, task_summary in qg_1_sum.tasks.items():
             self.assertEqual(task_summary.n_not_attempted, 0)
@@ -234,7 +237,9 @@ class ProdOutputsTestCase(unittest.TestCase):
                         self.assertEqual(quantum_summary.data_id["instrument"], "HSC")
                         self.assertIsInstance(quantum_summary.data_id["detector"], int)
                         self.assertEqual(quantum_summary.data_id["visit"], 18202)
-                        self.assertDictEqual(quantum_summary.runs, {"HSC/runs/Prod/step1-i-attempt1": "failed"})
+                        self.assertDictEqual(
+                            quantum_summary.runs, {"HSC/runs/Prod/step1-i-attempt1": "failed"}
+                        )
                         self.assertIsInstance(quantum_summary.messages, list)
                         for message in quantum_summary.messages:
                             self.assertIsInstance(message, str)
@@ -257,8 +262,6 @@ class ProdOutputsTestCase(unittest.TestCase):
                         self.assertListEqual(task_summary.failed_quanta, [])
 
         # Test datasets for the first QPG.
-        DatasetTypeSummary.model_validate(qg_1_sum.datasets)
-
         for dataset_type_name, dataset_summary in qg_1_sum.datasets.items():
             # For the expected failure
             if dataset_summary.producer == "_mock_calibrate":
@@ -279,14 +282,10 @@ class ProdOutputsTestCase(unittest.TestCase):
                 )
                 # Check that the unsuccessful datasets are as expected
                 self.assertIsInstance(dataset_summary.unsuccessful_datasets, list)
-                self.assertEqual(
-                    dataset_summary.unsuccessful_datasets[0]["instrument"], "HSC"
-                )
+                self.assertEqual(dataset_summary.unsuccessful_datasets[0]["instrument"], "HSC")
                 self.assertEqual(dataset_summary.unsuccessful_datasets[0]["visit"], 18202)
                 self.assertEqual(dataset_summary.unsuccessful_datasets[0]["band"], "i")
-                self.assertEqual(
-                    dataset_summary.unsuccessful_datasets[0]["day_obs"], 20150117
-                )
+                self.assertEqual(dataset_summary.unsuccessful_datasets[0]["day_obs"], 20150117)
                 self.assertEqual(
                     dataset_summary.unsuccessful_datasets[0]["physical_filter"],
                     "HSC-I",
@@ -325,9 +324,7 @@ class ProdOutputsTestCase(unittest.TestCase):
             where="instrument='HSC'",
         )
         qg_sum = qpg.to_summary(helper.butler)
-        Summary.model_validate(qg_sum)
 
-        TaskSummary.model_validate(qg_sum.tasks)
         for label, task_summary in qg_sum.tasks.items():
             self.assertEqual(task_summary.n_successful, 36)
             self.assertEqual(task_summary.n_blocked, 0)
@@ -358,8 +355,6 @@ class ProdOutputsTestCase(unittest.TestCase):
 
         # Test datasets for the overall QPG.
         # Check that we have the expected datasets
-        DatasetTypeSummary.model_validate(qg_sum.datasets)
-
         for dataset_summary in qg_sum.datasets.values():
             # Check counts: we should have recovered everything, so
             # published should equal expected for each dataset.
