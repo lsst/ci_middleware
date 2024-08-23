@@ -164,6 +164,40 @@ class Rc2OutputsTestCase(unittest.TestCase):
         self.assertNotIn(231819, htm7_indices)
         self.assertIn(231865, htm7_indices)
 
+    def test_partial_outputs(self) -> None:
+        """Test that downstream tasks are run or not as appropriate when
+        partial output errors are raised.
+        """
+        no_raise_direct = OutputRepoTests("RC2", "test-no-raise-partial-outputs-direct", {})
+        no_raise_qbb = OutputRepoTests("RC2", "test-no-raise-partial-outputs-qbb", {})
+        data_id = dict(instrument="HSC", detector=57)
+        for helper in (no_raise_direct, no_raise_qbb):
+            # When we don't raise, the ISR quantum that raised should have
+            # metadata and logs written, and so should downstream tasks that
+            # end up raising NoWorkFound.
+            self.assertTrue(helper.butler.exists(get_mock_name("isr_metadata"), data_id, exposure=95104))
+            self.assertTrue(helper.butler.exists(get_mock_name("isr_log"), data_id, exposure=95104))
+            self.assertTrue(
+                helper.butler.exists(get_mock_name("characterizeImage_metadata"), data_id, visit=95104)
+            )
+            self.assertTrue(
+                helper.butler.exists(get_mock_name("characterizeImage_log"), data_id, visit=95104)
+            )
+        raise_direct = OutputRepoTests("RC2", "test-raise-partial-outputs-direct", {})
+        raise_qbb = OutputRepoTests("RC2", "test-raise-partial-outputs-qbb", {})
+        for helper in (raise_direct, raise_qbb):
+            # When we do raise, the ISR quantum that raised should not have
+            # metadata written, but it should have logs, and downstream tasks
+            # should not have either, because they are never run.
+            self.assertFalse(helper.butler.exists(get_mock_name("isr_metadata"), data_id, exposure=95104))
+            self.assertTrue(helper.butler.exists(get_mock_name("isr_log"), data_id, exposure=95104))
+            self.assertFalse(
+                helper.butler.exists(get_mock_name("characterizeImage_metadata"), data_id, visit=95104)
+            )
+            self.assertFalse(
+                helper.butler.exists(get_mock_name("characterizeImage_log"), data_id, visit=95104)
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
