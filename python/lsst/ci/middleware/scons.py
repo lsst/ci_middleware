@@ -264,6 +264,8 @@ class PipelineCommands:
         skip_existing_in_last: bool = False,
         extend_run: bool = False,
         clobber_outputs: bool = False,
+        raise_on_partial_outputs: bool = False,
+        expect_failure: bool | None = None,
     ) -> PipelineCommands:
         """Add a new QuantumGraph and its execution to the build, but do not
         use it as input for later runs.
@@ -293,6 +295,12 @@ class PipelineCommands:
             If `True`, pass ``--clobber-outputs`` to the QuantumGraph
             generation command and the direct execution command.  QBB execution
             effectively inherits its clobber behavior from the quantum graph.
+        raise_on_partial_outputs : `bool`, optional
+            If `True`, pass ``--raise-on-partial-outputs`` to ``pipetask run``
+            and ``pipetask run-qbb``.
+        expect_failure : `bool`, optional
+            Override whether to expect the command to exit with a nonzero exit
+            code; default is ``bool(fail)``.
 
         Returns
         -------
@@ -318,17 +326,19 @@ class PipelineCommands:
             qg,
             suffix=suffix,
             output_run=output_run,
-            expect_failure=bool(fail),
+            expect_failure=bool(fail) if expect_failure is None else expect_failure,
             extend_run=extend_run,
             clobber_outputs=clobber_outputs,
+            raise_on_partial_outputs=raise_on_partial_outputs,
         )
         if not extend_run:
             self._add_qbb(
                 qg,
                 suffix=suffix,
                 output_run=output_run,
-                expect_failure=bool(fail),
+                expect_failure=bool(fail) if expect_failure is None else expect_failure,
                 pre_exec_init=not extend_run,
+                raise_on_partial_outputs=raise_on_partial_outputs,
             )
         return self
 
@@ -506,6 +516,7 @@ class PipelineCommands:
         extend_run: bool = False,
         clobber_outputs: bool = False,
         auto_retry_mem: tuple[str, str] | None = None,
+        raise_on_partial_outputs: bool = False,
     ) -> File:
         """Make an SCons target for direct execution of the quantum graph
         with ``pipetask run`` and a full butler.
@@ -527,6 +538,8 @@ class PipelineCommands:
             If `True`, pass ``--clobber-outputs`` to ``pipetask run``.
         auto_retry_mem : `tuple` [ `str`, `str` ], optional
             See argument of the same name on `add`.
+        raise_on_partial_outputs : `bool`, optional
+            If `True`, pass ``--raise-on-partial-outputs`` to ``pipetask run``.
 
         Returns
         -------
@@ -543,6 +556,8 @@ class PipelineCommands:
             extra_args.append("--clobber-outputs")
         if auto_retry_mem:
             extra_args.append(f"--memory-per-quantum {auto_retry_mem[0]}")
+        if raise_on_partial_outputs:
+            extra_args.append("--raise-on-partial-outputs")
         cmds = [
             # Untar the input data repository, which naturally makes a copy
             # of it, with the name we'll use for the output data
@@ -598,6 +613,7 @@ class PipelineCommands:
         expect_failure: bool,
         pre_exec_init: bool = True,
         auto_retry_mem: tuple[str, str] | None = None,
+        raise_on_partial_outputs: bool = False,
     ) -> File:
         """Make an SCons target for direct execution of the quantum graph
         with ``pipetask run-qbb`` and `lsst.daf.butler.QuantumBackedButler`.
@@ -617,7 +633,9 @@ class PipelineCommands:
             If `False`, do not run ``pipetask pre-exec-init-qbb`` at all.
         auto_retry_mem : `tuple` [ `str`, `str` ], optional
             See argument of the same name on `add`.
-
+        raise_on_partial_outputs : `bool`, optional
+            If `True`, pass ``--raise-on-partial-outputs`` to
+            ``pipetask run-qbb``.
 
         Returns
         -------
@@ -645,6 +663,8 @@ class PipelineCommands:
         extra_args: list[str] = []
         if auto_retry_mem:
             extra_args.append(f"--memory-per-quantum {auto_retry_mem[0]}")
+        if raise_on_partial_outputs:
+            extra_args.append("--raise-on-partial-outputs")
         commands.append(
             # Execute the QG using QuantumBackedButler.
             self._pipetask_cmd(

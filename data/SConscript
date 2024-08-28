@@ -70,9 +70,38 @@ rc2 = (
     PipelineCommands(
         "RC2", os.path.join(os.environ["DRP_PIPE_DIR"], "pipelines", "HSC", "DRP-RC2.yaml"), base_repo
     )
+    # Add side runs (later runs do not build on these) to check
+    # --raise-on-partial-outputs.
+    .add_side_run(
+        "test-raise-partial-outputs",
+        ["isr", "characterizeImage"],
+        where="skymap='ci_mw'",
+        fail=[
+            # Configure one quantum to fail with AnnotatedPartialOutputsError.
+            # Due to command-line options this should be interpreted as
+            # a regular failure, and downstream quanta should not be run.
+            '''isr:lsst.pipe.base.AnnotatedPartialOutputsError:"instrument='HSC' AND exposure=95104"'''
+        ],
+        raise_on_partial_outputs=True,
+        expect_failure=True,
+    )
+    .add_side_run(
+        "test-no-raise-partial-outputs",
+        ["isr", "characterizeImage"],
+        where="skymap='ci_mw'",
+        fail=[
+            # Configure one quantum to fail with AnnotatedPartialOutputsError.
+            # By default this is treated as a qualified success, and downstream
+            # quanta will be run - we expect them to them do NoWorkFound, which
+            # just reflects the fact that it's a little weird to pick ISR as
+            # the task to raise this error, but that doesn't matter for testing
+            # the mechanics.
+            '''isr:lsst.pipe.base.AnnotatedPartialOutputsError:"instrument='HSC' AND exposure=95104"'''
+        ],
+        expect_failure=False,
+    )
     .add("step1", where="instrument='HSC' AND exposure NOT IN (18202, 96980)")
-    # Add side runs (later runs do not build on these) to check --extend-run
-    # and --clobber-outputs.
+    # Add more side runs to check --extend-run and --clobber-outputs.
     .add_side_run(
         "test-clobber-without-skip",
         ["calibrate", "consolidatePreSourceTable"],
