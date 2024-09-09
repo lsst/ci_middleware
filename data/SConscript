@@ -117,6 +117,8 @@ rc2 = (
         clobber_outputs=True,
     )
     .add("step2a", where="skymap='ci_mw'")
+    # Test fail-and-rescue workflow by configuring one task fail on the first
+    # try, and then recover from that with a new run and --skip-existing-in.
     .add("step2b", where="skymap='ci_mw' AND tract=0")
     .add("step2cde")
     .add(
@@ -125,18 +127,20 @@ rc2 = (
         fail=[
             # Configure one quantum to fail on the first try and succeed on the
             # second, simulating an out-of-memory failure and automatic retry.
-            '''assembleCoadd::"skymap='ci_mw' AND tract=0 AND patch=2 AND band='r'":6GB'''
+            """assembleCoadd::"skymap='ci_mw' AND tract=0 AND patch=2 AND band='r'":6GB"""
         ],
         auto_retry_mem=("4GB", "8GB"),
     )
     .add("step4")
-    .add("step5", where="skymap='ci_mw' AND tract=0")
+    .add(
+        "step5",
+        where="skymap='ci_mw' AND tract=0",
+        group="attempt1",
+        fail=['''consolidateForcedSourceTable::"skymap='ci_mw' AND tract=0"'''],
+    )
+    .add("step5", where="skymap='ci_mw' AND tract=0", group="attempt2", skip_existing_in_last=True)
     .add("step6")
     .add("step7")
-    # Test fail-and-rescue workflow by configuring one task fail on the first
-    # try, and then recover from that with a new run and --skip-existing-in.
-    .add("step8", group="attempt1", fail=['''analyzeObjectTableCore::"skymap='ci_mw' AND tract=0"'''])
-    .add("step8", group="attempt2", skip_existing_in_last=True)
     .finish()
 )
 state.targets["data"].extend(rc2)
@@ -175,8 +179,6 @@ prod = (
     .add("step4", group="r", where="band='r'")
     .add("step4", group="i", where="band='i'")
     .add("step7")
-    # step8 in DRP-Prod is not actually valid, because it has tasks that should
-    # be partitioned in different ways in order to scale up.  This is DM-39314.
     .finish()
 )
 state.targets["data"].extend(prod)
