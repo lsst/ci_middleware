@@ -210,7 +210,7 @@ class ProdOutputsTestCase(unittest.TestCase):
 
         # Loop through the tasks in the dict
         for label, task_summary in qg_1_sum.tasks.items():
-            self.assertEqual(task_summary.n_not_attempted, 0)
+            self.assertEqual(task_summary.n_unknown, 0)
             self.assertEqual(task_summary.n_wonky, 0)
             self.assertEqual(task_summary.n_expected, 36)
             self.assertListEqual(task_summary.wonky_quanta, [])
@@ -219,7 +219,7 @@ class ProdOutputsTestCase(unittest.TestCase):
                 task_summary.n_expected,
                 task_summary.n_successful
                 + task_summary.n_blocked
-                + task_summary.n_not_attempted
+                + task_summary.n_unknown
                 + task_summary.n_wonky
                 + task_summary.n_failed,
             )
@@ -270,7 +270,7 @@ class ProdOutputsTestCase(unittest.TestCase):
                 # Check that the published datasets = expected - (unsuccessful
                 # + predicted_only)
                 self.assertEqual(
-                    dataset_summary.n_published,
+                    dataset_summary.n_visible,
                     dataset_summary.n_expected
                     - dataset_summary.n_unsuccessful
                     - dataset_summary.n_predicted_only,
@@ -289,15 +289,15 @@ class ProdOutputsTestCase(unittest.TestCase):
                 # and that they are not published
                 self.assertEqual(len(dataset_summary.unsuccessful_datasets), 6)
                 self.assertEqual(dataset_summary.n_expected, 36)
-                self.assertEqual(dataset_summary.n_published, 30)
+                self.assertEqual(dataset_summary.n_visible, 30)
 
             # Check that all the counts add up for every task
             self.assertEqual(
                 dataset_summary.n_expected,
                 sum(
                     [
-                        dataset_summary.n_published,
-                        dataset_summary.n_unpublished,
+                        dataset_summary.n_visible,
+                        dataset_summary.n_shadowed,
                         dataset_summary.n_predicted_only,
                         dataset_summary.n_cursed,
                         dataset_summary.n_unsuccessful,
@@ -324,7 +324,7 @@ class ProdOutputsTestCase(unittest.TestCase):
             self.assertEqual(task_summary.n_successful, 36)
             self.assertEqual(task_summary.n_blocked, 0)
             self.assertEqual(task_summary.n_failed, 0)
-            self.assertEqual(task_summary.n_not_attempted, 0)
+            self.assertEqual(task_summary.n_unknown, 0)
             self.assertEqual(task_summary.n_wonky, 0)
             self.assertEqual(task_summary.n_expected, 36)
             self.assertListEqual(task_summary.wonky_quanta, [])
@@ -333,7 +333,7 @@ class ProdOutputsTestCase(unittest.TestCase):
                 task_summary.n_expected,
                 task_summary.n_successful
                 + task_summary.n_blocked
-                + task_summary.n_not_attempted
+                + task_summary.n_unknown
                 + task_summary.n_wonky
                 + task_summary.n_failed,
             )
@@ -355,17 +355,17 @@ class ProdOutputsTestCase(unittest.TestCase):
             # published should equal expected for each dataset.
             self.assertEqual(
                 dataset_summary.n_expected,
-                dataset_summary.n_published,
+                dataset_summary.n_visible,
             )
             # Check that this is the expected number
-            self.assertEqual(dataset_summary.n_published, 36)
+            self.assertEqual(dataset_summary.n_visible, 36)
             # Check that they all add up
             self.assertEqual(
                 dataset_summary.n_expected,
                 sum(
                     [
-                        dataset_summary.n_published,
-                        dataset_summary.n_unpublished,
+                        dataset_summary.n_visible,
+                        dataset_summary.n_shadowed,
                         dataset_summary.n_predicted_only,
                         dataset_summary.n_cursed,
                         dataset_summary.n_unsuccessful,
@@ -381,8 +381,8 @@ class ProdOutputsTestCase(unittest.TestCase):
             # Since we have recovered everything, we should have the same
             # numbers for every task:
             self.assertEqual(dataset_summary.n_expected, 36)
-            self.assertEqual(dataset_summary.n_published, 36)
-            self.assertEqual(dataset_summary.n_unpublished, 0)
+            self.assertEqual(dataset_summary.n_visible, 36)
+            self.assertEqual(dataset_summary.n_shadowed, 0)
             self.assertEqual(dataset_summary.n_predicted_only, 0)
 
     def test_step1_quantum_provenance_graph_qbb(self) -> None:
