@@ -159,10 +159,7 @@ class Rc2OutputsTestCase(unittest.TestCase):
         # Make the quantum provenance graph for the first attempt
         qg_1 = helper.get_quantum_graph("step8", "attempt1")
         qpg1 = QuantumProvenanceGraph()
-        qpg1.add_new_graph(helper.butler, qg_1)
-        qpg1.resolve_duplicates(
-            helper.butler, collections=["HSC/runs/RC2/step8-attempt1"], where="instrument='HSC'"
-        )
+        qpg1.assemble_quantum_provenance_graph(helper.butler, qg_1, collections=["HSC/runs/RC2/step8-attempt1"], where="instrument='HSC'")
         qg_1_sum = qpg1.to_summary(helper.butler)
 
         # Check that expected, wonky and not attempted do not occur throughout
@@ -284,18 +281,13 @@ class Rc2OutputsTestCase(unittest.TestCase):
 
         # Before we get into that, let's see if we correctly label a successful
         # task whose data products do not make it into the output collection
-        # given as unpublished.
+        # given as shadowed.
 
-        qpg_unpublished = QuantumProvenanceGraph()
-        qpg_unpublished.add_new_graph(helper.butler, qg_1)
-        qpg_unpublished.add_new_graph(helper.butler, qg_2)
-        qpg_unpublished.resolve_duplicates(
-            helper.butler, collections=["HSC/runs/RC2/step8-attempt1"], where="instrument='HSC'"
-        )
+        qpg_shadowed = QuantumProvenanceGraph()
+        qpg_shadowed.assemble_quantum_provenance_graph(helper.butler, [qg_1, qg_2], collections=["HSC/runs/RC2/step8-attempt1"], where="instrument='HSC'")
+        qpg_shadowed_sum = qpg_shadowed.to_summary(helper.butler)
 
-        qpg_u_sum = qpg_unpublished.to_summary(helper.butler)
-
-        for dataset_type_name, dataset_type_summary in qpg_u_sum.datasets.items():
+        for dataset_type_name, dataset_type_summary in qpg_shadowed_sum.datasets.items():
             if dataset_type_summary.producer == "_mock_analyzeObjectTableCore":
                 if dataset_type_name == "_mock_analyzeObjectTableCore_log":
                     continue
@@ -310,13 +302,7 @@ class Rc2OutputsTestCase(unittest.TestCase):
         # Now for verifying the recovery properly -- the graph below is made
         # as intended.
         qpg2 = QuantumProvenanceGraph()
-        qpg2.add_new_graph(helper.butler, qg_1)
-        qpg2.add_new_graph(helper.butler, qg_2)
-        qpg2.resolve_duplicates(
-            helper.butler,
-            collections=["HSC/runs/RC2/step8-attempt2", "HSC/runs/RC2/step8-attempt1"],
-            where="instrument='HSC'",
-        )
+        qpg2.assemble_quantum_provenance_graph(helper.butler, [qg_1, qg_2], collections=["HSC/runs/RC2/step8-attempt2", "HSC/runs/RC2/step8-attempt1"], where="instrument='HSC'")
         qg_2_sum = qpg2.to_summary(helper.butler)
 
         for label, task_summary in qg_2_sum.tasks.items():
