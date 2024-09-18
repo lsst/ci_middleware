@@ -202,7 +202,9 @@ class ProdOutputsTestCase(unittest.TestCase):
         # Make the quantum provenance graph for the first attempt
         qg_1 = helper.get_quantum_graph("step1", "i-attempt1")
         qpg1 = QuantumProvenanceGraph()
-        qpg1.assemble_quantum_provenance_graph(helper.butler, [qg_1], collections=["HSC/runs/Prod/step1-i-attempt1"], where="instrument='HSC'")
+        qpg1.assemble_quantum_provenance_graph(
+            helper.butler, [qg_1], collections=["HSC/runs/Prod/step1-i-attempt1"], where="instrument='HSC'"
+        )
         qg_1_sum = qpg1.to_summary(helper.butler)
 
         # Loop through the tasks in the dict
@@ -230,7 +232,7 @@ class ProdOutputsTestCase(unittest.TestCase):
                         self.assertIsInstance(quantum_summary.data_id["detector"], int)
                         self.assertEqual(quantum_summary.data_id["visit"], 18202)
                         self.assertDictEqual(
-                            quantum_summary.runs, {"HSC/runs/Prod/step1-i-attempt1": "failed"}
+                            quantum_summary.runs, {"HSC/runs/Prod/step1-i-attempt1": "FAILED"}
                         )
                         self.assertIsInstance(quantum_summary.messages, list)
                         for message in quantum_summary.messages:
@@ -308,7 +310,12 @@ class ProdOutputsTestCase(unittest.TestCase):
         # Make an overall QPG and add the recovery attempt to the QPG
         qpg = QuantumProvenanceGraph()
         qg_2 = helper.get_quantum_graph("step1", "i-attempt2")
-        qpg.assemble_quantum_provenance_graph(helper.butler, [qg_1, qg_2], collections=["HSC/runs/Prod/step1-i-attempt2", "HSC/runs/Prod/step1-i-attempt1"], where="instrument='HSC'")
+        qpg.assemble_quantum_provenance_graph(
+            helper.butler,
+            [qg_1, qg_2],
+            collections=["HSC/runs/Prod/step1-i-attempt2", "HSC/runs/Prod/step1-i-attempt1"],
+            where="instrument='HSC'",
+        )
         qg_sum = qpg.to_summary(helper.butler)
 
         for label, task_summary in qg_sum.tasks.items():
