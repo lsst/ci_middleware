@@ -225,6 +225,12 @@ class Rc2OutputsTestCase(unittest.TestCase):
                     self.assertEqual(task_summary.n_successful, 46)
                     self.assertEqual(task_summary.n_blocked, 0)
                     self.assertEqual(task_summary.failed_quanta, [])
+                case _:
+                    raise RuntimeError(
+                        """Task summary contains unexpected
+                                       quanta. It is likely this test must be
+                                       updated to reflect the mocks."""
+                    )
         # Check on datasets
         for dataset_type_name, dataset_type_summary in qg_1_sum.datasets.items():
             # We shouldn't run into predicted only, shadowed or cursed.
@@ -282,13 +288,12 @@ class Rc2OutputsTestCase(unittest.TestCase):
 
         # Now examine the quantum provenance graph after the recovery attempt
         # has been made.
-        # Make the quantum provenance graph for the first attempt
+        # Get a graph for the second attempt.
         qg_2 = helper.get_quantum_graph("step5", "attempt2")
 
-        # Before we get into that, let's see if we correctly label a successful
-        # task whose data products do not make it into the output collection
-        # given as shadowed.
-
+        # Check that if we correctly label a successful task whose data
+        # products do not make it into the output collection, the data products
+        # are marked as shadowed.
         qpg_shadowed = QuantumProvenanceGraph()
         qpg_shadowed.assemble_quantum_provenance_graph(
             helper.butler, [qg_1, qg_2], collections=["HSC/runs/RC2/step5-attempt1"], where="instrument='HSC'"
@@ -307,9 +312,13 @@ class Rc2OutputsTestCase(unittest.TestCase):
                     self.assertEqual(dataset_type_summary.n_predicted_only, 0)
                     self.assertEqual(dataset_type_summary.n_unsuccessful, 0)
 
-        # Now for verifying the recovery properly -- the graph below is made
-        # as intended.
+        # Make the quantum provenance graph across both attempts properly, to
+        # check that the recovery was correctly handled.
         qpg2 = QuantumProvenanceGraph()
+        # Quantum graphs are passed in order of execution; collections are
+        # passed in reverse order because the query in
+        # `QuantumProvenanceGraph.__resolve_duplicates` requires collections
+        # be passed with the most recent first.
         qpg2.assemble_quantum_provenance_graph(
             helper.butler,
             [qg_1, qg_2],

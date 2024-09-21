@@ -243,17 +243,16 @@ class ProdOutputsTestCase(unittest.TestCase):
                             self.assertIn(
                                 "Exception ValueError: Simulated failure: task=_mock_calibrate", message
                             )
+                case "_mock_writePreSourceTable" | "_mock_transformPreSourceTable":
+                    self.assertEqual(task_summary.n_successful, 30)
+                    self.assertEqual(task_summary.n_blocked, 6)
+                    self.assertEqual(task_summary.n_failed, 0)
+                    self.assertListEqual(task_summary.failed_quanta, [])
                 case _:
-                    if label == "_mock_writePreSourceTable" or label == "_mock_transformPreSourceTable":
-                        self.assertEqual(task_summary.n_successful, 30)
-                        self.assertEqual(task_summary.n_blocked, 6)
-                        self.assertEqual(task_summary.n_failed, 0)
-                        self.assertListEqual(task_summary.failed_quanta, [])
-                    else:
-                        self.assertEqual(task_summary.n_successful, 36)
-                        self.assertEqual(task_summary.n_blocked, 0)
-                        self.assertEqual(task_summary.n_failed, 0)
-                        self.assertListEqual(task_summary.failed_quanta, [])
+                    self.assertEqual(task_summary.n_successful, 36)
+                    self.assertEqual(task_summary.n_blocked, 0)
+                    self.assertEqual(task_summary.n_failed, 0)
+                    self.assertListEqual(task_summary.failed_quanta, [])
 
         # Test datasets for the first QPG.
         for dataset_type_name, dataset_summary in qg_1_sum.datasets.items():
@@ -266,7 +265,7 @@ class ProdOutputsTestCase(unittest.TestCase):
                     dataset_summary.unsuccessful_datasets,
                     f"Expected failures were not stored as unsuccessful datasets for {dataset_type_name}.",
                 )
-                # Check that the published datasets = expected - (unsuccessful
+                # Check that the visible datasets = expected - (unsuccessful
                 # + predicted_only)
                 self.assertEqual(
                     dataset_summary.n_visible,
@@ -285,10 +284,11 @@ class ProdOutputsTestCase(unittest.TestCase):
                     "HSC-I",
                 )
                 # Check that there are the expected amount of failures
-                # and that they are not published
+                # and that they are not visible
                 self.assertEqual(len(dataset_summary.unsuccessful_datasets), 6)
                 self.assertEqual(dataset_summary.n_expected, 36)
                 self.assertEqual(dataset_summary.n_visible, 30)
+                self.assertEqual(dataset_summary.n_predicted_only, 0)
 
             # Check that all the counts add up for every task
             self.assertEqual(
@@ -310,6 +310,10 @@ class ProdOutputsTestCase(unittest.TestCase):
         # Make an overall QPG and add the recovery attempt to the QPG
         qpg = QuantumProvenanceGraph()
         qg_2 = helper.get_quantum_graph("step1", "i-attempt2")
+        # Quantum graphs are passed in order of execution; collections are
+        # passed in reverse order because the query in
+        # `QuantumProvenanceGraph.__resolve_duplicates` requires collections
+        # be passed with the most recent first.
         qpg.assemble_quantum_provenance_graph(
             helper.butler,
             [qg_1, qg_2],
@@ -350,7 +354,7 @@ class ProdOutputsTestCase(unittest.TestCase):
         # Check that we have the expected datasets
         for dataset_summary in qg_sum.datasets.values():
             # Check counts: we should have recovered everything, so
-            # published should equal expected for each dataset.
+            # visible should equal expected for each dataset.
             self.assertEqual(
                 dataset_summary.n_expected,
                 dataset_summary.n_visible,
