@@ -23,6 +23,7 @@ import unittest
 from typing import ClassVar
 
 from lsst.ci.middleware.output_repo_tests import OutputRepoTests
+from lsst.pipe.base.quantum_provenance_graph import QuantumProvenanceGraph, UnsuccessfulQuantumSummary
 from lsst.pipe.base.tests.mocks import MockDataset, get_mock_name
 
 # (tract, patch, band): {input visits} for coadds produced here.
@@ -148,8 +149,250 @@ class Rc2OutputsTestCase(unittest.TestCase):
         self.assertIn(get_mock_name("transformForcedSourceTable"), tasks_with_quanta_1)
         self.assertNotIn(get_mock_name("transformForcedSourceTable"), tasks_with_quanta_2)
 
-    def test_step8_rescue_qbb(self) -> None:
+    def test_step5_rescue_qbb(self) -> None:
         self.check_step5_rescue(self.qbb)
+
+    def check_step5_qpg(self, helper: OutputRepoTests) -> None:
+        """Check that the fail-and-recover attempts in step 5 are properly
+        diagnosed using the `QuantumProvenanceGraph`.
+        """
+        # Make the quantum provenance graph for the first attempt
+        qg_1 = helper.get_quantum_graph("step5", "attempt1")
+        qpg1 = QuantumProvenanceGraph()
+        qpg1.assemble_quantum_provenance_graph(
+            helper.butler, [qg_1], collections=["HSC/runs/RC2/step5-attempt1"], where="instrument='HSC'"
+        )
+        qg_1_sum = qpg1.to_summary(helper.butler)
+
+        # Check that expected, wonky and not attempted do not occur throughout
+        # tasks:
+        for label, task_summary in qg_1_sum.tasks.items():
+            self.assertEqual(task_summary.n_unknown, 0)
+            self.assertEqual(task_summary.n_wonky, 0)
+            self.assertListEqual(task_summary.wonky_quanta, [])
+            self.assertListEqual(task_summary.recovered_quanta, [])
+            match label:
+                # Check that the failure was documented in expected ways:
+                case label if label in [
+                    "_mock_transformForcedSourceTable",
+                    "_mock_drpAssociation",
+                    "_mock_drpDiaCalculation",
+                    "_mock_transformForcedSourceOnDiaObjectTable",
+                ]:
+                    self.assertEqual(task_summary.n_expected, 4)
+                    self.assertEqual(task_summary.n_failed, 0)
+                    self.assertEqual(task_summary.n_successful, 4)
+                    self.assertEqual(task_summary.n_blocked, 0)
+                    self.assertEqual(task_summary.failed_quanta, [])
+                case "_mock_consolidateForcedSourceTable":
+                    self.assertEqual(task_summary.n_expected, 1)
+                    self.assertEqual(task_summary.n_failed, 1)
+                    self.assertEqual(task_summary.n_successful, 0)
+                    self.assertEqual(task_summary.n_blocked, 0)
+                    self.assertEqual(
+                        task_summary.failed_quanta,
+                        [
+                            UnsuccessfulQuantumSummary(
+                                data_id={"instrument": "HSC", "skymap": "ci_mw", "tract": 0},
+                                runs={"HSC/runs/RC2/step5-attempt1": "FAILED"},
+                                messages=[
+                                    "Execution of task '_mock_consolidateForcedSourceTable' on quantum "
+                                    "{instrument: 'HSC', skymap: 'ci_mw', tract: 0} failed. Exception "
+                                    "ValueError: Simulated failure: task=_mock_consolidateForcedSourceTable "
+                                    "dataId={instrument: 'HSC', skymap: 'ci_mw', tract: 0}"
+                                ],
+                            )
+                        ],
+                    )
+                case label if label in [
+                    "_mock_consolidateAssocDiaSourceTable",
+                    "_mock_consolidateFullDiaObjectTable",
+                    "_mock_consolidateForcedSourceOnDiaObjectTable",
+                ]:
+                    self.assertEqual(task_summary.n_expected, 1)
+                    self.assertEqual(task_summary.n_failed, 0)
+                    self.assertEqual(task_summary.n_successful, 1)
+                    self.assertEqual(task_summary.n_blocked, 0)
+                    self.assertEqual(task_summary.failed_quanta, [])
+
+                case label if label in [
+                    "_mock_forcedPhotCcdOnDiaObjects",
+                    "_mock_forcedPhotDiffOnDiaObjects",
+                    "_mock_writeForcedSourceOnDiaObjectTable",
+                ]:
+                    self.assertEqual(task_summary.n_expected, 46)
+                    self.assertEqual(task_summary.n_failed, 0)
+                    self.assertEqual(task_summary.n_successful, 46)
+                    self.assertEqual(task_summary.n_blocked, 0)
+                    self.assertEqual(task_summary.failed_quanta, [])
+                case _:
+                    raise RuntimeError(
+                        """Task summary contains unexpected
+                                       quanta. It is likely this test must be
+                                       updated to reflect the mocks."""
+                    )
+        # Check on datasets
+        for dataset_type_name, dataset_type_summary in qg_1_sum.datasets.items():
+            # We shouldn't run into predicted only, shadowed or cursed.
+            # Shadowed suggests that the dataset exists but is not included
+            # in the final collection; cursed suggests that the dataset is
+            # visible but unsuccessful.
+            self.assertEqual(dataset_type_summary.n_predicted_only, 0)
+            self.assertEqual(dataset_type_summary.n_shadowed, 0)
+            self.assertEqual(dataset_type_summary.n_cursed, 0)
+            self.assertListEqual(dataset_type_summary.cursed_datasets, [])
+            match dataset_type_summary.producer:
+                # Check that the failure was documented in expected ways:
+                case label if label in [
+                    "_mock_transformForcedSourceTable",
+                    "_mock_drpAssociation",
+                    "_mock_drpDiaCalculation",
+                    "_mock_transformForcedSourceOnDiaObjectTable",
+                ]:
+                    self.assertEqual(dataset_type_summary.n_visible, 4)
+                    self.assertEqual(dataset_type_summary.n_expected, 4)
+                    self.assertEqual(dataset_type_summary.n_unsuccessful, 0)
+                    self.assertListEqual(dataset_type_summary.unsuccessful_datasets, [])
+                case "_mock_consolidateForcedSourceTable":
+                    self.assertEqual(dataset_type_summary.n_visible, 0)
+                    self.assertEqual(dataset_type_summary.n_expected, 1)
+                    self.assertEqual(dataset_type_summary.n_unsuccessful, 1)
+                    if dataset_type_name == "_mock_forcedSourceTable_tract":
+                        self.assertListEqual(
+                            dataset_type_summary.unsuccessful_datasets,
+                            [{"skymap": "ci_mw", "tract": 0}],
+                        )
+                    else:
+                        self.assertListEqual(
+                            dataset_type_summary.unsuccessful_datasets,
+                            [{"instrument": "HSC", "skymap": "ci_mw", "tract": 0}],
+                        )
+                case label if label in [
+                    "_mock_consolidateAssocDiaSourceTable",
+                    "_mock_consolidateFullDiaObjectTable",
+                    "_mock_consolidateForcedSourceOnDiaObjectTable",
+                ]:
+                    self.assertEqual(dataset_type_summary.n_visible, 1)
+                    self.assertEqual(dataset_type_summary.n_expected, 1)
+                    self.assertEqual(dataset_type_summary.n_unsuccessful, 0)
+                    self.assertListEqual(dataset_type_summary.unsuccessful_datasets, [])
+                case label if label in [
+                    "_mock_forcedPhotCcdOnDiaObjects",
+                    "_mock_forcedPhotDiffOnDiaObjects",
+                    "_mock_writeForcedSourceOnDiaObjectTable",
+                ]:
+                    self.assertEqual(dataset_type_summary.n_visible, 46)
+                    self.assertEqual(dataset_type_summary.n_expected, 46)
+                    self.assertEqual(dataset_type_summary.n_unsuccessful, 0)
+                    self.assertListEqual(dataset_type_summary.unsuccessful_datasets, [])
+
+        # Now examine the quantum provenance graph after the recovery attempt
+        # has been made.
+        # Get a graph for the second attempt.
+        qg_2 = helper.get_quantum_graph("step5", "attempt2")
+
+        # Check that if we correctly label a successful task whose data
+        # products do not make it into the output collection, the data products
+        # are marked as shadowed.
+        qpg_shadowed = QuantumProvenanceGraph()
+        qpg_shadowed.assemble_quantum_provenance_graph(
+            helper.butler, [qg_1, qg_2], collections=["HSC/runs/RC2/step5-attempt1"], where="instrument='HSC'"
+        )
+        qg_shadowed_sum = qpg_shadowed.to_summary(helper.butler)
+
+        for dataset_type_name, dataset_type_summary in qg_shadowed_sum.datasets.items():
+            if dataset_type_summary.producer == "_mock_consolidateForcedSourceTable":
+                if dataset_type_name == "_mock_consolidateForcedSourceTable_log":
+                    continue
+                else:
+                    self.assertEqual(dataset_type_summary.n_visible, 0)
+                    self.assertEqual(dataset_type_summary.n_shadowed, 1)
+                    self.assertEqual(dataset_type_summary.n_expected, 1)
+                    self.assertEqual(dataset_type_summary.n_cursed, 0)
+                    self.assertEqual(dataset_type_summary.n_predicted_only, 0)
+                    self.assertEqual(dataset_type_summary.n_unsuccessful, 0)
+
+        # Make the quantum provenance graph across both attempts properly, to
+        # check that the recovery was correctly handled.
+        qpg2 = QuantumProvenanceGraph()
+        # Quantum graphs are passed in order of execution; collections are
+        # passed in reverse order because the query in
+        # `QuantumProvenanceGraph.__resolve_duplicates` requires collections
+        # be passed with the most recent first.
+        qpg2.assemble_quantum_provenance_graph(
+            helper.butler,
+            [qg_1, qg_2],
+            collections=["HSC/runs/RC2/step5-attempt2", "HSC/runs/RC2/step5-attempt1"],
+            where="instrument='HSC'",
+        )
+        qg_2_sum = qpg2.to_summary(helper.butler)
+
+        for label, task_summary in qg_2_sum.tasks.items():
+            self.assertEqual(task_summary.n_unknown, 0)
+            self.assertEqual(task_summary.n_wonky, 0)
+            self.assertListEqual(task_summary.wonky_quanta, [])
+            # There should be no failures, so we can say for all tasks:
+            self.assertEqual(task_summary.n_successful, task_summary.n_expected)
+            self.assertEqual(task_summary.n_failed, 0)
+            self.assertListEqual(task_summary.failed_quanta, [])
+            match label:
+                case label if label in [
+                    "_mock_transformForcedSourceTable",
+                    "_mock_drpAssociation",
+                    "_mock_drpDiaCalculation",
+                    "_mock_transformForcedSourceOnDiaObjectTable",
+                ]:
+                    self.assertEqual(task_summary.n_expected, 4)
+                    self.assertEqual(task_summary.n_failed, 0)
+                    self.assertEqual(task_summary.n_successful, 4)
+                    self.assertEqual(task_summary.n_blocked, 0)
+                    self.assertEqual(task_summary.failed_quanta, [])
+                    self.assertEqual(task_summary.recovered_quanta, [])
+                # Check that the failure was recovered:
+                case "_mock_consolidateForcedSourceTable":
+                    self.assertEqual(task_summary.n_expected, 1)
+                    self.assertEqual(task_summary.n_successful, 1)
+                    self.assertEqual(task_summary.n_blocked, 0)
+                    self.assertEqual(
+                        task_summary.recovered_quanta,
+                        [{"instrument": "HSC", "skymap": "ci_mw", "tract": 0}],
+                    )
+                case label if label in [
+                    "_mock_consolidateAssocDiaSourceTable",
+                    "_mock_consolidateFullDiaObjectTable",
+                    "_mock_consolidateForcedSourceOnDiaObjectTable",
+                ]:
+                    self.assertEqual(task_summary.n_expected, 1)
+                    self.assertEqual(task_summary.n_failed, 0)
+                    self.assertEqual(task_summary.n_successful, 1)
+                    self.assertEqual(task_summary.n_blocked, 0)
+                    self.assertEqual(task_summary.failed_quanta, [])
+
+                case label if label in [
+                    "_mock_forcedPhotCcdOnDiaObjects",
+                    "_mock_forcedPhotDiffOnDiaObjects",
+                    "_mock_writeForcedSourceOnDiaObjectTable",
+                ]:
+                    self.assertEqual(task_summary.n_expected, 46)
+                    self.assertEqual(task_summary.n_failed, 0)
+                    self.assertEqual(task_summary.n_successful, 46)
+                    self.assertEqual(task_summary.n_blocked, 0)
+                    self.assertEqual(task_summary.failed_quanta, [])
+
+        # Check on datasets
+        for dataset_type_summary in qg_2_sum.datasets.values():
+            # Check that all the data products are present and successful for
+            # all tasks.
+            self.assertEqual(dataset_type_summary.n_predicted_only, 0)
+            self.assertEqual(dataset_type_summary.n_cursed, 0)
+            self.assertListEqual(dataset_type_summary.cursed_datasets, [])
+            self.assertEqual(dataset_type_summary.n_unsuccessful, 0)
+            self.assertListEqual(dataset_type_summary.unsuccessful_datasets, [])
+            self.assertEqual(dataset_type_summary.n_shadowed, 0)
+            self.assertEqual(dataset_type_summary.n_visible, dataset_type_summary.n_expected)
+
+    def test_step5_quantum_provenance_graph_qbb(self) -> None:
+        self.check_step5_qpg(self.qbb)
 
     def test_fgcm_refcats(self) -> None:
         """Test that FGCM does not get refcats that don't overlap any of its
