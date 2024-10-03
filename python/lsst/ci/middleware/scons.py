@@ -558,6 +558,8 @@ class PipelineCommands:
             extra_args.append(f"--memory-per-quantum {auto_retry_mem[0]}")
         if raise_on_partial_outputs:
             extra_args.append("--raise-on-partial-outputs")
+        else:
+            extra_args.append("--no-raise-on-partial-outputs")
         cmds = [
             # Untar the input data repository, which naturally makes a copy
             # of it, with the name we'll use for the output data
@@ -665,6 +667,8 @@ class PipelineCommands:
             extra_args.append(f"--memory-per-quantum {auto_retry_mem[0]}")
         if raise_on_partial_outputs:
             extra_args.append("--raise-on-partial-outputs")
+        else:
+            extra_args.append("--no-raise-on-partial-outputs")
         commands.append(
             # Execute the QG using QuantumBackedButler.
             self._pipetask_cmd(
