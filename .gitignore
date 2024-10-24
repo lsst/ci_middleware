@@ -21,3 +21,5 @@ pytest_session.txt
 
 # Coverage (from pytest and pipetask --coverage).
 .coverage*
+
+_build.*
