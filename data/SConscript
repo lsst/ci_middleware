@@ -74,7 +74,7 @@ rc2 = (
     # --raise-on-partial-outputs.
     .add_side_run(
         "test-raise-partial-outputs",
-        ["isr", "characterizeImage"],
+        ["isr", "calibrateImage"],
         where="skymap='ci_mw'",
         fail=[
             # Configure one quantum to fail with AnnotatedPartialOutputsError.
@@ -87,7 +87,7 @@ rc2 = (
     )
     .add_side_run(
         "test-no-raise-partial-outputs",
-        ["isr", "characterizeImage"],
+        ["isr", "calibrateImage"],
         where="skymap='ci_mw'",
         fail=[
             # Configure one quantum to fail with AnnotatedPartialOutputsError.
@@ -104,14 +104,14 @@ rc2 = (
     # Add more side runs to check --extend-run and --clobber-outputs.
     .add_side_run(
         "test-clobber-without-skip",
-        ["calibrate", "consolidatePreSourceTable"],
+        ["calibrateImage", "consolidatePreSourceTable"],
         where="skymap='ci_mw'",
         extend_run=True,
         clobber_outputs=True,
     )
     .add_side_run(
         "test-skip-and-clobber",
-        ["calibrate", "consolidatePreSourceTable"],
+        ["calibrateImage", "consolidatePreSourceTable"],
         skip_existing_in_last=True,
         extend_run=True,
         clobber_outputs=True,
@@ -163,7 +163,7 @@ prod = (
         "step1",
         group="i-attempt1",
         where="band='i'",
-        fail=['''calibrate::"instrument='HSC' AND visit=18202"'''],
+        fail=['''calibrateImage::"instrument='HSC' AND visit=18202"'''],
     )
     .add("step1", group="i-attempt2", where="band='i'", skip_existing_in_last=True)
     .add("step2a", group="r", where="band='r'")
