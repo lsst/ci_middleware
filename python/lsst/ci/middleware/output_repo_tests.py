@@ -114,8 +114,8 @@ class OutputRepoTests:
         """Run tests on the objectTable and objectTable_tract datasets.
 
         This includes tests of storage class conversion, since objectTable
-        tract is defined as a DataFrame in its producing and consuming tasks,
-        but ArrowTable in the data repository."""
+        tract is defined as a ArrowAstropy in its producing and consuming
+        tasks, but ArrowTable in the data repository."""
         patch_refs = {
             (cast(int, ref.dataId["tract"]), cast(int, ref.dataId["patch"])): ref
             for ref in self.butler.registry.queryDatasets(get_mock_name("objectTable"))
@@ -129,7 +129,7 @@ class OutputRepoTests:
         }
         test_case.assertEqual(set(tract_refs.keys()), {tract for tract, _, _ in self.expected.keys()})
         for tract, tract_ref in tract_refs.items():
-            test_case.assertEqual(tract_ref.datasetType.storageClass.name, get_mock_name("DataFrame"))
+            test_case.assertEqual(tract_ref.datasetType.storageClass.name, get_mock_name("ArrowAstropy"))
             tract_dataset: MockDataset = self.butler.get(tract_ref)
             test_case.assertIsNone(tract_dataset.converted_from)
             assert tract_dataset.quantum is not None
@@ -140,17 +140,19 @@ class OutputRepoTests:
                 patch_ref = patch_refs[tract, patch]
                 # We pre-registered this dataset type with ArrowTable as its
                 # storage class, even though the task connections all use
-                # DataFrame.
+                # ArrowAstropy.
                 test_case.assertEqual(patch_ref.datasetType.storageClass.name, get_mock_name("ArrowTable"))
                 patch_dataset: MockDataset = self.butler.get(patch_ref)
                 test_case.assertEqual(patch_dataset.storage_class, get_mock_name("ArrowTable"))
-                # Conversion from DataFrame should have happened on write.
+                # Conversion from ArrowAstropy should have happened on write.
                 assert patch_dataset.converted_from is not None  # mypy-friendly assert
-                test_case.assertEqual(patch_dataset.converted_from.storage_class, get_mock_name("DataFrame"))
-                # The objectTable should have been read in as a DataFrame to
+                test_case.assertEqual(
+                    patch_dataset.converted_from.storage_class, get_mock_name("ArrowAstropy")
+                )
+                # The objectTable should have been read in as Astropy to
                 # the task that makes objectTable_tract, i.e. converted on
                 # read.
-                test_case.assertEqual(patch_dataset_as_input.storage_class, get_mock_name("DataFrame"))
+                test_case.assertEqual(patch_dataset_as_input.storage_class, get_mock_name("ArrowAstropy"))
                 assert patch_dataset_as_input.converted_from is not None
                 test_case.assertEqual(patch_dataset_as_input.converted_from, patch_dataset)
 
