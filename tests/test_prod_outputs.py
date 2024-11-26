@@ -152,11 +152,11 @@ class ProdOutputsTestCase(unittest.TestCase):
                     ]
                 ),
             )
-        failures = summary_1["_mock_calibrate"]["failed_quanta"]
+        failures = summary_1["_mock_calibrateImage"]["failed_quanta"]
         failed_visits = set()
         for quantum_summary in failures.values():
             self.assertTrue(
-                quantum_summary["error"][0].startswith("Execution of task '_mock_calibrate' on quantum")
+                quantum_summary["error"][0].startswith("Execution of task '_mock_calibrateImage' on quantum")
             )
             failed_visits.add(quantum_summary["data_id"]["visit"])
         self.assertEqual(failed_visits, {18202})
@@ -164,10 +164,12 @@ class ProdOutputsTestCase(unittest.TestCase):
         # Now we will make a human_readable report and assert that the outputs
         # are where we expect them to be, a second time.
         hr_summary_1 = report_1.to_summary_dict(helper.butler, human_readable=True)
-        failures = hr_summary_1["_mock_calibrate"]["errors"]
+        failures = hr_summary_1["_mock_calibrateImage"]["errors"]
         for failure in failures:
             self.assertEqual(failure["data_id"]["visit"], 18202)
-            self.assertTrue(failure["error"][0].startswith("Execution of task '_mock_calibrate' on quantum"))
+            self.assertTrue(
+                failure["error"][0].startswith("Execution of task '_mock_calibrateImage' on quantum")
+            )
             self.assertEqual(hr_summary_1["_mock_isr"]["outputs"]["_mock_postISRCCD"]["produced"], 36)
         # This task should have succeeded in attempt1 and should not have been
         # included in attempt2.
@@ -186,10 +188,10 @@ class ProdOutputsTestCase(unittest.TestCase):
                     ]
                 ),
             )
-        self.assertEqual(summary_2["_mock_calibrate"]["failed_quanta"], {})  # is empty ??
+        self.assertEqual(summary_2["_mock_calibrateImage"]["failed_quanta"], {})  # is empty ??
         # Making sure it works with the human-readable version,
         hr_summary_2 = report_2.to_summary_dict(helper.butler, human_readable=True)
-        self.assertEqual(hr_summary_2["_mock_calibrate"]["failed_quanta"], [])
+        self.assertEqual(hr_summary_2["_mock_calibrateImage"]["failed_quanta"], [])
 
     def test_step1_execution_reports_qbb(self) -> None:
         self.check_step1_execution_reports(self.qbb)
@@ -223,7 +225,7 @@ class ProdOutputsTestCase(unittest.TestCase):
                 + task_summary.n_failed,
             )
             match label:
-                case "_mock_calibrate":
+                case "_mock_calibrateImage":
                     self.assertEqual(task_summary.n_successful, 30)
                     self.assertEqual(task_summary.n_blocked, 0)
                     self.assertEqual(task_summary.n_failed, 6)
@@ -238,10 +240,10 @@ class ProdOutputsTestCase(unittest.TestCase):
                         for message in quantum_summary.messages:
                             self.assertIsInstance(message, str)
                             self.assertTrue(
-                                message.startswith("Execution of task '_mock_calibrate' on quantum")
+                                message.startswith("Execution of task '_mock_calibrateImage' on quantum")
                             )
                             self.assertIn(
-                                "Exception ValueError: Simulated failure: task=_mock_calibrate", message
+                                "Exception ValueError: Simulated failure: task=_mock_calibrateImage", message
                             )
                 case "_mock_writePreSourceTable" | "_mock_transformPreSourceTable":
                     self.assertEqual(task_summary.n_successful, 30)
@@ -257,7 +259,7 @@ class ProdOutputsTestCase(unittest.TestCase):
         # Test datasets for the first QPG.
         for dataset_type_name, dataset_summary in qg_1_sum.datasets.items():
             # For the expected failure
-            if dataset_summary.producer == "_mock_calibrate":
+            if dataset_summary.producer == "_mock_calibrateImage":
                 # A bit hard to read, but this is actually asserting that it's
                 # not empty + showing an error if it is.
 
@@ -340,7 +342,7 @@ class ProdOutputsTestCase(unittest.TestCase):
                 + task_summary.n_failed,
             )
             if (
-                label == "_mock_calibrate"
+                label == "_mock_calibrateImage"
                 or label == "_mock_writePreSourceTable"
                 or label == "_mock_transformPreSourceTable"
             ):

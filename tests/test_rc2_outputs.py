@@ -421,11 +421,9 @@ class Rc2OutputsTestCase(unittest.TestCase):
             self.assertTrue(helper.butler.exists(get_mock_name("isr_metadata"), data_id, exposure=95104))
             self.assertTrue(helper.butler.exists(get_mock_name("isr_log"), data_id, exposure=95104))
             self.assertTrue(
-                helper.butler.exists(get_mock_name("characterizeImage_metadata"), data_id, visit=95104)
+                helper.butler.exists(get_mock_name("calibrateImage_metadata"), data_id, visit=95104)
             )
-            self.assertTrue(
-                helper.butler.exists(get_mock_name("characterizeImage_log"), data_id, visit=95104)
-            )
+            self.assertTrue(helper.butler.exists(get_mock_name("calibrateImage_log"), data_id, visit=95104))
         raise_direct = OutputRepoTests("RC2", "test-raise-partial-outputs-direct", {})
         raise_qbb = OutputRepoTests("RC2", "test-raise-partial-outputs-qbb", {})
         for helper in (raise_direct, raise_qbb):
@@ -435,11 +433,9 @@ class Rc2OutputsTestCase(unittest.TestCase):
             self.assertFalse(helper.butler.exists(get_mock_name("isr_metadata"), data_id, exposure=95104))
             self.assertTrue(helper.butler.exists(get_mock_name("isr_log"), data_id, exposure=95104))
             self.assertFalse(
-                helper.butler.exists(get_mock_name("characterizeImage_metadata"), data_id, visit=95104)
+                helper.butler.exists(get_mock_name("calibrateImage_metadata"), data_id, visit=95104)
             )
-            self.assertFalse(
-                helper.butler.exists(get_mock_name("characterizeImage_log"), data_id, visit=95104)
-            )
+            self.assertFalse(helper.butler.exists(get_mock_name("calibrateImage_log"), data_id, visit=95104))
 
 
 if __name__ == "__main__":
