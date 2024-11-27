@@ -26,10 +26,6 @@ import os
 from lsst.ci.middleware.scons import PipelineCommands, python_cmd, tar_repo_cmd
 from lsst.sconsUtils import state
 
-# Ensure we can run butler CLI extension in build scripts by propagating the
-# necessary envvar.
-state.env.Append(ENV={"DAF_BUTLER_PLUGINS": os.environ["DAF_BUTLER_PLUGINS"]})
-
 # Set up a list of all build targets produced in this subdir.
 state.targets["data"] = []
 
