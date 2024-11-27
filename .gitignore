@@ -18,8 +18,10 @@ tests/.tests
 pytest_session.txt
 .cache/
 .pytest_cache
+tests/tmp*
 
 # Coverage (from pytest and pipetask --coverage).
 .coverage*
 
 _build.*
+python/*.dist-info/
