@@ -43,11 +43,17 @@ from lsst.sphgeom import Box
 BASE_STYLE = {"fill_alpha": 0.5}
 
 
-STYLE_DEFAULTS: dict[str, dict[str, Any]] = dict(
-    htm7={"line_color": "black", "fill_color": "white", "fill_alpha": 0.0, **BASE_STYLE, "level": "underlay"},
-    patch={"line_color": "blue", "fill_color": "blue", **BASE_STYLE, "level": "overlay"},
-    visit_detector_region={"line_color": "red", "fill_color": "red", **BASE_STYLE, "level": "glyph"},
-)
+STYLE_DEFAULTS: dict[str, dict[str, Any]] = {
+    "htm7": {
+        "line_color": "black",
+        "fill_color": "white",
+        "fill_alpha": 0.0,
+        **BASE_STYLE,
+        "level": "underlay",
+    },
+    "patch": {"line_color": "blue", "fill_color": "blue", **BASE_STYLE, "level": "overlay"},
+    "visit_detector_region": {"line_color": "red", "fill_color": "red", **BASE_STYLE, "level": "glyph"},
+}
 
 
 @dataclasses.dataclass
