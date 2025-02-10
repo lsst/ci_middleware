@@ -22,10 +22,10 @@
 from __future__ import annotations
 
 __all__ = (
+    "PipelineCommands",
     "python_cmd",
     "tar_repo_cmd",
     "untar_repo_cmd",
-    "PipelineCommands",
 )
 
 import os

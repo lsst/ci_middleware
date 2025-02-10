@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-__all__ = ("InstrumentRecords", "ObservationRecords", "make_skymap_instance", "RepoData")
+__all__ = ("InstrumentRecords", "ObservationRecords", "RepoData", "make_skymap_instance")
 
 import dataclasses
 import json

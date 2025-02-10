@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-__all__ = ("MockDatasetMaker", "UNMOCKED_DATASET_TYPES")
+__all__ = ("UNMOCKED_DATASET_TYPES", "MockDatasetMaker")
 
 from typing import Any, ClassVar, cast
 
