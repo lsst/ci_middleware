@@ -86,6 +86,9 @@ select = [
     "W",  # pycodestyle
     "I",  # isort
     "RUF022", # sort __all__
+    "UP",  # pyupgrade
+    "C4",  # comprehensions
+    "B",  # bugbear
 ]
 extend-select = [
     "RUF100", # Warn about unused noqa
