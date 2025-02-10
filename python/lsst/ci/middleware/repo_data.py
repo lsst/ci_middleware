@@ -335,7 +335,7 @@ class ObservationRecords:
             if any(getattr(record, k) != v for k, v in fixed.items()):
                 continue
             bin_key = []
-            for k, extract in extractors.items():
+            for extract in extractors.values():
                 value = extract(record)
                 bin_key.append(value)
             binned[tuple(bin_key)].append(record.id)
