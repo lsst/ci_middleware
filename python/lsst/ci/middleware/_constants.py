@@ -22,13 +22,13 @@
 from __future__ import annotations
 
 __all__ = (
-    "INSTRUMENT",
-    "DETECTORS",
     "BANDS",
+    "DEFAULTS_COLLECTION",
+    "DETECTORS",
+    "INSTRUMENT",
+    "MISC_INPUT_RUN",
     "SKYMAP",
     "UNMOCKED_DATASET_TYPES",
-    "DEFAULTS_COLLECTION",
-    "MISC_INPUT_RUN",
 )
 
 INSTRUMENT = "HSC"

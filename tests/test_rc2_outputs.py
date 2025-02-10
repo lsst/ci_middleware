@@ -402,7 +402,8 @@ class Rc2OutputsTestCase(unittest.TestCase):
             get_mock_name("fgcm_reference_stars"), instrument="HSC"
         )
         htm7_indices = {
-            input.data_id["htm7"] for input in fgcm_reference_stars.quantum.inputs["ref_cat"]  # type: ignore
+            input.data_id["htm7"]
+            for input in fgcm_reference_stars.quantum.inputs["ref_cat"]  # type: ignore
         }
         self.assertNotIn(231819, htm7_indices)
         self.assertIn(231865, htm7_indices)
@@ -413,7 +414,7 @@ class Rc2OutputsTestCase(unittest.TestCase):
         """
         no_raise_direct = OutputRepoTests("RC2", "test-no-raise-partial-outputs-direct", {})
         no_raise_qbb = OutputRepoTests("RC2", "test-no-raise-partial-outputs-qbb", {})
-        data_id = dict(instrument="HSC", detector=57)
+        data_id = {"instrument": "HSC", "detector": 57}
         for helper in (no_raise_direct, no_raise_qbb):
             # When we don't raise, the ISR quantum that raised should have
             # metadata and logs written, and so should downstream tasks that

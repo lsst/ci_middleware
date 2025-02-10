@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-__all__ = ("InstrumentRecords", "ObservationRecords", "make_skymap_instance", "RepoData")
+__all__ = ("InstrumentRecords", "ObservationRecords", "RepoData", "make_skymap_instance")
 
 import dataclasses
 import json
@@ -32,6 +32,7 @@ from collections.abc import Iterable
 from typing import Any, cast
 
 import pydantic
+
 from lsst.daf.butler import (
     Butler,
     CollectionType,
@@ -334,7 +335,7 @@ class ObservationRecords:
             if any(getattr(record, k) != v for k, v in fixed.items()):
                 continue
             bin_key = []
-            for k, extract in extractors.items():
+            for extract in extractors.values():
                 value = extract(record)
                 bin_key.append(value)
             binned[tuple(bin_key)].append(record.id)

@@ -89,6 +89,7 @@ class Display(Tool):
 
     def __call__(self, args: argparse.Namespace) -> None:
         import bokeh.io
+
         from lsst.daf.butler import Butler
 
         from .display import DimensionDisplay

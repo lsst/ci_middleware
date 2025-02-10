@@ -43,6 +43,7 @@ target-version = ["py310"]
 [tool.isort]
 profile = "black"
 line_length = 110
+known_first_party = ["lsst"]
 
 [tool.lsst_versions]
 write_to = "python/lsst/ci/middleware/version.py"
@@ -83,13 +84,25 @@ select = [
     "F",  # pyflakes
     "N",  # pep8-naming
     "W",  # pycodestyle
+    "I",  # isort
+    "RUF022", # sort __all__
+    "UP",  # pyupgrade
+    "C4",  # comprehensions
+    "B",  # bugbear
 ]
 extend-select = [
     "RUF100", # Warn about unused noqa
 ]
+
+[tool.ruff.lint.isort]
+known-first-party = ["lsst"]
 
 [tool.ruff.lint.pycodestyle]
 max-doc-length = 79
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 79
