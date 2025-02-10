@@ -32,6 +32,7 @@ from collections.abc import Iterable
 from typing import Any, cast
 
 import pydantic
+
 from lsst.daf.butler import (
     Butler,
     CollectionType,

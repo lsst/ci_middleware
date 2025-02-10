@@ -34,6 +34,7 @@ from typing import Any, cast
 
 import bokeh.plotting
 import numpy as np
+
 from lsst.afw.geom import makeCdMatrix, makeSkyWcs
 from lsst.daf.butler import Butler, DataCoordinate, DimensionRecord, DimensionUniverse, SkyPixDimension
 from lsst.geom import Point2D, SpherePoint, degrees

@@ -31,9 +31,10 @@ __all__ = (
 import os
 from collections.abc import Iterable, Sequence
 
+from SCons.Script import File
+
 from lsst.sconsUtils import state
 from lsst.sconsUtils.utils import libraryLoaderEnvironment
-from SCons.Script import File
 
 from ._constants import DEFAULTS_COLLECTION, UNMOCKED_DATASET_TYPES
 
