@@ -39,10 +39,10 @@ Package Structure and Overview
 
 - `python/lsst/ci/middleware/display.py`:
     A simple display tool for inspecting the spatial relationships between the visits, detectors, tracts, patches, and HTM7 trixels.
- 
+
 - `python/lsst/ci/middleware/mock_dataset_maker.py`:
     The `MockDatasetMaker` class, which can populate a data repository with the inputs needed to run a pipeline.
- 
+
 - `python/lsst/ci/middleware/output_repo_tests.py`:
     Helper code for `unittest`-based tests that check the contents of the data repository `tar` files in the `data` directory.
 
