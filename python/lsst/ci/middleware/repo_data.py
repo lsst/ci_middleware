@@ -108,7 +108,7 @@ class InstrumentRecords:
             butler.registry.queryDimensionRecords(
                 "physical_filter",
                 instrument=instrument,
-                where="band IN (bands)",
+                where="band IN (:bands)",
                 bind={"bands": bands},
             )
         )
@@ -116,7 +116,7 @@ class InstrumentRecords:
             butler.registry.queryDimensionRecords(
                 "detector",
                 instrument=instrument,
-                where="detector IN (detectors)",
+                where="detector IN (:detectors)",
                 bind={"detectors": detectors},
             )
         )
@@ -251,7 +251,7 @@ class ObservationRecords:
                 for data_id in butler.registry.queryDataIds(
                     ["visit", "detector"],
                     instrument=instrument,
-                    where="band IN (bands) AND detector IN (detectors)",
+                    where="band IN (:bands) AND detector IN (:detectors)",
                     bind={"detectors": detectors, "bands": bands},
                     **kwargs,
                 )
@@ -420,7 +420,7 @@ class ObservationRecords:
             butler.registry.queryDimensionRecords(
                 "visit_detector_region",
                 instrument=instrument,
-                where="visit IN (visit_ids) AND detector IN (detectors)",
+                where="visit IN (:visit_ids) AND detector IN (:detectors)",
                 bind={"visit_ids": visit_ids, "detectors": detectors},
             )
         )
@@ -435,7 +435,7 @@ class ObservationRecords:
         data_ids = butler.registry.queryDataIds(
             ["exposure", "visit", "visit_system"],
             instrument=instrument,
-            where="visit IN (visit_ids)",
+            where="visit IN (:visit_ids)",
             bind={"visit_ids": visit_ids},
         )
         for element_name in ["exposure", "visit_definition", "visit_system", "visit_system_membership"]:
@@ -462,7 +462,7 @@ class ObservationRecords:
         for visit_record in butler.registry.queryDimensionRecords(
             "visit",
             instrument=instrument,
-            where="visit IN (visit_ids)",
+            where="visit IN (:visit_ids)",
             bind={"visit_ids": visit_ids},
         ):
             d = visit_record.toDict()
