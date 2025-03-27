@@ -175,6 +175,7 @@ class Rc2OutputsTestCase(unittest.TestCase):
                 # Check that the failure was documented in expected ways:
                 case label if label in [
                     "_mock_transformForcedSourceTable",
+                    "_mock_splitPrimaryObjectForcedSource",
                     "_mock_drpAssociation",
                     "_mock_drpDiaCalculation",
                     "_mock_transformForcedSourceOnDiaObjectTable",
