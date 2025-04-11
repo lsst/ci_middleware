@@ -96,6 +96,12 @@ rc2 = (
         ],
         expect_failure=False,
     )
+    .add_side_run(
+        "test-data-id-table",
+        ["isr", "calibrateImage"],
+        where="instrument='HSC'",
+        extra_qg_args=["--data-id-table", "resource://lsst.ci.middleware/data/data_ids.ecsv"],
+    )
     .add("step1", where="instrument='HSC' AND exposure NOT IN (18202, 96980)")
     # Add more side runs to check --extend-run and --clobber-outputs.
     .add_side_run(

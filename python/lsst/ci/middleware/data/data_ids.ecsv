@@ -1,0 +1,10 @@
+# %ECSV 1.0
+# ---
+# datatype:
+# - {name: visit, datatype: int64}
+# - {name: detector, datatype: int64}
+# schema: astropy-2.0
+visit detector
+18202 50
+96980 50
+96980 49
