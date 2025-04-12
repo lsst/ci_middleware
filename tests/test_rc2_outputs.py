@@ -439,6 +439,21 @@ class Rc2OutputsTestCase(unittest.TestCase):
             )
             self.assertFalse(helper.butler.exists(get_mock_name("calibrateImage_log"), data_id, visit=95104))
 
+    def test_data_id_table(self) -> None:
+        """Test that the side run that uses the --data-id-table option produced
+        outputs for just the data IDs provided by that table.
+        """
+        direct = OutputRepoTests("RC2", "test-data-id-table-direct", {})
+        qbb = OutputRepoTests("RC2", "test-data-id-table-qbb", {})
+        for helper in (direct, qbb):
+            self.assertEqual(
+                {
+                    (ref.dataId["visit"], ref.dataId["detector"])
+                    for ref in helper.butler.query_datasets(get_mock_name("calexp"))
+                },
+                {(18202, 50), (96980, 50), (96980, 49)},
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

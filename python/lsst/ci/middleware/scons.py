@@ -267,6 +267,7 @@ class PipelineCommands:
         clobber_outputs: bool = False,
         raise_on_partial_outputs: bool = False,
         expect_failure: bool | None = None,
+        extra_qg_args: Sequence[str] = (),
     ) -> PipelineCommands:
         """Add a new QuantumGraph and its execution to the build, but do not
         use it as input for later runs.
@@ -302,6 +303,9 @@ class PipelineCommands:
         expect_failure : `bool`, optional
             Override whether to expect the command to exit with a nonzero exit
             code; default is ``bool(fail)``.
+        extra_qg_args : `~collections.abc.Sequence` [ `str` ]
+            Extra command-line arguments to be passed to the QG generation
+            command.
 
         Returns
         -------
@@ -322,6 +326,7 @@ class PipelineCommands:
             skip_existing_in_last=skip_existing_in_last,
             extend_run=extend_run,
             clobber_outputs=clobber_outputs,
+            extra_args=extra_qg_args,
         )
         self._add_direct(
             qg,
@@ -426,6 +431,7 @@ class PipelineCommands:
         skip_existing_in_last: bool = False,
         extend_run: bool = False,
         clobber_outputs: bool = False,
+        extra_args: Sequence[str] = (),
     ) -> File:
         """Make a SCons target for the quantum graph file.
 
@@ -453,6 +459,8 @@ class PipelineCommands:
         clobber_outputs : `bool`, optional
             If `True`, pass ``--clobber-outputs`` to the QuantumGraph
             generation command.
+        extra_args : `~collections.abc.Sequence` [ `str` ]
+            Extra command-line arguments.
 
         Returns
         -------
@@ -499,6 +507,7 @@ class PipelineCommands:
                     "--qgraph-datastore-records",
                     "--mock",
                     *fail_and_retry_args,
+                    *extra_args,
                     f"--unmocked-dataset-types '{','.join(UNMOCKED_DATASET_TYPES)}'",
                     log="${TARGETS[1]}",
                 ),
