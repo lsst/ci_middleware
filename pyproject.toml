@@ -50,8 +50,6 @@ write_to = "python/lsst/ci/middleware/version.py"
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"  # Recommended as best practice
-# Some unit tests open registry database and don't close it.
-open_files_ignore = ["gen3.sqlite3"]
 
 [tool.ruff]
 line-length = 110
