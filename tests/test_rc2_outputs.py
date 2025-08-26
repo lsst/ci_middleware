@@ -217,9 +217,7 @@ class Rc2OutputsTestCase(unittest.TestCase):
                     self.assertEqual(task_summary.failed_quanta, [])
 
                 case label if label in [
-                    "_mock_forcedPhotCcdOnDiaObjects",
-                    "_mock_forcedPhotDiffOnDiaObjects",
-                    "_mock_writeForcedSourceOnDiaObjectTable",
+                    "_mock_forcedPhotDiaObjectDetector",
                 ]:
                     self.assertEqual(task_summary.n_expected, 46)
                     self.assertEqual(task_summary.n_failed, 0)
