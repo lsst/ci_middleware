@@ -84,7 +84,7 @@ class OutputRepoTests:
         if self._butler is None:
             self._root = makeTestTempDir(str(TEST_DIR))
             with tarfile.open(DATA_DIR.joinpath(self.name, f"{self.variant}.tgz")) as archive:
-                archive.extractall(self._root)
+                archive.extractall(self._root, filter="data")
             self._butler = Butler.from_config(self._root, collections=f"HSC/runs/{self.name}")
         return self._butler
 
