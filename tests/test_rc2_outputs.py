@@ -217,9 +217,7 @@ class Rc2OutputsTestCase(unittest.TestCase):
                     self.assertEqual(task_summary.failed_quanta, [])
 
                 case label if label in [
-                    "_mock_forcedPhotCcdOnDiaObjects",
-                    "_mock_forcedPhotDiffOnDiaObjects",
-                    "_mock_writeForcedSourceOnDiaObjectTable",
+                    "_mock_forcedPhotDiaObjectDetector",
                 ]:
                     self.assertEqual(task_summary.n_expected, 46)
                     self.assertEqual(task_summary.n_failed, 0)
@@ -228,8 +226,8 @@ class Rc2OutputsTestCase(unittest.TestCase):
                     self.assertEqual(task_summary.failed_quanta, [])
                 case _:
                     raise RuntimeError(
-                        """Task summary contains unexpected
-                                       quanta. It is likely this test must be
+                        f"""Task summary contains unexpected
+                                       quanta with label {label}. It is likely this test must be
                                        updated to reflect the mocks."""
                     )
         # Check on datasets
