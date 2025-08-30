@@ -99,7 +99,7 @@ class OutputRepoTests:
         terms = [step]
         if group is not None:
             terms.append(group)
-        return QuantumGraph.loadUri(DATA_DIR.joinpath(self.name, "-".join(terms) + ".qgraph"))
+        return QuantumGraph.loadUri(DATA_DIR.joinpath(self.name, "-".join(terms) + ".qg"))
 
     def close(self) -> None:
         """Delete the temporary data repository.
