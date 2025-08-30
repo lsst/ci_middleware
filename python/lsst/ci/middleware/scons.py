@@ -467,7 +467,7 @@ class PipelineCommands:
         qg_file : `SCons.Script.File`
             SCons file node for the quantum graph.
         """
-        qg_file = os.path.join(self.name, suffix + ".qgraph")
+        qg_file = os.path.join(self.name, suffix + ".qg")
         log = os.path.join(self.name, suffix + "-qgraph.log")
         repo_in_cmd = "${TARGETS[0].base}-qgraph-repo"
         fail_and_retry_args = [f"--mock-failure {f}" for f in fail]
