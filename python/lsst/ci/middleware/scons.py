@@ -702,15 +702,19 @@ class PipelineCommands:
                 )
             )
         commands += [
-            # Bring results home using butler transfer-from-graph.
+            # Bring results home using butler aggregate-graph.
             python_cmd(
                 BUTLER_BIN,
-                "transfer-from-graph",
+                "--long-log",
+                "--log-level",
+                "VERBOSE",
+                "--log-file",
+                f"data/{log}",
+                "--no-log-tty",
+                "aggregate-graph",
                 "${SOURCES[1]}",
                 repo_in_cmd,
-                "--no-transfer-dimensions",
-                "--update-output-chain",
-                "--register-dataset-types",
+                "--mock-storage-classes",
             ),
             tar_repo_cmd(repo_in_cmd, "${TARGETS[0]}"),
         ]
