@@ -655,6 +655,7 @@ class PipelineCommands:
             SCons file node for the output repo.
         """
         repo_file = os.path.join(self.name, suffix + "-qbb.tgz")
+        prov_file = os.path.join(self.name, suffix + "-prov.qg")
         log = os.path.join(self.name, suffix + "-qbb.log")
         repo_in_cmd = "${TARGETS[0].base}"
         commands = [
@@ -702,20 +703,26 @@ class PipelineCommands:
                 )
             )
         commands += [
-            # Bring results home using butler transfer-from-graph.
+            # Bring results home using butler aggregate-graph.
             python_cmd(
                 BUTLER_BIN,
-                "transfer-from-graph",
+                "--long-log",
+                "--log-level",
+                "VERBOSE",
+                "--log-file",
+                f"data/{log}",
+                "--no-log-tty",
+                "aggregate-graph",
                 "${SOURCES[1]}",
                 repo_in_cmd,
-                "--no-transfer-dimensions",
-                "--update-output-chain",
-                "--register-dataset-types",
+                "-o",
+                "${TARGETS[2]}",
+                "--mock-storage-classes",
             ),
             tar_repo_cmd(repo_in_cmd, "${TARGETS[0]}"),
         ]
         targets = state.env.Command(
-            [File(repo_file), File(log)],
+            [File(repo_file), File(log), File(prov_file)],
             [self.last_qbb_repo, qg_file],
             commands,
         )
