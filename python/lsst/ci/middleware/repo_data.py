@@ -487,8 +487,7 @@ def make_skymap_instance(
         Skymap object.
     """
     config = DiscreteSkyMap.ConfigClass()
-    uri = ResourcePath(uri)
-    config.loadFromString(uri.read())
+    config.load(uri)
     return DiscreteSkyMap(config)
 
 
