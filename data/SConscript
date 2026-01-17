@@ -102,7 +102,7 @@ rc2 = (
         where="instrument='HSC'",
         extra_qg_args=["--data-id-table", "resource://lsst.ci.middleware/data/data_ids.ecsv"],
     )
-    .add("step1", where="instrument='HSC' AND exposure NOT IN (18202, 96980)")
+    .add("step1", where="instrument='HSC' AND exposure NOT IN (18202, 96980)", ingest_graph=False)
     # Add more side runs to check --extend-run and --clobber-outputs.
     .add_side_run(
         "test-clobber-without-skip",
@@ -139,6 +139,7 @@ rc2 = (
         where="skymap='ci_mw' AND tract=0",
         group="attempt1",
         fail=['''consolidateForcedSourceTable::"skymap='ci_mw' AND tract=0"'''],
+        ingest_graph=False,
     )
     .add("step5", where="skymap='ci_mw' AND tract=0", group="attempt2", skip_existing_in_last=True)
     .add("step6")
@@ -166,8 +167,9 @@ prod = (
         group="i-attempt1",
         where="band='i'",
         fail=['''calibrateImage::"instrument='HSC' AND visit=18202"'''],
+        ingest_graph=False
     )
-    .add("step1", group="i-attempt2", where="band='i'", skip_existing_in_last=True)
+    .add("step1", group="i-attempt2", where="band='i'", skip_existing_in_last=True, ingest_graph=False)
     .add("step2a", group="r", where="band='r'")
     .add("step2a", group="i", where="band='i'")
     .add("step2b", group="even", where="skymap='ci_mw' AND tract IN (0, 2)")

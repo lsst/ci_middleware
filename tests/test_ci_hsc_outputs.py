@@ -54,7 +54,7 @@ class CiHscOutputsTestCase(unittest.TestCase):
 
     def test_direct_qbb_equivalence(self) -> None:
         """Test that the direct and QBB runs produce exactly the same
-        collections, dataset types, and datasets."""
+        collections, dataset types, and datasets (except for provenance)."""
         self.assertEqual(
             list(
                 self.direct.butler.registry.queryCollections(
@@ -69,7 +69,8 @@ class CiHscOutputsTestCase(unittest.TestCase):
         )
         self.assertEqual(
             set(self.direct.butler.registry.queryDatasetTypes(...)),
-            set(self.qbb.butler.registry.queryDatasetTypes(...)),
+            set(self.qbb.butler.registry.queryDatasetTypes(...))
+            - {self.qbb.butler.get_dataset_type("run_provenance")},
         )
         self.assertEqual(
             set(self.direct.butler.registry.queryDatasets(get_mock_name("isr_config"))),
