@@ -18,6 +18,17 @@ lsst.ci.middleware
 .. .. toctree::
 ..    :maxdepth: 1
 
+.. _lsst.ci.middleware-changes:
+
+Changes
+=======
+
+.. toctree::
+   :maxdepth: 1
+
+   CHANGES.rst
+
+
 .. _lsst.ci.middleware-contributing:
 
 Contributing
