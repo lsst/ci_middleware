@@ -240,7 +240,8 @@ class ProdOutputsTestCase(unittest.TestCase):
                         for message in quantum_summary.messages:
                             self.assertIsInstance(message, str)
                             self.assertTrue(
-                                message.startswith("Execution of task '_mock_calibrateImage' on quantum")
+                                message.startswith("Execution of task '_mock_calibrateImage' on quantum"),
+                                message,
                             )
                             self.assertIn(
                                 "Exception ValueError: Simulated failure: task=_mock_calibrateImage", message

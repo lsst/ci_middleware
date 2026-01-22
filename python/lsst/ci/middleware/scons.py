@@ -187,6 +187,7 @@ class PipelineCommands:
         fail: Sequence[str] = (),
         skip_existing_in_last: bool = False,
         auto_retry_mem: tuple[str, str] | None = None,
+        ingest_graph: bool = True,
     ) -> PipelineCommands:
         """Add a new QuantumGraph and its execution to the build.
 
@@ -217,6 +218,10 @@ class PipelineCommands:
             ``fail`` setting that causes the first attempt for one or more
             quanta to simulate an out-of-memory failure for the first value
             only, effectively testing BPS auto-retry logic.
+        ingest_graph : `bool`, optional
+            Whether to ingest the provenance quantum graph (only for QBB right
+            now).  Must be `False` if a side run with ``extend_run=True`` will
+            be added.
 
         Returns
         -------
@@ -252,6 +257,7 @@ class PipelineCommands:
             output_run=output_run,
             expect_failure=bool(fail),
             auto_retry_mem=auto_retry_mem,
+            ingest_graph=ingest_graph,
         )
         self.last_output_run = output_run
         return self
@@ -626,6 +632,7 @@ class PipelineCommands:
         pre_exec_init: bool = True,
         auto_retry_mem: tuple[str, str] | None = None,
         raise_on_partial_outputs: bool = False,
+        ingest_graph: bool = True,
     ) -> File:
         """Make an SCons target for direct execution of the quantum graph
         with ``pipetask run-qbb`` and `lsst.daf.butler.QuantumBackedButler`.
@@ -648,6 +655,9 @@ class PipelineCommands:
         raise_on_partial_outputs : `bool`, optional
             If `True`, pass ``--raise-on-partial-outputs`` to
             ``pipetask run-qbb``.
+        ingest_graph : `bool`, optional
+            Whether to ingest the provenance quantum graph.  Must be `False` if
+            a side run will use ``extend_run=True``.
 
         Returns
         -------
@@ -718,6 +728,23 @@ class PipelineCommands:
                 "-o",
                 "${TARGETS[2]}",
                 "--mock-storage-classes",
+                *(["--promise-ingest-graph"] if ingest_graph else []),
+            ),
+            python_cmd(
+                BUTLER_BIN,
+                "--long-log",
+                "--log-level",
+                "VERBOSE",
+                "--log-file",
+                f"data/{log}",
+                "--no-log-tty",
+                "ingest-graph",
+                repo_in_cmd,
+                "${TARGETS[2]}",
+                "--batch-size",
+                "50",
+                "-t",
+                "copy",
             ),
             tar_repo_cmd(repo_in_cmd, "${TARGETS[0]}"),
         ]
